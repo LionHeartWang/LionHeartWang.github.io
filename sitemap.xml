@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>http://lionheartwang.github.io/blog/2016/02/03/test/</loc>
+<loc>http://lionheartwang.github.io/blog/2016/02/03/%25E4%25BD%25BF%25E7%2594%25A8Octopress%25E6%2590%25AD%25E5%25BB%25BAGitHub%25E5%258D%259A%25E5%25AE%25A2/</loc>
 <lastmod>2016-02-03T11:42:56+08:00</lastmod>
 </url>
 <url>
@@ -9,5 +9,8 @@
 </url>
 <url>
 <loc>http://lionheartwang.github.io/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/blog/categories/ji-zhu-zi-yuan/</loc>
 </url>
 </urlset>
