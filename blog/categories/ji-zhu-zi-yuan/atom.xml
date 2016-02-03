@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/ji-zhu-zi-yuan/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-02-03T13:27:06+08:00</updated>
+  <updated>2016-02-03T14:49:34+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -18,11 +18,109 @@
     <link href="http://lionheartwang.github.io/blog/2016/02/03/%E4%BD%BF%E7%94%A8Octopress%E6%90%AD%E5%BB%BAGitHub%E5%8D%9A%E5%AE%A2/"/>
     <updated>2016-02-03T11:42:56+08:00</updated>
     <id>http://lionheartwang.github.io/blog/2016/02/03/使用Octopress搭建GitHub博客</id>
-    <content type="html"><![CDATA[<h1>安装Octopress</h1>
+    <content type="html"><![CDATA[<p>本文介绍如何使用Octopress搭建Github博客。</p>
 
-<h1>建立GitHub博客主页</h1>
+<h2>Octopress安装与配置</h2>
 
-<h1>发布博客</h1>
+<h3>安装ruby</h3>
+
+<p>查看ruby版本</p>
+
+<pre><code>ruby --version  # 必须显示1.9.3
+</code></pre>
+
+<p>安装方法：</p>
+
+<pre><code>$curl -L https://get.rvm.io | bash -s stable --ruby
+$rvm install 1.9.3
+$rvm use 1.9.3
+$rvm rubygems latest
+</code></pre>
+
+<p>若有显示命名未找到，直接下载安装即可。</p>
+
+<h3>安装octopress</h3>
+
+<p>在安装octopress之前，确保已安装git。</p>
+
+<pre><code> $git clone git://github.com/imathis/octopress.git octopress
+ $cd octopress
+ $gem install bundler
+ $bundle install
+ $rake install
+</code></pre>
+
+<h2>建立Github主页</h2>
+
+<p>需要注册Github账户。登录后在GitHub上创建一个仓库。仓库名称：username.github.io</p>
+
+<h3>博客生成</h3>
+
+<p>博客的源码放到source分支下，并把生成的内容提交到master分支。
+在octopress目录下使用如下命令生成博客内容。</p>
+
+<pre><code>$rake generate //生成
+</code></pre>
+
+<h3>博客预览</h3>
+
+<p>可使用如下命令在本地预览生成效果。</p>
+
+<pre><code>$rake preview //预览
+</code></pre>
+
+<p>执行成功后可通过本地浏览器在<a href="http://localhost:4000%E6%9F%A5%E7%9C%8B%E5%88%B0%E5%85%88%E5%89%8D%E7%94%9F%E6%88%90%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%86%85%E5%AE%B9%E3%80%82">http://localhost:4000%E6%9F%A5%E7%9C%8B%E5%88%B0%E5%85%88%E5%89%8D%E7%94%9F%E6%88%90%E7%9A%84%E5%8D%9A%E5%AE%A2%E5%86%85%E5%AE%B9%E3%80%82</a></p>
+
+<h3>博客发布</h3>
+
+<p>如果预览没有问题，想要发布博客到Github主页。
+首先执行如下命令：</p>
+
+<pre><code>$rake setup_github_pages
+</code></pre>
+
+<p>执行后要求输入仓库的url，可以在Github仓库内容页面找到项目的ssh或http URL链接。</p>
+
+<p>如：git@github.com:username/username.github.io.git</p>
+
+<p>直接复制粘贴该链接即可。</p>
+
+<p>上述操作设置了发布的目标位置为用户Github主页。</p>
+
+<pre><code>$rake deploy 
+$git add .
+$git commit -m "comment"
+$git push origin source
+</code></pre>
+
+<p>生成后的博客文件存放在_deploy目录下, 通过上述操作提交到Github博客项目。</p>
+
+<p>至此就能够在username.github.io上看到了博客内容了。</p>
+
+<h2>发布新文章</h2>
+
+<p>发布新文章时可使用如下命令：</p>
+
+<pre><code>$rake new_post["title"]
+</code></pre>
+
+<p>生成的新文章在source/_post/目录下，文件名构成为时间和标题的拼接。</p>
+
+<p>后续发布操作依然是执行</p>
+
+<pre><code>$rake generate
+$rake preview
+</code></pre>
+
+<p>此时可以预览文章，然后执行</p>
+
+<pre><code>$rake deploy 
+$git add .
+$git commit -m "comment"
+$git push origin source
+</code></pre>
+
+<p>此时在Github博客主页就能看到新发布的文章了。</p>
 ]]></content>
   </entry>
   
