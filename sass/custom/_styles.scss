@@ -1,2 +1,29 @@
 // This File is imported last, and will override other styles in the cascade
 // Add styles here to make changes without digging in too much
+
+article > header > h1 {
+  color: #a61c00;
+	font-size: 28px;
+}
+
+article > div > h1 {
+  color: #a61c00;
+  font-size: 28px;
+}
+
+article > div > h2 {
+	color: #263347;
+	font-size: bold 24px;
+}
+
+article > div > h3 {
+	font-size: bold 20px;
+}
+
+article > div > h4 {
+  font-size: bold 16px;
+}
+
+article p {
+	font-size: 14px;
+}
