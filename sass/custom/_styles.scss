@@ -1,7 +1,7 @@
 // This File is imported last, and will override other styles in the cascade
 // Add styles here to make changes without digging in too much
 
-article > header > h1 {
+article > header h1, h1.entry-title a {
   color: #a61c00;
 	font-size: 28px;
 }
@@ -27,3 +27,4 @@ article > div > h4 {
 article p {
 	font-size: 14px;
 }
+
