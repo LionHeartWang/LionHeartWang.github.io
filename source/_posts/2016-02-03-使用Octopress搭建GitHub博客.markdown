@@ -60,7 +60,7 @@ $rake generate //生成
 $rake preview //预览
 ~~~
 
-执行成功后可通过本地浏览器在http://localhost:4000查看到先前生成的博客内容。
+执行成功后可通过本地浏览器在 http://localhost:4000 查看到先前生成的博客内容。
 
 ### 博客发布
 如果预览没有问题，想要发布博客到Github主页。
