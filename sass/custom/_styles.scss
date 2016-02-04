@@ -16,10 +16,10 @@ article > header h1, h1.entry-title a {
 
 article > div > h1 {
   color: #a61c00;
-  font-size: 28px;
+  font-size: bold 28px;
 }
 
-article > div > h2 {
+article > div > h2, #about-team h2 {
 	color: #263347;
 	font-size: bold 24px;
 }
@@ -35,4 +35,8 @@ article > div > h4 {
 article p {
 	font-size: 14px;
 	line-height: 5px;
+}
+
+article li {
+	font-size: 14px;
 }
