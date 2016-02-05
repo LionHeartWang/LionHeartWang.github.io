@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: 设计模式 | Workspace of LionHeart]]></title>
+  <title><![CDATA[设计模式 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-02-05T16:08:02+08:00</updated>
+  <updated>2016-02-05T20:16:50+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -220,11 +220,8 @@ Facade模式定义了一个高层接口，这个接口使这一子系统更加�
 <p>面向对象设计的准则：</p>
 
 <ul>
-<li><ol type="a">
 <li>针对接口编程，而不是针对实现编程</li>
-</ol>
-</li>
-<li>II. 优先使用对象组合，而不是类继承</li>
+<li>优先使用对象组合，而不是类继承</li>
 </ul>
 
 
@@ -252,10 +249,14 @@ Facade模式定义了一个高层接口，这个接口使这一子系统更加�
 </ul>
 
 
-<p>设计模式的应用：
-* 应用程序：内部复用性，可维护性，可扩充性
-* 工具箱：一组相关的，可复用的类的集合
-* 框架：构成一类特定软件可复用设计的一组相互协作的类</p>
+<p>设计模式的应用：</p>
+
+<ul>
+<li>应用程序：内部复用性，可维护性，可扩充性</li>
+<li>工具箱：一组相关的，可复用的类的集合</li>
+<li>框架：构成一类特定软件可复用设计的一组相互协作的类</li>
+</ul>
+
 
 <p>模式和框架的区别：</p>
 
