@@ -13,8 +13,19 @@ article > header h1, h1.entry-title a {
 	font-size: 18px;
 }
 
-#recent_posts a, #recent_posts li {
-	font-size: 18px;
+header {
+	margin-bottom: 0em;
+}
+
+header > h1.entry-title {
+	padding-bottom: 0em;
+	margin-bottom: 0em;
+}
+
+article, article > div {
+	padding-top: 0em;
+	border-top: 0em;
+	margin-top: 0em;
 }
 
 article > div > h1 {
@@ -23,6 +34,8 @@ article > div > h1 {
 }
 
 article > div > h2, #about-team h2 {
+	padding-top: 0.5em;
+	margin-top: 0.5em;
 	color: $theme-color2;
 	font-size: bold 24px;
 }
@@ -44,3 +57,29 @@ article li {
 	font-size: 14px;
 	margin-left: 2em;
 }
+
+#categories_aside h1 {
+	color: $theme-color1;
+	margin-top: 3em;
+}
+
+#recent_posts h1 {
+	color: $theme-color1;
+	margin-bottom: 0.5em;
+}
+
+#categories_aside h2, #recent_posts h2 {
+	margin-top: 0.5em;
+	color: $theme-color2;
+}
+
+#recent_posts a {
+	font-size: 14px;
+  line-height: 5px;
+}
+
+#recent_posts p {
+  font-size: 14px;
+  line-height: 5px;
+}
+

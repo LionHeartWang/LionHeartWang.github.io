@@ -1,6 +1,11 @@
-<section>
+<section id="categories_aside">
   <h1>Categories</h1>
-  <ul id="categories">
-    {%raw%}{% category_list %}{%endraw%} 
+  {% for category in site.categories %}
+  <h2>{{ category | first }} <span>({{ category | last | size }})</span></h2>
+  <ul class="arc-list">
+    {% for post in category.last %}
+		<li><a href="{{ post.url }}">{{ post.title }}</a> {{post.date | date:"%d/%m/%Y"}}</li>
+    {% endfor %}
   </ul>
+  {% endfor %}
 </section>
