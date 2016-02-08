@@ -6,7 +6,7 @@ comments: true
 categories: 技术资源
 ---
 本文介绍如何使用Octopress搭建Github博客。
-
+<!--more-->
 
 ## Octopress安装与配置
 ### 安装ruby
