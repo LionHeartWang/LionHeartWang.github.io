@@ -4,7 +4,7 @@
   <title><![CDATA[设计模式 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/she-ji-mo-shi/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-02-06T20:37:03+08:00</updated>
+  <updated>2016-02-08T18:43:22+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -18,7 +18,12 @@
     <link href="http://lionheartwang.github.io/blog/2016/02/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0/"/>
     <updated>2016-02-05T15:24:58+08:00</updated>
     <id>http://lionheartwang.github.io/blog/2016/02/05/设计模式概述</id>
-    <content type="html"><![CDATA[<h2>什么是设计模式？</h2>
+    <content type="html"><![CDATA[<p>本文介绍设计模式的基本概念并简述23种常见的基本设计模式。</p>
+
+<!--more-->
+
+
+<h2>什么是设计模式？</h2>
 
 <p>一个模式有四个基本要素：</p>
 

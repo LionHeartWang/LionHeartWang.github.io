@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://lionheartwang.github.io/blog/2016/02/08/%25E6%2590%259C%25E7%25B4%25A2%25E5%25BC%2595%25E6%2593%258E%25E5%258F%258A%25E5%2585%25B6%25E6%258A%2580%25E6%259C%25AF%25E6%259E%25B6%25E6%259E%2584/</loc>
+<lastmod>2016-02-08T18:15:43+08:00</lastmod>
+</url>
+<url>
 <loc>http://lionheartwang.github.io/blog/2016/02/05/%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F%25E6%25A6%2582%25E8%25BF%25B0/</loc>
 <lastmod>2016-02-05T15:24:58+08:00</lastmod>
 </url>
@@ -25,5 +29,8 @@
 </url>
 <url>
 <loc>http://lionheartwang.github.io/blog/categories/du-shu-bi-ji/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/blog/categories/sou-suo-yin-qing/</loc>
 </url>
 </urlset>

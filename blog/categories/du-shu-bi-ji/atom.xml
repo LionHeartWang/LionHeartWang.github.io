@@ -4,7 +4,7 @@
   <title><![CDATA[读书笔记 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/du-shu-bi-ji/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-02-06T20:37:03+08:00</updated>
+  <updated>2016-02-08T18:43:22+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -14,11 +14,93 @@
 
   
   <entry>
+    <title type="html"><![CDATA[搜索引擎及其技术架构]]></title>
+    <link href="http://lionheartwang.github.io/blog/2016/02/08/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E5%8F%8A%E5%85%B6%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84/"/>
+    <updated>2016-02-08T18:15:43+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2016/02/08/搜索引擎及其技术架构</id>
+    <content type="html"><![CDATA[<p>本文介绍搜索引擎发展史，搜索引擎的目标与核心问题以及搜索引擎的技术架构。</p>
+
+<!--more-->
+
+
+<h2>搜索引擎技术发展史</h2>
+
+<h3>史前时代：分类目录的一代</h3>
+
+<ul>
+<li>也成为"导航"时代，以Yahoo,hao123为代表。</li>
+<li>纯人工将高质量网站分门别类。</li>
+</ul>
+
+
+<h3>第一代: 文本检索的一代</h3>
+
+<ul>
+<li>采用经典信息检索模型计算关键词和网页文本的相关程度：布尔模型、向量空间模型、概率模型等。</li>
+<li>没有使用网页间链接关系，搜索质量较低。</li>
+<li>早期搜索引擎如AltaVista、Excite等使用这种方式。</li>
+</ul>
+
+
+<h3>第二代: 链接分析的一代</h3>
+
+<ul>
+<li>利用网页链接关系衡量网页流行程度。</li>
+<li>结合网页流行性和内容相似性来改善搜索质量。</li>
+<li>Google率先提出并使用PageRank链接分析技术，有效改善搜索质量。</li>
+<li>未考虑用户个性化要求</li>
+</ul>
+
+
+<h3>第三代: 用户中心的一代</h3>
+
+<ul>
+<li>以理解用户需求为核心：用户历史搜索信息、查询时间地理位置信息。</li>
+<li>例如："苹果"关键词，果粉和果农的搜索目的会有很大差距。</li>
+</ul>
+
+
+<h2>搜索引擎的目标</h2>
+
+<p>搜索引擎期望达到的目标：更全、更快、更准。</p>
+
+<p>为达到目标涉及的3个核心问题：</p>
+
+<ul>
+<li>用户真正需求是什么。</li>
+<li>哪些信息是和用户需求真正相关的。</li>
+<li>哪些信息是用户可以信赖的。</li>
+</ul>
+
+
+<h2>搜索引擎的技术架构</h2>
+
+<ul>
+<li>信息来源于互联网网页，通过网络爬虫将互联网信息获取到本地。</li>
+<li>网页去重模块会对网页做检测，除去重复内容。</li>
+<li>搜索引擎对网页解析，抽出主体内容。</li>
+<li>通过倒排索引保存网页内容和链接关系。</li>
+<li>通过云存储与计算平台处理和存储中间结果。</li>
+<li>搜索引擎对接收的用户查询词分析，推导用户搜索意图。</li>
+<li>在缓存中查找，缓存系统存储了不同查询意图对应的搜索结果。</li>
+<li>如果没有命中，调用网页排序模块功能。结合内容相似性、链接分析返回搜索结果。</li>
+<li>反作弊模块用于自动发现通过"作弊"手段提升排名的网页并对其进行处罚。</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[设计模式概述]]></title>
     <link href="http://lionheartwang.github.io/blog/2016/02/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0/"/>
     <updated>2016-02-05T15:24:58+08:00</updated>
     <id>http://lionheartwang.github.io/blog/2016/02/05/设计模式概述</id>
-    <content type="html"><![CDATA[<h2>什么是设计模式？</h2>
+    <content type="html"><![CDATA[<p>本文介绍设计模式的基本概念并简述23种常见的基本设计模式。</p>
+
+<!--more-->
+
+
+<h2>什么是设计模式？</h2>
 
 <p>一个模式有四个基本要素：</p>
 

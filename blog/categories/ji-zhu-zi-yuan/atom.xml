@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/ji-zhu-zi-yuan/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-02-06T20:37:03+08:00</updated>
+  <updated>2016-02-08T18:43:22+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -19,6 +19,9 @@
     <updated>2016-02-03T11:42:56+08:00</updated>
     <id>http://lionheartwang.github.io/blog/2016/02/03/使用Octopress搭建GitHub博客</id>
     <content type="html"><![CDATA[<p>本文介绍如何使用Octopress搭建Github博客。</p>
+
+<!--more-->
+
 
 <h2>Octopress安装与配置</h2>
 
