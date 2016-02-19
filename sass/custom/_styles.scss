@@ -3,8 +3,8 @@
 $theme-color1: #a61c00;
 $theme-color2: #263347;
 
-
-article > header h1, h1.entry-title a {
+// General
+h1.entry-title a {
   color: $theme-color1;
 	font-size: 28px;
 }
@@ -20,6 +20,13 @@ header {
 header > h1.entry-title {
 	padding-bottom: 0em;
 	margin-bottom: 0em;
+}
+
+
+// Article
+article > header h1 {
+  color: $theme-color1;
+	font-size: 28px;
 }
 
 article, article > div {
@@ -58,14 +65,16 @@ article li {
 	margin-left: 2em;
 }
 
+article footer {
+  font-size: 14px;
+	line-height: 6px;
+}
+
+
+// Categories aside
 #categories_aside h1 {
 	color: $theme-color1;
 	margin-top: 3em;
-}
-
-#recent_posts h1 {
-	color: $theme-color1;
-	margin-bottom: 0.5em;
 }
 
 #categories_aside h2, #recent_posts h2 {
@@ -73,9 +82,16 @@ article li {
 	color: $theme-color2;
 }
 
+
+// Recent Posts
+#recent_posts h1 {
+	color: $theme-color1;
+	margin-bottom: 0.5em;
+}
+
 #recent_posts a {
 	font-size: 14px;
-  line-height: 5px;
+  line-height: 10px;
 }
 
 #recent_posts p {
