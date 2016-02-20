@@ -4,7 +4,7 @@
   <title><![CDATA[读书笔记 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/du-shu-bi-ji/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-02-19T13:06:22+08:00</updated>
+  <updated>2016-02-20T15:28:56+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,172 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[搜索引擎索引]]></title>
+    <link href="http://lionheartwang.github.io/blog/2016/02/20/sou-suo-yin-qing-suo-yin/"/>
+    <updated>2016-02-20T15:23:30+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2016/02/20/sou-suo-yin-qing-suo-yin</id>
+    <content type="html"><![CDATA[<p>本文介绍搜索引擎的索引建立，更新，查询和压缩技术。</p>
+
+<!--more-->
+
+
+<h2>索引基础</h2>
+
+<p>倒排索引是搜索引擎用来快速查找包含某个单词的文档集合的数据结构
+倒排索引由单词词典和所有单词对应的倒排列表组成</p>
+
+<p>倒排列表由倒排列表项构成，一般包含：</p>
+
+<ul>
+<li>文档ID(一般采取文档编号差值方式编码)</li>
+<li>单词出现次数</li>
+<li>单词在文档出现位置的信息</li>
+</ul>
+
+
+<h2>索引建立与更新</h2>
+
+<h3>倒排索引建立</h3>
+
+<p>常见建立倒排索引方法：</p>
+
+<ul>
+<li>两遍文档遍历法</li>
+<li>排序法</li>
+<li>归并法</li>
+</ul>
+
+
+<h3>动态索引及更新</h3>
+
+<p>动态索引的三个关键数据结构：</p>
+
+<ul>
+<li>倒排索引：对初始文档集合建立的索引结构</li>
+<li>临时索引：新文档进入系统建立的索引结构</li>
+<li>已删除文档列表：已删除的文档ID列表</li>
+</ul>
+
+
+<p>注意：对于动态索引文档更改可认为是文档先被删除然后向系统内增加一篇新的文档。</p>
+
+<p>对于动态索引需要进行更新，常见索引更新策略：</p>
+
+<ul>
+<li>完全重建策略</li>
+<li>再合并策略</li>
+<li>原地更新策略</li>
+<li>混合策略</li>
+</ul>
+
+
+<h2>查询处理</h2>
+
+<h3>基本处理机制</h3>
+
+<p>常见查询处理机制有如下两种：</p>
+
+<ul>
+<li>一次一文档方式(Doc At a Time)</li>
+<li>一次一单词方式(Term At a Time)</li>
+</ul>
+
+
+<p>注意：</p>
+
+<ul>
+<li>一次一文档方式实际查询时不必保留所有文档得分，保留得分Top K的文档队列即可。</li>
+<li>一次一单词方式适用于多词查询，找到包含所有查询词的文档等价于求查询词对应的倒排列表的交集。</li>
+</ul>
+
+
+<h3>多字段和短语查询</h3>
+
+<p>实现多字段索引方式：</p>
+
+<ul>
+<li>多索引方式</li>
+<li>倒排列表方式</li>
+<li>扩展列表方式</li>
+</ul>
+
+
+<p>常见的支持短语查询技术的方法包括：</p>
+
+<ul>
+<li>位置信息索引</li>
+<li>双词索引</li>
+<li>短语索引</li>
+</ul>
+
+
+<p>可混合使用，查询索引优先级：短语索引 > 双词索引 > 常规索引</p>
+
+<h3>分布式索引</h3>
+
+<p>常见的分布式索引方案：</p>
+
+<ul>
+<li>按文档对索引划分</li>
+<li>按单词对索引划分</li>
+</ul>
+
+
+<p>其中按文档对索引划分在以下方面有优势：</p>
+
+<ul>
+<li>可扩展性</li>
+<li>负载均衡</li>
+<li>容错性</li>
+<li>对查询方式的支持</li>
+</ul>
+
+
+<h2>索引压缩</h2>
+
+<p>索引压缩包括对词典的压缩和对倒排列表的压缩。</p>
+
+<h3>倒排列表压缩</h3>
+
+<p>倒排列表压缩：</p>
+
+<ul>
+<li>无损压缩：更常用</li>
+<li>有损压缩：特殊场合使用</li>
+</ul>
+
+
+<p>倒排列表压缩算法的基本构件：</p>
+
+<ul>
+<li>一元编码</li>
+<li>二元编码</li>
+</ul>
+
+
+<p>常用压缩算法：</p>
+
+<ul>
+<li>Elias Gamma算法</li>
+<li>Elias Delta算法</li>
+<li>Golomb算法</li>
+<li>Rice算法</li>
+<li>变长字节算法</li>
+<li>SimpleX系列算法</li>
+<li>PForDelta算法</li>
+</ul>
+
+
+<p>实际使用一般混合采用多种算法。</p>
+
+<h3>重排序与裁剪</h3>
+
+<p>文档ID重排序通过文档聚类并重排文档ID编号来获得较高的索引压缩率
+静态索引裁剪是一种有损压缩算法，通过抛弃一部分不重要的索引项来获得较好的压缩效果。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[搜索引擎及其技术架构]]></title>
