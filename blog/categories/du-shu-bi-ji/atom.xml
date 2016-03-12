@@ -4,7 +4,7 @@
   <title><![CDATA[读书笔记 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/du-shu-bi-ji/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-02-20T15:28:56+08:00</updated>
+  <updated>2016-03-12T17:51:06+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,112 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[检索模型与搜索排序]]></title>
+    <link href="http://lionheartwang.github.io/blog/2016/03/12/jian-suo-mo-xing-yu-sou-suo-pai-xu/"/>
+    <updated>2016-03-12T17:47:54+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2016/03/12/jian-suo-mo-xing-yu-sou-suo-pai-xu</id>
+    <content type="html"><![CDATA[<p>检索模型是搜索引擎排序的理论基础，用来计算网页和用户查询的相关性。</p>
+
+<p>几种常用的检索模型包括：</p>
+
+<ul>
+<li>布尔模型</li>
+<li>向量空间模型</li>
+<li>概率模型</li>
+<li>语言模型</li>
+<li>机器学习排序算法</li>
+</ul>
+
+
+<!--more-->
+
+
+<h2>向量空间模型</h2>
+
+<p>该模型需要将文档表示转换为特征向量，根据特征向量计算相似性。</p>
+
+<p>其中，特征向量的获取主要考虑如下计算因子：</p>
+
+<ul>
+<li>词频Tf</li>
+<li>逆文档IDF</li>
+</ul>
+
+
+<p>特征权值一般是二者乘积 Weight = Tf * IDF</p>
+
+<h2>概率检索模型</h2>
+
+<p>目前大部分商业搜索引擎采用概率模型作为相关性排序模型。</p>
+
+<p>基本思想：给定用户查询，按照文档和用户需求的相关性由高到低排序。</p>
+
+<p>实现模型：</p>
+
+<ul>
+<li>BIM：二元独立模型</li>
+<li>BM25模型：目前最成功的内容排序模型。</li>
+<li>BM25F：基于BM25，对文档中不同的域赋予不同的权值。</li>
+</ul>
+
+
+<p>BM25模型计算公式融合了4个考虑因素：</p>
+
+<ul>
+<li>IDF因子</li>
+<li>文档长度因子</li>
+<li>文档词频</li>
+<li>查询词频</li>
+</ul>
+
+
+<p>BM25模型利用3个自由调节因子(k1，k2，b)对各种因子的权值进行调整组合。</p>
+
+<h2>机器学习排序</h2>
+
+<p>机器学习排序系统由4个步骤组成：</p>
+
+<ul>
+<li>人工标注训练数据</li>
+<li>文档特征抽取</li>
+<li>学习分类函数</li>
+<li>在实际搜索系统中采用机器学习模型</li>
+</ul>
+
+
+<p>文档进入机器学习系统前需要转化为特征向量，常用特征包括：</p>
+
+<ul>
+<li>查询词在文档中的词频信息</li>
+<li>查询词的IDF信息</li>
+<li>文档长度</li>
+<li>网页的入链数量</li>
+<li>网页的出链数量</li>
+<li>网页的PageRank值</li>
+<li>网页的URL长度</li>
+</ul>
+
+
+<p>确定特征向量X后，每个文档会人工标注出相关性得分Y，这样每个文档转化为一个&lt;X,Y>的形式。
+就形成了一个具体的训练实例。</p>
+
+<p>通过多个训练实例，就可采用机器学习技术对系统进行训练，结果往往是一个分类函数或回归函数。</p>
+
+<p>后续用户搜索中就可以用这个分类函数对文档进行打分，形成搜索结果。</p>
+
+<h2>检索质量评价标准</h2>
+
+<p>精确率和召回率是评价检索系统的常用指标，而对于搜索引擎来说，精确率尤为重要。</p>
+
+<ul>
+<li>精确率：本次搜索结果中相关文档所占比例。</li>
+<li>召回率：本次搜索结果中包含的相关文档占整个文档集合中所有相关文档中的比例。</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[搜索引擎索引]]></title>
