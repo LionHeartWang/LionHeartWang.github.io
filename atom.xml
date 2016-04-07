@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-03-12T17:51:06+08:00</updated>
+  <updated>2016-04-07T21:41:15+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,107 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[非Root账户快速安装mySQL]]></title>
+    <link href="http://lionheartwang.github.io/blog/2016/04/07/fei-rootzhang-hu-kuai-su-an-zhuang-mysql/"/>
+    <updated>2016-04-07T21:37:37+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2016/04/07/fei-rootzhang-hu-kuai-su-an-zhuang-mysql</id>
+    <content type="html"><![CDATA[<p>生产环境中尝尝需要使用mySQL，但线上机器往往工作在非root账户下，没有root密码也不能使用sudo。</p>
+
+<p>本文介绍非Root账户如何快速安装mySQL。</p>
+
+<!--more-->
+
+
+<h2>下载安装MYSQL</h2>
+
+<p>从官网下载mySQL二进制包： mySQL 5.5.48
+下载后解压进入目录</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$tar zxvf mysql-5.5.48-linux2.6-x86_64.tar.gz
+</span><span class='line'>$cd mysql-5.5.48-linux2.6-x86_64</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$./scripts/mysql_install_db --defaults-file=/home/wyg/work/mysql/my.cnf \
+</span><span class='line'>  --user=wyg --basedir=/home/wyg/work/mysql/mysql-5.5.48-linux2.6-x86_64 \
+</span><span class='line'>  --datadir=/home/wyg/work/mysql/sql_data --socket=/tmp/mysql.sock</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>配置MYSQL</h2>
+
+<p>创建配置文件my.cnf如下</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>[client]
+</span><span class='line'>password       = your_password
+</span><span class='line'>port            = 3306
+</span><span class='line'>socket = /tmp/mysql.sock
+</span><span class='line'>[server]
+</span><span class='line'>user = wyg
+</span><span class='line'>basedir = /home/wyg/work/mysql/mysql-5.5.48-linux2.6-x86_64
+</span><span class='line'>datadir = /home/wyg/work/mysql/sql_data
+</span><span class='line'>socket = /tmp/mysql.sock
+</span><span class='line'>port = 3306</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>启动MYSQL</h2>
+
+<p>执行如下命令启动mysql服务</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$./mysqld --defaults-file=/home/wyg/work/mysql/my.cnf &</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>随后执行mysq命令</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$mysql</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果进入mysql客户端，则安装成功。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Welcome to the MySQL monitor.  Commands end with ; or \g.
+</span><span class='line'>Your MySQL connection id is 4
+</span><span class='line'>Server version: 5.5.48 MySQL Community Server (GPL)
+</span><span class='line'>Copyright (c) 2000, 2016, Oracle and/or its affiliates. All rights reserved.
+</span><span class='line'>Oracle is a registered trademark of Oracle Corporation and/or its
+</span><span class='line'>affiliates. Other names may be trademarks of their respective
+</span><span class='line'>owners.
+</span><span class='line'>Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+</span><span class='line'>mysql&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>配置环境变量将mysql-5.5.48-linux2.6-x86_64/bin目录添加到path，即可正常使用mysql命令。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[检索模型与搜索排序]]></title>

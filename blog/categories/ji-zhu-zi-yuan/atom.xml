@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/ji-zhu-zi-yuan/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-03-12T17:51:06+08:00</updated>
+  <updated>2016-04-07T21:41:15+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,79 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[非Root账户快速安装mySQL]]></title>
+    <link href="http://lionheartwang.github.io/blog/2016/04/07/fei-rootzhang-hu-kuai-su-an-zhuang-mysql/"/>
+    <updated>2016-04-07T21:37:37+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2016/04/07/fei-rootzhang-hu-kuai-su-an-zhuang-mysql</id>
+    <content type="html"><![CDATA[<p>生产环境中尝尝需要使用mySQL，但线上机器往往工作在非root账户下，没有root密码也不能使用sudo。</p>
+
+<p>本文介绍非Root账户如何快速安装mySQL。</p>
+
+<!--more-->
+
+
+<h2>下载安装MYSQL</h2>
+
+<p>从官网下载mySQL二进制包： mySQL 5.5.48
+下载后解压进入目录</p>
+
+<pre><code>$tar zxvf mysql-5.5.48-linux2.6-x86_64.tar.gz
+$cd mysql-5.5.48-linux2.6-x86_64
+</code></pre>
+
+<p>执行</p>
+
+<pre><code>$./scripts/mysql_install_db --defaults-file=/home/wyg/work/mysql/my.cnf \
+  --user=wyg --basedir=/home/wyg/work/mysql/mysql-5.5.48-linux2.6-x86_64 \
+  --datadir=/home/wyg/work/mysql/sql_data --socket=/tmp/mysql.sock
+</code></pre>
+
+<h2>配置MYSQL</h2>
+
+<p>创建配置文件my.cnf如下</p>
+
+<pre><code>[client]
+password       = your_password
+port            = 3306
+socket = /tmp/mysql.sock
+[server]
+user = wyg
+basedir = /home/wyg/work/mysql/mysql-5.5.48-linux2.6-x86_64
+datadir = /home/wyg/work/mysql/sql_data
+socket = /tmp/mysql.sock
+port = 3306
+</code></pre>
+
+<h2>启动MYSQL</h2>
+
+<p>执行如下命令启动mysql服务</p>
+
+<pre><code>$./mysqld --defaults-file=/home/wyg/work/mysql/my.cnf &amp;
+</code></pre>
+
+<p>随后执行mysq命令</p>
+
+<pre><code>$mysql
+</code></pre>
+
+<p>如果进入mysql客户端，则安装成功。</p>
+
+<pre><code>Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4
+Server version: 5.5.48 MySQL Community Server (GPL)
+Copyright (c) 2000, 2016, Oracle and/or its affiliates. All rights reserved.
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+mysql&gt;
+</code></pre>
+
+<p>配置环境变量将mysql-5.5.48-linux2.6-x86_64/bin目录添加到path，即可正常使用mysql命令。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用Octopress搭建Github博客]]></title>
