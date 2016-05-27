@@ -72,3 +72,8 @@ mysql>
 ```
 
 配置环境变量将mysql-5.5.48-linux2.6-x86_64/bin目录添加到path，即可正常使用mysql命令。
+
+
+
+
+
