@@ -5,14 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>搜索引擎索引 - Workspace of LionHeart</title>
+  <title>Mysql常用操作方法 - Workspace of LionHeart</title>
   <meta name="author" content="Wang Yiguang">
 
   
-  <meta name="description" content="本文介绍搜索引擎的索引建立，更新，查询和压缩技术。 索引基础 倒排索引是搜索引擎用来快速查找包含某个单词的文档集合的数据结构
-倒排索引由单词词典和所有单词对应的倒排列表组成 倒排列表由倒排列表项构成，一般包含： 文档ID(一般采取文档编号差值方式编码)
-单词出现次数
-单词在文档出现位置的信息 &hellip;">
+  <meta name="description" content="本文介绍一些mysql实用操作方法。 用户权限管理 一般mysql安装完在本地可以root账户免密码登录。可以为root账户设置密码。 设置root账户密码 使用mysqladmin命令设置，形式如下： 1
+$mysqladmin -u root password "&lt;新的root密码&gt &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -21,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://lionheartwang.github.io/blog/2016/02/20/sou-suo-yin-qing-suo-yin/">
+  <link rel="canonical" href="http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Workspace of LionHeart" type="application/atom+xml">
@@ -74,7 +72,7 @@
   
   <header>
     
-      <h1 class="entry-title">搜索引擎索引</h1>
+      <h1 class="entry-title">Mysql常用操作方法</h1>
     
     
       <p class="meta">
@@ -83,171 +81,93 @@
 
 
 
-<time class='entry-date' datetime='2016-02-20T15:23:30+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:23 pm</span></time>
+<time class='entry-date' datetime='2016-07-06T19:24:22+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:24 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>本文介绍搜索引擎的索引建立，更新，查询和压缩技术。</p>
+<div class="entry-content"><p>本文介绍一些mysql实用操作方法。</p>
 
 <!--more-->
 
 
-<h2>索引基础</h2>
+<h2>用户权限管理</h2>
 
-<p>倒排索引是搜索引擎用来快速查找包含某个单词的文档集合的数据结构
-倒排索引由单词词典和所有单词对应的倒排列表组成</p>
+<p>一般mysql安装完在本地可以root账户免密码登录。可以为root账户设置密码。</p>
 
-<p>倒排列表由倒排列表项构成，一般包含：</p>
+<h3>设置root账户密码</h3>
 
-<ul>
-<li>文档ID(一般采取文档编号差值方式编码)</li>
-<li>单词出现次数</li>
-<li>单词在文档出现位置的信息</li>
-</ul>
+<p>使用mysqladmin命令设置，形式如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqladmin -u root password "&lt;新的root密码&gt;"</span></code></pre></td></tr></table></div></figure>
 
 
-<h2>索引建立与更新</h2>
+<p>设置完毕后root帐号登录j就需要输入密码：</p>
 
-<h3>倒排索引建立</h3>
-
-<p>常见建立倒排索引方法：</p>
-
-<ul>
-<li>两遍文档遍历法</li>
-<li>排序法</li>
-<li>归并法</li>
-</ul>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$mysql -uroot -p&lt;新的root密码&gt;</span></code></pre></td></tr></table></div></figure>
 
 
-<h3>动态索引及更新</h3>
+<h3>添加用户</h3>
 
-<p>动态索引的三个关键数据结构：</p>
+<p>添加新用户并授予权限使用如下语句：</p>
 
-<ul>
-<li>倒排索引：对初始文档集合建立的索引结构</li>
-<li>临时索引：新文档进入系统建立的索引结构</li>
-<li>已删除文档列表：已删除的文档ID列表</li>
-</ul>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; GRANT &lt;权限1, 权限2...&gt; PRIVILEGES ON &lt;授权数据库名&gt;.&lt;授权表名&gt; TO '&lt;用户名&gt;'@'&lt;授权访问的IP&gt;' IDENTIFIED BY '&lt;密码&gt;' WITH GRANT OPTION;</span></code></pre></td></tr></table></div></figure>
 
 
-<p>注意：对于动态索引文档更改可认为是文档先被删除然后向系统内增加一篇新的文档。</p>
+<p>其中WITH GRANT OPTION可选，表明该用户是否有权限授予权限。</p>
 
-<p>对于动态索引需要进行更新，常见索引更新策略：</p>
+<p>另外可以使用通配符'*&lsquo;，&rsquo;%&lsquo;，例如如下语句：</p>
 
-<ul>
-<li>完全重建策略</li>
-<li>再合并策略</li>
-<li>原地更新策略</li>
-<li>混合策略</li>
-</ul>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; GRANT ALL PRIVILEGES ON *.* TO 'wyg'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION;</span></code></pre></td></tr></table></div></figure>
 
 
-<h2>查询处理</h2>
+<p>该语句为用户wyg授权，以123456为密码，具有从任意IP访问所有数据库中所有表的所有权限，并具有授权权限。</p>
 
-<h3>基本处理机制</h3>
+<h2>备份/还原数据库</h2>
 
-<p>常见查询处理机制有如下两种：</p>
+<p>生产环境中经常需要对数据库进行迁移，这就需要备份/还原数据库。</p>
 
-<ul>
-<li>一次一文档方式(Doc At a Time)</li>
-<li>一次一单词方式(Term At a Time)</li>
-</ul>
+<h3>备份数据</h3>
 
+<p>使用mysqldump命令，语法如下：</p>
 
-<p>注意：</p>
-
-<ul>
-<li>一次一文档方式实际查询时不必保留所有文档得分，保留得分Top K的文档队列即可。</li>
-<li>一次一单词方式适用于多词查询，找到包含所有查询词的文档等价于求查询词对应的倒排列表的交集。</li>
-</ul>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqldump -u&lt;用户名&gt; -p&lt;密码&gt; --databases &lt;数据库1，数据库2...&gt; &gt; &lt;输出文件&gt;</span></code></pre></td></tr></table></div></figure>
 
 
-<h3>多字段和短语查询</h3>
+<p>该语句将指定的database的数据信息备份到输出文件中，输出文件是一个sql文件。</p>
 
-<p>实现多字段索引方式：</p>
+<p>可以用&ndash;all-databases 将整个数据库的所有database的数据备份。</p>
 
-<ul>
-<li>多索引方式</li>
-<li>倒排列表方式</li>
-<li>扩展列表方式</li>
-</ul>
+<h3>还原数据</h3>
 
+<p>在输出文件的当前目录登录mysql，然后执行：</p>
 
-<p>常见的支持短语查询技术的方法包括：</p>
-
-<ul>
-<li>位置信息索引</li>
-<li>双词索引</li>
-<li>短语索引</li>
-</ul>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; source &lt;输入文件&gt;</span></code></pre></td></tr></table></div></figure>
 
 
-<p>可混合使用，查询索引优先级：短语索引 > 双词索引 > 常规索引</p>
+<p>执行完成后当前输入文件中的数据信息就录入当前mysql中。</p>
 
-<h3>分布式索引</h3>
+<p>例如，在一台老的数据库机器上执行：</p>
 
-<p>常见的分布式索引方案：</p>
-
-<ul>
-<li>按文档对索引划分</li>
-<li>按单词对索引划分</li>
-</ul>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqldump -uwyg -p123456 --all-databases &gt; all.sql</span></code></pre></td></tr></table></div></figure>
 
 
-<p>其中按文档对索引划分在以下方面有优势：</p>
+<p>然后拷贝all.sql到新机器，登录mysql执行:</p>
 
-<ul>
-<li>可扩展性</li>
-<li>负载均衡</li>
-<li>容错性</li>
-<li>对查询方式的支持</li>
-</ul>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; source all.sql</span></code></pre></td></tr></table></div></figure>
 
 
-<h2>索引压缩</h2>
-
-<p>索引压缩包括对词典的压缩和对倒排列表的压缩。</p>
-
-<h3>倒排列表压缩</h3>
-
-<p>倒排列表压缩：</p>
-
-<ul>
-<li>无损压缩：更常用</li>
-<li>有损压缩：特殊场合使用</li>
-</ul>
-
-
-<p>倒排列表压缩算法的基本构件：</p>
-
-<ul>
-<li>一元编码</li>
-<li>二元编码</li>
-</ul>
-
-
-<p>常用压缩算法：</p>
-
-<ul>
-<li>Elias Gamma算法</li>
-<li>Elias Delta算法</li>
-<li>Golomb算法</li>
-<li>Rice算法</li>
-<li>变长字节算法</li>
-<li>SimpleX系列算法</li>
-<li>PForDelta算法</li>
-</ul>
-
-
-<p>实际使用一般混合采用多种算法。</p>
-
-<h3>重排序与裁剪</h3>
-
-<p>文档ID重排序通过文档聚类并重排文档ID编号来获得较高的索引压缩率
-静态索引裁剪是一种有损压缩算法，通过抛弃一部分不重要的索引项来获得较好的压缩效果。</p>
+<p>这样就完成了mysql数据从老机器到新机器的迁移。</p>
 </div>
 
 
@@ -263,12 +183,12 @@
 
 
 
-<time class='entry-date' datetime='2016-02-20T15:23:30+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:23 pm</span></time>
+<time class='entry-date' datetime='2016-07-06T19:24:22+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:24 pm</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/sou-suo-yin-qing/'>搜索引擎</a>, <a class='category' href='/blog/categories/du-shu-bi-ji/'>读书笔记</a>
+    <a class='category' href='/blog/categories/ji-zhu-zi-yuan/'>技术资源</a>
   
 </span>
 
@@ -277,7 +197,7 @@
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2016/02/20/sou-suo-yin-qing-suo-yin/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2016/02/20/sou-suo-yin-qing-suo-yin/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/" >Tweet</a>
   
   
   
@@ -286,10 +206,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/02/08/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E5%8F%8A%E5%85%B6%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84/" title="Previous Post: 搜索引擎及其技术架构">&laquo; 搜索引擎及其技术架构</a>
+        <a class="basic-alignment left" href="/blog/2016/05/27/linux-shellpei-se-zhi-nan/" title="Previous Post: Linux Shell配色指南">&laquo; Linux Shell配色指南</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/03/12/jian-suo-mo-xing-yu-sou-suo-pai-xu/" title="Next Post: 检索模型与搜索排序">检索模型与搜索排序 &raquo;</a>
       
     </p>
   </footer>
