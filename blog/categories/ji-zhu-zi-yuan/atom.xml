@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/ji-zhu-zi-yuan/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-07-06T19:29:05+08:00</updated>
+  <updated>2016-07-06T21:06:32+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -22,6 +22,27 @@
 
 <!--more-->
 
+
+<h2>启动/登录</h2>
+
+<p>安装完毕后，使用如下命令：</p>
+
+<pre><code>$bin/mysqld_safe --user=mysql &amp;
+</code></pre>
+
+<p>启动后即可登录</p>
+
+<pre><code>$mysql
+</code></pre>
+
+<p>出现如下登录界面表示启动成功：</p>
+
+<p><img src="https://wt-prj.oss.aliyuncs.com/f552fc42b7f64b5a9a4f288c96eb594c/ef5e6448-0869-44cd-9b49-a1c74d5337df.png" alt="替代文字" /></p>
+
+<p>更一般地，可以登录远程mysql数据库。命令如下：</p>
+
+<pre><code>$mysql -h&lt;目标ip/hostname&gt; -u&lt;用户名&gt; -p&lt;密码&gt;
+</code></pre>
 
 <h2>用户权限管理</h2>
 
