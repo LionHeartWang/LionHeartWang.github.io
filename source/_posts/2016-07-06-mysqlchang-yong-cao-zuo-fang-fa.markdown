@@ -8,6 +8,30 @@ categories: [技术资源]
 本文介绍一些mysql实用操作方法。
 <!--more-->
 
+## 启动/登录
+
+安装完毕后，使用如下命令： 
+
+```
+$bin/mysqld_safe --user=mysql &
+```
+
+启动后即可登录
+
+```
+$mysql
+```
+
+出现如下登录界面表示启动成功：
+
+![替代文字](https://wt-prj.oss.aliyuncs.com/f552fc42b7f64b5a9a4f288c96eb594c/ef5e6448-0869-44cd-9b49-a1c74d5337df.png)
+
+更一般地，可以登录远程mysql数据库。命令如下：
+
+```
+$mysql -h<目标ip/hostname> -u<用户名> -p<密码>
+```
+
 ## 用户权限管理
 
 一般mysql安装完在本地可以root账户免密码登录。可以为root账户设置密码。
