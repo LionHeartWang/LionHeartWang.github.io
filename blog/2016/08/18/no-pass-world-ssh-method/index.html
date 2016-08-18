@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Linux Shell配色指南 - Workspace of LionHeart</title>
+  <title>免密码远程登录/拷贝方法 - Workspace of LionHeart</title>
   <meta name="author" content="Wang Yiguang">
 
   
-  <meta name="description" content="本文介绍如何配置Linux Shell终端配色。 PS1变量详解 我们能够通过配置PS1变量使提示符成为彩色。
-在PS1中配置字符序列颜色的格式为： [\e[F;Bm] 基本上是夹在 &ldquo;\e["（转义开方括号）和 "m&rdquo; 之间数字值。假如指定一个以上的数字代码， &hellip;">
+  <meta name="description" content="生产环境中尝尝需要在机器间建立信任关系，远程登录或拷贝大量数据，本文介绍非如何快速免密码登录机器或拷贝数据。 生成密钥 设有源机器 A，目标机器 B。现需要从A免密码登录B，或从B拷贝数据到A。 首先需要生成密钥。登录A机器，执行 1
+$ssh-keygen -t rsa 一路回车到底。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://lionheartwang.github.io/blog/2016/05/27/linux-shellpei-se-zhi-nan/">
+  <link rel="canonical" href="http://lionheartwang.github.io/blog/2016/08/18/no-pass-world-ssh-method/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Workspace of LionHeart" type="application/atom+xml">
@@ -72,7 +72,7 @@
   
   <header>
     
-      <h1 class="entry-title">Linux Shell配色指南</h1>
+      <h1 class="entry-title">免密码远程登录/拷贝方法</h1>
     
     
       <p class="meta">
@@ -81,98 +81,65 @@
 
 
 
-<time class='entry-date' datetime='2016-05-27T16:52:57+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:52 pm</span></time>
+<time class='entry-date' datetime='2016-08-18T15:41:28+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:41 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>本文介绍如何配置Linux Shell终端配色。</p>
+<div class="entry-content"><p>生产环境中尝尝需要在机器间建立信任关系，远程登录或拷贝大量数据，本文介绍非如何快速免密码登录机器或拷贝数据。</p>
 
 <!--more-->
 
 
-<h2>PS1变量详解</h2>
+<h2>生成密钥</h2>
 
-<p>我们能够通过配置PS1变量使提示符成为彩色。
-在PS1中配置字符序列颜色的格式为：</p>
+<p>设有源机器 A，目标机器 B。现需要从A免密码登录B，或从B拷贝数据到A。</p>
 
-<blockquote><p>   [\e[F;Bm]</p></blockquote>
+<p>首先需要生成密钥。登录A机器，执行</p>
 
-<p>基本上是夹在 &ldquo;\e["（转义开方括号）和 "m&rdquo; 之间数字值。假如指定一个以上的数字代码，则用分号将他们分开。</p>
-
-<p>其中：</p>
-
-<ul>
-<li>F 为字体颜色，编号30~37；</li>
-<li>B 为背景色，编号40~47。</li>
-</ul>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ssh-keygen -t rsa</span></code></pre></td></tr></table></div></figure>
 
 
-<p>可通过 \e[0m 关闭颜色输出；特别的，当B为1时，将显示加亮加粗的文字，请看下面的颜色表和代码表。</p>
+<p>一路回车到底。这时在A主机~/.ssh目录下生成了私钥id_rsa以及陪对的id_rsa.pub公钥文件。</p>
+
+<h2>复制公钥</h2>
+
+<p>接下来把公钥复制到远程主机B。</p>
+
+<p>即把公钥id_rsa.pub追加写入到机器B的 ~/.ssh/authorized_keys文件中即可。</p>
+
+<p>执行如下命令：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$cat ~/.ssh/id_rsa.pub | ssh user@host "mkdir ~/.ssh; cat &gt;&gt; ~/.ssh/authorized_keys"</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如有多台远程主机多次复制即可。</p>
+
+<p>此时已经可以免密码从B拷贝数据到A或从A ssh登录到B。</p>
+
+<p>如果机器A和B用户一致的话，就可以直接从A ssh hostname 直接登陆B。</p>
+
+<p>若不一致则可通过ssh username@hostname登录。</p>
+
+<h2>配置ssh</h2>
+
+<p>对于本地机器用户和远程登录用户名不同的情况可通过修改本地登陆用户的 ~/.ssh/config 文件解决。</p>
+
+<p>向 ~/.ssh/config 中添加内容如下：</p>
 
 <figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>前景 背景 颜色
-</span><span class='line'>-------------------------
-</span><span class='line'>30 40 黑色
-</span><span class='line'>31 41 红色
-</span><span class='line'>32 42 绿色
-</span><span class='line'>33 43 黄色
-</span><span class='line'>34 44 蓝色
-</span><span class='line'>35 45 紫色
-</span><span class='line'>36 46 青色
-</span><span class='line'>37 47 白色
-</span><span class='line'>代码 意义
-</span><span class='line'>-------------------------
-</span><span class='line'>0 OFF
-</span><span class='line'>1 高亮显示
-</span><span class='line'>4 underline
-</span><span class='line'>5 闪烁
-</span><span class='line'>7 反白显示
-</span><span class='line'>8 不可见</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Host 机器B的hostname
+</span><span class='line'>user 登录用户名
+</span><span class='line'>...</span></code></pre></td></tr></table></div></figure>
 
 
-<p>假如想要配置终端提示符的样式只要把$PS1在~/.bahrc指定即可。</p>
-
-<p>&ldquo;\e[0m&rdquo;    假如将数字代码指定为零，则他就会通知终端将前景、背景和加粗配置重置为他们的默认值。</p>
-
-<h2>示例配置</h2>
-
-<p>修改~/.bashrc，增加如下内容</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'># set color options for terminal
-</span><span class='line'>export CLICOLOR=1
-</span><span class='line'>PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;35;35m\]\w\[\033[00m\]\$\033[1;32;32m\]'
-</span><span class='line'>unset LS_COLORS</span></code></pre></td></tr></table></div></figure>
-
-
-<p>重新登录，查看配色：</p>
-
-<p><img src="https://wt-prj.oss.aliyuncs.com/f552fc42b7f64b5a9a4f288c96eb594c/e792eb36-92f3-4bdb-a896-99b80df1d56c.png" alt="替代文字" /></p>
-
-<p>实际使用根据需要配置即可。</p>
+<p>这样，本地机器A和远程机器B用户名不一致也可 ssh hostname 免密码直接登陆。</p>
 </div>
 
 
@@ -188,7 +155,7 @@
 
 
 
-<time class='entry-date' datetime='2016-05-27T16:52:57+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>4:52 pm</span></time>
+<time class='entry-date' datetime='2016-08-18T15:41:28+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>3:41 pm</span></time>
       
 
 <span class="categories">
@@ -202,7 +169,7 @@
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2016/05/27/linux-shellpei-se-zhi-nan/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2016/05/27/linux-shellpei-se-zhi-nan/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2016/08/18/no-pass-world-ssh-method/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2016/08/18/no-pass-world-ssh-method/" >Tweet</a>
   
   
   
@@ -211,10 +178,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/04/07/fei-rootzhang-hu-kuai-su-an-zhuang-mysql/" title="Previous Post: 非Root账户快速安装mySQL">&laquo; 非Root账户快速安装mySQL</a>
+        <a class="basic-alignment left" href="/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/" title="Previous Post: mysql常用操作方法">&laquo; mysql常用操作方法</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/" title="Next Post: mysql常用操作方法">mysql常用操作方法 &raquo;</a>
       
     </p>
   </footer>
