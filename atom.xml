@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-08-23T15:19:50+08:00</updated>
+  <updated>2016-08-24T17:22:12+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,174 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Spark HistoryServer 配置和使用方法]]></title>
+    <link href="http://lionheartwang.github.io/blog/2016/08/24/spark-historyserver-configuration/"/>
+    <updated>2016-08-24T17:17:58+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2016/08/24/spark-historyserver-configuration</id>
+    <content type="html"><![CDATA[<p>本文介绍Spark History Server的配置和使用方法。</p>
+
+<!--More-->
+
+
+<h2>History Server 配置</h2>
+
+<p>Spark提供了History Server服务可以保存历史Application的运行记录。</p>
+
+<h3>客户端配置</h3>
+
+<p>对于提交应用程序的客户端需要在conf/spark-defaults.conf中配置以下参数：</p>
+
+<table>
+<thead>
+<tr>
+<th> 参数        </th>
+<th style="text-align:left;"> 功能           </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> spark.eventLog.enabled      </td>
+<td style="text-align:left;"> 是否记录Spark事件，用于应用程序在完成后重构webUI。 </td>
+</tr>
+<tr>
+<td> spark.eventLog.dir      </td>
+<td style="text-align:left;"> spark.eventLog.enabled为 true，该属性为记录spark事件的根目录。在此根目录中，Spark为每个应用程序创建分目录，并将应用程序的事件记录到此目录中。可以将此属性设置为HDFS目录，以便history server读取历史记录文件。      </td>
+</tr>
+<tr>
+<td> spark.yarn.historyServer.address </td>
+<td style="text-align:left;"> Spark history server的地址。 这个地址会在Spark应用程序完成后提交给YARN RM，然后RM将信息从RM UI写到history server UI上。<strong><font color=red>注意：hostname:port，前面不加<a href="http://%EF%BC%8C%E6%9C%AB%E5%B0%BE%E4%B9%9F%E4%B8%8D%E8%A6%81%E5%8A%A0%E5%8F%8D%E6%96%9C%E6%9D%A0%E3%80%82">http://%EF%BC%8C%E6%9C%AB%E5%B0%BE%E4%B9%9F%E4%B8%8D%E8%A6%81%E5%8A%A0%E5%8F%8D%E6%96%9C%E6%9D%A0%E3%80%82</a></font></strong>      </td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>服务端配置</h3>
+
+<p>服务端主要需要在conf/spark-defaults.conf中配置如下属性：</p>
+
+<table>
+<thead>
+<tr>
+<th> 参数        </th>
+<th style="text-align:left;"> 功能           </th>
+<th style="text-align:left;"> 默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> spark.history.ui.port     </td>
+<td style="text-align:left;"> History Server的默认访问端口。<strong><font color=red>建议配置在8000~9000之间，以确保再内网浏览器能够正常显示。</strong><font color=red> </td>
+<td style="text-align:left;"> 18080 </td>
+</tr>
+<tr>
+<td> sspark.history.fs.logDirectory    </td>
+<td style="text-align:left;">   用于指定HistoryServer读取的eventlog存放的hdfs路径。  </td>
+<td style="text-align:left;">无</td>
+</tr>
+<tr>
+<td> spark.history.updateInterval </td>
+<td style="text-align:left;">  History Server显示信息的刷新时间间隔，以秒为单位。每次更新都会检查持久层事件日志的任何变化。  </td>
+<td style="text-align:left;"> 10 </td>
+</tr>
+<tr>
+<td>spark.history.retainedApplications</td>
+<td style="text-align:left;">在History Server上显示的最大应用程序数量，如果超过这个值，旧的应用程序信息将被删除。</td>
+<td style="text-align:left;">250</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>如果使用Kerberos认证可以配置如下参数：</p>
+
+<table>
+<thead>
+<tr>
+<th> 参数        </th>
+<th style="text-align:left;"> 功能           </th>
+<th style="text-align:left;"> 默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> spark.history.kerberos.enabled    </td>
+<td style="text-align:left;"> 是否使用kerberos方式登录访问history server。</td>
+<td style="text-align:left;">false</td>
+</tr>
+<tr>
+<td>spark.history.kerberos.principal</td>
+<td style="text-align:left;">spark.history.kerberos.enabled为true时使用，用于指定History Server的kerberos主体名称</td>
+<td style="text-align:left;">空</td>
+</tr>
+<tr>
+<td>spark.history.kerberos.keytab</td>
+<td style="text-align:left;">spark.history.kerberos.enabled为true时使用，用于指定History Server的kerberos keytab文件位置</td>
+<td style="text-align:left;">空</td>
+</tr>
+<tr>
+<td>spark.history.ui.acls.enable</td>
+<td style="text-align:left;">授权用户查看应用程序信息的时候是否检查acl。如果启用，无论应用程序的spark.ui.acls.enable怎么设置，都要进行授权检查，只有应用程序所有者和spark.ui.view.acls指定的用户可以查看应用程序信息; 如果禁用，不做任何检查。</td>
+<td style="text-align:left;">false</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>另外，服务端可以配置以下环境变量：</p>
+
+<table>
+<thead>
+<tr>
+<th> 参数        </th>
+<th style="text-align:left;"> 功能           </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SPARK_DAEMON_JAVA_OPTS</td>
+<td style="text-align:left;">History Server的JVM参数，默认为空</td>
+</tr>
+<tr>
+<td>SPARK_DAEMON_MEMORY</td>
+<td style="text-align:left;">分配给History Server的内存大小，默认512M</td>
+</tr>
+<tr>
+<td>SPARK_HISTORY_OPTS</td>
+<td style="text-align:left;">History Server的属性设置，默认为空。</td>
+</tr>
+<tr>
+<td>SPARK_PUBLIC_DNS</td>
+<td style="text-align:left;">History Server的公网地址，如果不设置，可以用内网地址来访问，默认为空。</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>History Server 使用</h2>
+
+<h3>启动</h3>
+
+<p>一般将客户端运行生成的eventlog统一存放在一个HDFS路径下便于查询历史记录，然后History Server端 spark.history.fs.logDirectory的值设为该路径即可。</p>
+
+<p>启动History Server命令：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$sh sbin/start-history-server.sh</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>停止</h3>
+
+<p>停止History Server命令：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$sh sbin/stop-history-server.sh</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[免密码远程登录/拷贝方法]]></title>

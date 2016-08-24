@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://lionheartwang.github.io/blog/2016/08/24/spark-historyserver-configuration/</loc>
+<lastmod>2016-08-24T17:17:58+08:00</lastmod>
+</url>
+<url>
 <loc>http://lionheartwang.github.io/blog/2016/08/18/no-pass-world-ssh-method/</loc>
 <lastmod>2016-08-18T15:41:28+08:00</lastmod>
 </url>
@@ -56,5 +60,11 @@
 </url>
 <url>
 <loc>http://lionheartwang.github.io/blog/categories/sou-suo-yin-qing/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/blog/categories/spark/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/blog/categories/da-shu-ju/</loc>
 </url>
 </urlset>

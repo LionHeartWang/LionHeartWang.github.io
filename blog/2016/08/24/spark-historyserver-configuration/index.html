@@ -1,0 +1,417 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Spark HistoryServer 配置和使用方法 - Workspace of LionHeart</title>
+  <meta name="author" content="Wang Yiguang">
+
+  
+  <meta name="description" content="本文介绍Spark History Server的配置和使用方法。 History Server 配置 Spark提供了History Server服务可以保存历史Application的运行记录。 客户端配置 对于提交应用程序的客户端需要在conf/spark-defaults. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lionheartwang.github.io/blog/2016/08/24/spark-historyserver-configuration/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Workspace of LionHeart" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<link href='https://fonts.googleapis.com/css?family=Tillana:400,500,600,700,800|Trade+Winds|Henny+Penny|Mountains+of+Christmas:400,700|Nothing+You+Could+Do' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Workspace of LionHeart</a></h1>
+  
+    <h2>Focus on Spark, Hadoop and other distribute systems</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="lionheartwang.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/team">Team</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Spark HistoryServer 配置和使用方法</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-08-24T17:17:58+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:17 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>本文介绍Spark History Server的配置和使用方法。</p>
+
+<!--More-->
+
+
+<h2>History Server 配置</h2>
+
+<p>Spark提供了History Server服务可以保存历史Application的运行记录。</p>
+
+<h3>客户端配置</h3>
+
+<p>对于提交应用程序的客户端需要在conf/spark-defaults.conf中配置以下参数：</p>
+
+<table>
+<thead>
+<tr>
+<th> 参数        </th>
+<th style="text-align:left;"> 功能           </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> spark.eventLog.enabled      </td>
+<td style="text-align:left;"> 是否记录Spark事件，用于应用程序在完成后重构webUI。 </td>
+</tr>
+<tr>
+<td> spark.eventLog.dir      </td>
+<td style="text-align:left;"> spark.eventLog.enabled为 true，该属性为记录spark事件的根目录。在此根目录中，Spark为每个应用程序创建分目录，并将应用程序的事件记录到此目录中。可以将此属性设置为HDFS目录，以便history server读取历史记录文件。      </td>
+</tr>
+<tr>
+<td> spark.yarn.historyServer.address </td>
+<td style="text-align:left;"> Spark history server的地址。 这个地址会在Spark应用程序完成后提交给YARN RM，然后RM将信息从RM UI写到history server UI上。<strong><font color=red>注意：hostname:port，前面不加<a href="http://%EF%BC%8C%E6%9C%AB%E5%B0%BE%E4%B9%9F%E4%B8%8D%E8%A6%81%E5%8A%A0%E5%8F%8D%E6%96%9C%E6%9D%A0%E3%80%82">http://%EF%BC%8C%E6%9C%AB%E5%B0%BE%E4%B9%9F%E4%B8%8D%E8%A6%81%E5%8A%A0%E5%8F%8D%E6%96%9C%E6%9D%A0%E3%80%82</a></font></strong>      </td>
+</tr>
+</tbody>
+</table>
+
+
+<h3>服务端配置</h3>
+
+<p>服务端主要需要在conf/spark-defaults.conf中配置如下属性：</p>
+
+<table>
+<thead>
+<tr>
+<th> 参数        </th>
+<th style="text-align:left;"> 功能           </th>
+<th style="text-align:left;"> 默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> spark.history.ui.port     </td>
+<td style="text-align:left;"> History Server的默认访问端口。<strong><font color=red>建议配置在8000~9000之间，以确保再内网浏览器能够正常显示。</strong><font color=red> </td>
+<td style="text-align:left;"> 18080 </td>
+</tr>
+<tr>
+<td> sspark.history.fs.logDirectory    </td>
+<td style="text-align:left;">   用于指定HistoryServer读取的eventlog存放的hdfs路径。  </td>
+<td style="text-align:left;">无</td>
+</tr>
+<tr>
+<td> spark.history.updateInterval </td>
+<td style="text-align:left;">  History Server显示信息的刷新时间间隔，以秒为单位。每次更新都会检查持久层事件日志的任何变化。  </td>
+<td style="text-align:left;"> 10 </td>
+</tr>
+<tr>
+<td>spark.history.retainedApplications</td>
+<td style="text-align:left;">在History Server上显示的最大应用程序数量，如果超过这个值，旧的应用程序信息将被删除。</td>
+<td style="text-align:left;">250</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>如果使用Kerberos认证可以配置如下参数：</p>
+
+<table>
+<thead>
+<tr>
+<th> 参数        </th>
+<th style="text-align:left;"> 功能           </th>
+<th style="text-align:left;"> 默认值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td> spark.history.kerberos.enabled    </td>
+<td style="text-align:left;"> 是否使用kerberos方式登录访问history server。</td>
+<td style="text-align:left;">false</td>
+</tr>
+<tr>
+<td>spark.history.kerberos.principal</td>
+<td style="text-align:left;">spark.history.kerberos.enabled为true时使用，用于指定History Server的kerberos主体名称</td>
+<td style="text-align:left;">空</td>
+</tr>
+<tr>
+<td>spark.history.kerberos.keytab</td>
+<td style="text-align:left;">spark.history.kerberos.enabled为true时使用，用于指定History Server的kerberos keytab文件位置</td>
+<td style="text-align:left;">空</td>
+</tr>
+<tr>
+<td>spark.history.ui.acls.enable</td>
+<td style="text-align:left;">授权用户查看应用程序信息的时候是否检查acl。如果启用，无论应用程序的spark.ui.acls.enable怎么设置，都要进行授权检查，只有应用程序所有者和spark.ui.view.acls指定的用户可以查看应用程序信息; 如果禁用，不做任何检查。</td>
+<td style="text-align:left;">false</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>另外，服务端可以配置以下环境变量：</p>
+
+<table>
+<thead>
+<tr>
+<th> 参数        </th>
+<th style="text-align:left;"> 功能           </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SPARK_DAEMON_JAVA_OPTS</td>
+<td style="text-align:left;">History Server的JVM参数，默认为空</td>
+</tr>
+<tr>
+<td>SPARK_DAEMON_MEMORY</td>
+<td style="text-align:left;">分配给History Server的内存大小，默认512M</td>
+</tr>
+<tr>
+<td>SPARK_HISTORY_OPTS</td>
+<td style="text-align:left;">History Server的属性设置，默认为空。</td>
+</tr>
+<tr>
+<td>SPARK_PUBLIC_DNS</td>
+<td style="text-align:left;">History Server的公网地址，如果不设置，可以用内网地址来访问，默认为空。</td>
+</tr>
+</tbody>
+</table>
+
+
+<h2>History Server 使用</h2>
+
+<h3>启动</h3>
+
+<p>一般将客户端运行生成的eventlog统一存放在一个HDFS路径下便于查询历史记录，然后History Server端 spark.history.fs.logDirectory的值设为该路径即可。</p>
+
+<p>启动History Server命令：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$sh sbin/start-history-server.sh</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>停止</h3>
+
+<p>停止History Server命令：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$sh sbin/stop-history-server.sh</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wang Yiguang</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-08-24T17:17:58+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>24</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:17 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/spark/'>spark</a>, <a class='category' href='/blog/categories/da-shu-ju/'>大数据</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2016/08/24/spark-historyserver-configuration/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2016/08/24/spark-historyserver-configuration/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/08/18/no-pass-world-ssh-method/" title="Previous Post: 免密码远程登录/拷贝方法">&laquo; 免密码远程登录/拷贝方法</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section id="recent_posts">
+  <h1>Recent Posts</h1>
+  
+	  <p><a href="/blog/2016/08/24/spark-historyserver-configuration/">Spark HistoryServer 配置和使用方法</a></p>
+  
+	  <p><a href="/blog/2016/08/18/no-pass-world-ssh-method/">免密码远程登录/拷贝方法</a></p>
+  
+	  <p><a href="/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/">Mysql常用操作方法</a></p>
+  
+	  <p><a href="/blog/2016/05/27/linux-shellpei-se-zhi-nan/">Linux Shell配色指南</a></p>
+  
+	  <p><a href="/blog/2016/04/07/fei-rootzhang-hu-kuai-su-an-zhuang-mysql/">非Root账户快速安装mySQL</a></p>
+  
+</section>
+
+<section id="categories_aside">
+  <h1>Categories</h1>
+  
+  <h2>技术资源 <span>(5)</span></h2>
+  <ul class="arc-list">
+    
+		<li><a href="/blog/2016/08/18/no-pass-world-ssh-method/">免密码远程登录/拷贝方法</a> 18/08/2016</li>
+    
+		<li><a href="/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/">mysql常用操作方法</a> 06/07/2016</li>
+    
+		<li><a href="/blog/2016/05/27/linux-shellpei-se-zhi-nan/">Linux Shell配色指南</a> 27/05/2016</li>
+    
+		<li><a href="/blog/2016/04/07/fei-rootzhang-hu-kuai-su-an-zhuang-mysql/">非Root账户快速安装mySQL</a> 07/04/2016</li>
+    
+		<li><a href="/blog/2016/02/03/%E4%BD%BF%E7%94%A8Octopress%E6%90%AD%E5%BB%BAGitHub%E5%8D%9A%E5%AE%A2/">使用Octopress搭建Github博客</a> 03/02/2016</li>
+    
+  </ul>
+  
+  <h2>设计模式 <span>(1)</span></h2>
+  <ul class="arc-list">
+    
+		<li><a href="/blog/2016/02/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0/">设计模式概述</a> 05/02/2016</li>
+    
+  </ul>
+  
+  <h2>读书笔记 <span>(4)</span></h2>
+  <ul class="arc-list">
+    
+		<li><a href="/blog/2016/03/12/jian-suo-mo-xing-yu-sou-suo-pai-xu/">检索模型与搜索排序</a> 12/03/2016</li>
+    
+		<li><a href="/blog/2016/02/20/sou-suo-yin-qing-suo-yin/">搜索引擎索引</a> 20/02/2016</li>
+    
+		<li><a href="/blog/2016/02/08/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E5%8F%8A%E5%85%B6%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84/">搜索引擎及其技术架构</a> 08/02/2016</li>
+    
+		<li><a href="/blog/2016/02/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0/">设计模式概述</a> 05/02/2016</li>
+    
+  </ul>
+  
+  <h2>搜索引擎 <span>(3)</span></h2>
+  <ul class="arc-list">
+    
+		<li><a href="/blog/2016/03/12/jian-suo-mo-xing-yu-sou-suo-pai-xu/">检索模型与搜索排序</a> 12/03/2016</li>
+    
+		<li><a href="/blog/2016/02/20/sou-suo-yin-qing-suo-yin/">搜索引擎索引</a> 20/02/2016</li>
+    
+		<li><a href="/blog/2016/02/08/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E5%8F%8A%E5%85%B6%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84/">搜索引擎及其技术架构</a> 08/02/2016</li>
+    
+  </ul>
+  
+  <h2>spark <span>(1)</span></h2>
+  <ul class="arc-list">
+    
+		<li><a href="/blog/2016/08/24/spark-historyserver-configuration/">Spark HistoryServer 配置和使用方法</a> 24/08/2016</li>
+    
+  </ul>
+  
+  <h2>大数据 <span>(1)</span></h2>
+  <ul class="arc-list">
+    
+		<li><a href="/blog/2016/08/24/spark-historyserver-configuration/">Spark HistoryServer 配置和使用方法</a> 24/08/2016</li>
+    
+  </ul>
+  
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Wang Yiguang -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
