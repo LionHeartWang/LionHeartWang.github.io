@@ -2,6 +2,7 @@
 // Add styles here to make changes without digging in too much
 $theme-color1: #a61c00;
 $theme-color2: #263347;
+$theme-color3: #aaa;
 
 // General
 #blog-archives a {
@@ -65,21 +66,31 @@ article li {
 }
 
 // Table Style
-article table {
-  border-top: 2px solid black;
-  border-bottom: 2px solid black;
+article > div > table {
+  border-top: 1px solid $theme-color3;
+  border-bottom: 1px solid $theme-color3;
   font-size: 14px;
   margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  margin-bottom: 1em;
 }
 
-article th {
+article > div > table th {
+  border-bottom: 1px solid $theme-color3;
   font-size: bold 14px;
-  border-bottom: 2px solid black;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-article td {
+article > div > table td {
   font-size: 14px;
+  margin-left: 5px;
+  margin-right: 5px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 article footer {
@@ -94,9 +105,9 @@ article footer {
   margin-top: 3em;
 }
 
-#categories_aside h2, #recent_posts h2 {
-  margin-top: 0.5em;
+#categories_aside h2 {
   color: $theme-color2;
+  margin-top: 0.5em;
 }
 
 
@@ -104,6 +115,11 @@ article footer {
 #recent_posts h1 {
   color: $theme-color1;
   margin-bottom: 0.5em;
+}
+
+#recent_posts h2 {
+  color: $theme-color2;
+  margin-top: 0.5em;
 }
 
 #recent_posts a {
