@@ -4,35 +4,32 @@ $theme-color1: #a61c00;
 $theme-color2: #263347;
 
 // General
-h1.entry-title a {
-  color: $theme-color1;
-	font-size: 28px;
-}
-
 #blog-archives a {
-	font-size: 18px;
+  font-size: 18px;
 }
 
 header {
-	margin-bottom: 0em;
+  margin-bottom: 0em;
 }
 
-header > h1.entry-title {
-	padding-bottom: 0em;
-	margin-bottom: 0em;
+header > h1.entry-title > a {
+  color: $theme-color1;
+	font-size: 22px;
+  margin-bottom: 0em;
+  padding-bottom: 0em;
 }
 
 
 // Article
 article > header h1 {
   color: $theme-color1;
-	font-size: 28px;
+  font-size: 28px;
 }
 
 article, article > div {
-	padding-top: 0em;
-	border-top: 0em;
-	margin-top: 0em;
+  padding-top: 0em;
+  border-top: 0em;
+  margin-top: 0em;
 }
 
 article > div > h1 {
@@ -41,14 +38,14 @@ article > div > h1 {
 }
 
 article > div > h2, #about-team h2 {
-	padding-top: 0.5em;
-	margin-top: 0.5em;
-	color: $theme-color2;
-	font-size: bold 24px;
+  padding-top: 0.5em;
+  margin-top: 0.5em;
+  color: $theme-color2;
+  font-size: bold 24px;
 }
 
 article > div > h3 {
-	font-size: bold 20px;
+  font-size: bold 20px;
 }
 
 article > div > h4 {
@@ -56,41 +53,61 @@ article > div > h4 {
 }
 
 article p {
-	font-size: 14px;
-	line-height: 5px;
+  font-size: 14px;
+  margin-top: 3px;
+  margin-bottom: 3px;
+  //line-height: 5px;
 }
 
 article li {
-	font-size: 14px;
-	margin-left: 2em;
+  font-size: 14px;
+  margin-left: 2em;
+}
+
+// Table Style
+article table {
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  font-size: 14px;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+article th {
+  font-size: bold 14px;
+  border-bottom: 2px solid black;
+}
+
+article td {
+  font-size: 14px;
 }
 
 article footer {
   font-size: 14px;
-	line-height: 6px;
+  line-height: 6px;
 }
 
 
 // Categories aside
 #categories_aside h1 {
-	color: $theme-color1;
-	margin-top: 3em;
+  color: $theme-color1;
+  margin-top: 3em;
 }
 
 #categories_aside h2, #recent_posts h2 {
-	margin-top: 0.5em;
-	color: $theme-color2;
+  margin-top: 0.5em;
+  color: $theme-color2;
 }
 
 
 // Recent Posts
 #recent_posts h1 {
-	color: $theme-color1;
-	margin-bottom: 0.5em;
+  color: $theme-color1;
+  margin-bottom: 0.5em;
 }
 
 #recent_posts a {
-	font-size: 14px;
+  font-size: 14px;
   line-height: 10px;
 }
 
