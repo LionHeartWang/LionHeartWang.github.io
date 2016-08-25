@@ -2,7 +2,7 @@
 // Add styles here to make changes without digging in too much
 $theme-color1: #a61c00;
 $theme-color2: #263347;
-$theme-color3: #aaa;
+$theme-color3: #999;
 
 // General
 #blog-archives a {
@@ -57,7 +57,6 @@ article p {
   font-size: 14px;
   margin-top: 3px;
   margin-bottom: 3px;
-  //line-height: 5px;
 }
 
 article li {
@@ -93,9 +92,17 @@ article > div > table td {
 	padding-right: 5px;
 }
 
+// Footers
 article footer {
   font-size: 14px;
-  line-height: 6px;
+	margin-top: 1em;
+}
+
+article footer p span {
+	color: $theme-color3;
+  font-size: 14px;
+  padding-top: 1em;
+	padding-bottom: 1em;
 }
 
 
