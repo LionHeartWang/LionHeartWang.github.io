@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-08-24T17:22:12+08:00</updated>
+  <updated>2016-08-25T13:02:35+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -45,11 +45,11 @@
 </tr>
 <tr>
 <td> spark.eventLog.dir      </td>
-<td style="text-align:left;"> spark.eventLog.enabled为 true，该属性为记录spark事件的根目录。在此根目录中，Spark为每个应用程序创建分目录，并将应用程序的事件记录到此目录中。可以将此属性设置为HDFS目录，以便history server读取历史记录文件。      </td>
+<td style="text-align:left;"> spark.eventLog.enabled为 true，该属性为记录spark事件的根目录。在此根目录中，Spark为每个应用程序创建分目录，并将应用程序的事件记录到此目录中。<br>可以将此属性设置为HDFS目录，以便history server读取历史记录文件。</br>      </td>
 </tr>
 <tr>
 <td> spark.yarn.historyServer.address </td>
-<td style="text-align:left;"> Spark history server的地址。 这个地址会在Spark应用程序完成后提交给YARN RM，然后RM将信息从RM UI写到history server UI上。<strong><font color=red>注意：hostname:port，前面不加<a href="http://%EF%BC%8C%E6%9C%AB%E5%B0%BE%E4%B9%9F%E4%B8%8D%E8%A6%81%E5%8A%A0%E5%8F%8D%E6%96%9C%E6%9D%A0%E3%80%82">http://%EF%BC%8C%E6%9C%AB%E5%B0%BE%E4%B9%9F%E4%B8%8D%E8%A6%81%E5%8A%A0%E5%8F%8D%E6%96%9C%E6%9D%A0%E3%80%82</a></font></strong>      </td>
+<td style="text-align:left;"> Spark history server的地址。 这个地址会在Spark应用程序完成后提交给YARN RM，然后RM将信息从RM UI写到history server UI上。<br><strong><font color=red>注意：hostname:port，前面不加http：//，末尾也不要加反斜杠。</font></strong> </br>     </td>
 </tr>
 </tbody>
 </table>
@@ -74,7 +74,7 @@
 <td style="text-align:left;"> 18080 </td>
 </tr>
 <tr>
-<td> sspark.history.fs.logDirectory    </td>
+<td> spark.history.fs.logDirectory    </td>
 <td style="text-align:left;">   用于指定HistoryServer读取的eventlog存放的hdfs路径。  </td>
 <td style="text-align:left;">无</td>
 </tr>
@@ -120,7 +120,7 @@
 </tr>
 <tr>
 <td>spark.history.ui.acls.enable</td>
-<td style="text-align:left;">授权用户查看应用程序信息的时候是否检查acl。如果启用，无论应用程序的spark.ui.acls.enable怎么设置，都要进行授权检查，只有应用程序所有者和spark.ui.view.acls指定的用户可以查看应用程序信息; 如果禁用，不做任何检查。</td>
+<td style="text-align:left;">授权用户查看应用程序信息的时候是否检查acl。如果启用，无论应用程序的spark.ui.acls.enable怎么设置，都要进行授权检查。<br>只有应用程序所有者和spark.ui.view.acls指定的用户可以查看应用程序信息; 如果禁用，不做任何检查。</br></td>
 <td style="text-align:left;">false</td>
 </tr>
 </tbody>
