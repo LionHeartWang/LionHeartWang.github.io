@@ -61,6 +61,6 @@ unset LS_COLORS
 ```
 重新登录，查看配色：
 
-![替代文字](https://wt-prj.oss.aliyuncs.com/f552fc42b7f64b5a9a4f288c96eb594c/e792eb36-92f3-4bdb-a896-99b80df1d56c.png)
+{% img /images/blog/01-color.png %}
 
 实际使用根据需要配置即可。
