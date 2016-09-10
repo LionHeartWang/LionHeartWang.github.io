@@ -9,8 +9,7 @@
   <meta name="author" content="Wang Yiguang">
 
   
-  <meta name="description" content="生产环境中尝尝需要在机器间建立信任关系，远程登录或拷贝大量数据，本文介绍非如何快速免密码登录机器或拷贝数据。 生成密钥 设有源机器 A，目标机器 B。现需要从A免密码登录B，或从B拷贝数据到A。 首先需要生成密钥。登录A机器，执行 1
-$ssh-keygen -t rsa 一路回车到底。 &hellip;">
+  <meta name="description" content="免密码远程登录/拷贝方法 Aug 18th, 2016 3:41 pm 导航[-] 生产环境中尝尝需要在机器间建立信任关系，远程登录或拷贝大量数据，本文介绍非如何快速免密码登录机器或拷贝数据。 生成密钥 设有源机器 A，目标机器 B。现需要从A免密码登录B，或从B拷贝数据到A。 首先需要生成密钥 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,7 +87,13 @@ $ssh-keygen -t rsa 一路回车到底。 &hellip;">
   </header>
 
 
-<div class="entry-content"><p>生产环境中尝尝需要在机器间建立信任关系，远程登录或拷贝大量数据，本文介绍非如何快速免密码登录机器或拷贝数据。</p>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<div class="blogAnchor">
+  <p id="anchorContentToggle" title="收起">导航[-]</p>
+  <div class="anchorContent" id="anchorContent"> </div>
+</div>
+
+  <div class="entry-content"><p>生产环境中尝尝需要在机器间建立信任关系，远程登录或拷贝大量数据，本文介绍非如何快速免密码登录机器或拷贝数据。</p>
 
 <!--more-->
 
@@ -141,6 +146,7 @@ $ssh-keygen -t rsa 一路回车到底。 &hellip;">
 
 <p>这样，本地机器A和远程机器B用户名不一致也可 ssh hostname 免密码直接登陆。</p>
 </div>
+  <script src="/javascripts/blogDirectory.js" type="text/javascript"></script>
 
 
   <footer>
@@ -285,6 +291,7 @@ $ssh-keygen -t rsa 一路回车到底。 &hellip;">
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
+<script src="/javascripts/libs/blogDirectory.js" type="text/javascript"></script>
 </footer>
   
 

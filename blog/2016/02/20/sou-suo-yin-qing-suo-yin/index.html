@@ -9,10 +9,8 @@
   <meta name="author" content="Wang Yiguang">
 
   
-  <meta name="description" content="本文介绍搜索引擎的索引建立，更新，查询和压缩技术。 索引基础 倒排索引是搜索引擎用来快速查找包含某个单词的文档集合的数据结构
-倒排索引由单词词典和所有单词对应的倒排列表组成 倒排列表由倒排列表项构成，一般包含： 文档ID(一般采取文档编号差值方式编码)
-单词出现次数
-单词在文档出现位置的信息 &hellip;">
+  <meta name="description" content="搜索引擎索引 Feb 20th, 2016 3:23 pm 导航[-] 本文介绍搜索引擎的索引建立，更新，查询和压缩技术。 索引基础 倒排索引是搜索引擎用来快速查找包含某个单词的文档集合的数据结构
+倒排索引由单词词典和所有单词对应的倒排列表组成 倒排列表由倒排列表项构成，一般包含： 文档ID( &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -90,7 +88,13 @@
   </header>
 
 
-<div class="entry-content"><p>本文介绍搜索引擎的索引建立，更新，查询和压缩技术。</p>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<div class="blogAnchor">
+  <p id="anchorContentToggle" title="收起">导航[-]</p>
+  <div class="anchorContent" id="anchorContent"> </div>
+</div>
+
+  <div class="entry-content"><p>本文介绍搜索引擎的索引建立，更新，查询和压缩技术。</p>
 
 <!--more-->
 
@@ -249,6 +253,7 @@
 <p>文档ID重排序通过文档聚类并重排文档ID编号来获得较高的索引压缩率
 静态索引裁剪是一种有损压缩算法，通过抛弃一部分不重要的索引项来获得较好的压缩效果。</p>
 </div>
+  <script src="/javascripts/blogDirectory.js" type="text/javascript"></script>
 
 
   <footer>
@@ -393,6 +398,7 @@
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
+<script src="/javascripts/libs/blogDirectory.js" type="text/javascript"></script>
 </footer>
   
 
