@@ -1,7 +1,7 @@
 // This File is imported last, and will override other styles in the cascade
 // Add styles here to make changes without digging in too much
 $theme-color1: #a61c00;
-$theme-color2: #263347;
+$theme-color2: #073763;
 $theme-color3: #999;
 
 // General
@@ -9,22 +9,23 @@ $theme-color3: #999;
   font-size: 18px;
 }
 
-header {
+// header
+article header {
   margin-bottom: 0em;
 }
 
-header > h1.entry-title > a {
+article > header h1 {
   color: $theme-color1;
-  font-size: 22px;
+  font-size: 28px;
   margin-bottom: 0em;
   padding-bottom: 0em;
 }
 
-
-// Article
-article > header h1 {
+article > header a {
   color: $theme-color1;
   font-size: 28px;
+  margin-bottom: 0em;
+  padding-bottom: 0em;
 }
 
 article, article > div {
@@ -33,39 +34,41 @@ article, article > div {
   margin-top: 0em;
 }
 
-article > div > h1 {
+// entry-title
+article header > h1 {
   color: $theme-color1;
   font-size: bold 28px;
 }
 
-article > div > h2, #about-team h2 {
+// entry-content
+.entry-content > h2 {
   padding-top: 0.5em;
   margin-top: 0.5em;
   color: $theme-color2;
   font-size: bold 24px;
 }
 
-article > div > h3 {
+.entry-content > h3 {
   font-size: bold 20px;
 }
 
-article > div > h4 {
+.entry-content > h4 {
   font-size: bold 16px;
 }
 
-article p {
+.entry-content p {
   font-size: 14px;
   margin-top: 3px;
   margin-bottom: 3px;
 }
 
-article li {
+.entry-content li {
   font-size: 14px;
   margin-left: 2em;
 }
 
 // Table Style
-article > div > table {
+.entry-content > table {
   border-top: 1px solid $theme-color3;
   border-bottom: 1px solid $theme-color3;
   font-size: 14px;
@@ -73,7 +76,7 @@ article > div > table {
   margin-bottom: 1em;
 }
 
-article > div > table th {
+.entry-content > table th {
   border-bottom: 1px solid $theme-color3;
   font-size: bold 14px;
   padding-top: 3px;
@@ -82,7 +85,7 @@ article > div > table th {
   padding-right: 5px;
 }
 
-article > div > table td {
+.entry-content > table td {
   font-size: 14px;
   margin-left: 5px;
   margin-right: 5px;
@@ -139,3 +142,52 @@ article footer p span {
   line-height: 5px;
 }
 
+// Directory
+.blogAnchor {
+	padding-bottom: 0px;
+	margin-bottom: 5px;
+}
+
+.anchorContent p {
+  color: $theme-color2;
+  font-size: 14px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  text-decoration: none;
+}
+
+.anchorContent a {
+  color: $theme-color3;
+  font-size: 14px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+	text-decoration: none;
+}
+
+.anchorContent a:hover {
+  color: $theme-color1;
+  font-size: 16px;
+  padding-left: 5px;
+}
+
+#anchorContentToggle {
+  color: $theme-color3;
+	cursor: pointer;
+  font-size: bold 12px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+// About Team
+#about-team h2 {
+  padding-top: 0.5em;
+  margin-top: 0.5em;
+  color: $theme-color2;
+  font-size: bold 24px;
+}

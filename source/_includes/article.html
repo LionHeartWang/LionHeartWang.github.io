@@ -25,5 +25,7 @@
     </footer>
   {% endif %}
 {% else %}
-<div class="entry-content">{{ content }}</div>
+  {% include blogDirectory.html %}
+  <div class="entry-content">{{ content }}</div>
+  <script src="/javascripts/blogDirectory.js" type="text/javascript"></script>
 {% endif %}
