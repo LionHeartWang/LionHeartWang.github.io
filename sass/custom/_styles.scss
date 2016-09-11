@@ -23,7 +23,7 @@ article, article > div {
 // entry-title
 .entry-title {
   color: $theme-color1;
-  font-size: 28px;
+  font-size: 25px;
 	font-weight: bold;
 }
 
@@ -31,6 +31,13 @@ article, article > div {
   color: $theme-color1;
   font-size: 22px;
 	font-weight: bold;
+}
+
+.entry-title a:hover {
+  color: darken($theme-color3, 10);
+  font-size: 22px;
+  font-weight: bold;
+	text-decoration: none;
 }
 
 // entry-date
