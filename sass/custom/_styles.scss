@@ -9,6 +9,31 @@ $theme-color3: #999;
   font-size: 18px;
 }
 
+// Blog Index
+.blog-index article {
+  .entry-title a {
+    color: $theme-color1;
+    font-size: 20px;
+    font-weight: bold;
+  }
+	.entry-content {
+		display: none;
+	}
+}
+
+.blog-index article:hover {
+  background: $sidebar-bg;
+
+  .entry-title a {
+    color: darken($theme-color3, 15);
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .entry-content {
+    display: inline;
+  }
+}
+
 // header
 article header {
   margin-bottom: 0em;
@@ -23,50 +48,37 @@ article, article > div {
 article header p.meta {
   margin-top: 0em;
   margin-bottom: 0em;
-	padding-top: 0em;
-	padding-bottom: 0em;
+  padding-top: 0em;
+  padding-bottom: 0em;
 }
 
 // entry-title
 .entry-title {
   color: $theme-color1;
   font-size: 25px;
-	font-weight: bold;
+  font-weight: bold;
   margin-top: 0em;
   padding-top: 0em;
 }
 
-.entry-title a {
-  color: $theme-color1;
-  font-size: 22px;
-	font-weight: bold;
-}
-
-.entry-title a:hover {
-  color: darken($theme-color3, 10);
-  font-size: 22px;
-  font-weight: bold;
-	text-decoration: none;
-}
-
 // entry-date
 .entry-date {
-	font-size: 16px;
-	padding-top: 0px;
-	padding-bottom: 0px;
+  font-size: 16px;
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 
 // entry-content
 .entry-content {
-	padding-bottom: 6px;
+  padding-bottom: 6px;
 }
 
 .entry-content > h2 {
-	border-bottom: 1px solid darken($sidebar-border, 10);
+  border-bottom: 1px solid darken($sidebar-border, 10);
   padding-top: 0.5em;
   padding-bottom: 4px;
   margin-top: 0.5em;
-	margin-bottom: 0em;
+  margin-bottom: 0em;
   color: $theme-color2;
   font-size: bold 24px;
 }
@@ -76,7 +88,7 @@ article header p.meta {
   padding-top: 5px;
   padding-bottom: 3px;
   margin-top: 0px;
-	margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 
 .entry-content > h4 {
@@ -171,8 +183,8 @@ article footer p span {
 
 // Directory
 .blogAnchor {
-	padding-bottom: 0px;
-	margin-bottom: 5px;
+  padding-bottom: 0px;
+  margin-bottom: 5px;
 }
 
 .anchorContent p {
@@ -192,21 +204,21 @@ article footer p span {
   margin-bottom: 0px;
   padding-top: 0px;
   padding-bottom: 0px;
-	text-decoration: none;
+  text-decoration: none;
 }
 
 .anchorContent a:hover {
   color: $theme-color1;
   font-size: 16px;
-	font-weight: bold;
+  font-weight: bold;
   padding-left: 5px;
 }
 
 #anchorContentToggle {
   color: $theme-color1;
-	cursor: pointer;
+  cursor: pointer;
   font-size: 16px;
-	font-weight: bold;
+  font-weight: bold;
   margin-top: 0px;
   margin-bottom: 0px;
   padding-top: 0px;
