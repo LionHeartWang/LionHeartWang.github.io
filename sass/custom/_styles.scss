@@ -20,11 +20,20 @@ article, article > div {
   margin-top: 0em;
 }
 
+article header p.meta {
+  margin-top: 0em;
+  margin-bottom: 0em;
+	padding-top: 0em;
+	padding-bottom: 0em;
+}
+
 // entry-title
 .entry-title {
   color: $theme-color1;
   font-size: 25px;
 	font-weight: bold;
+  margin-top: 0em;
+  padding-top: 0em;
 }
 
 .entry-title a {
