@@ -15,6 +15,10 @@ $theme-color3: #999;
     color: $theme-color1;
     font-size: 20px;
     font-weight: bold;
+    margin-top: 0em;
+    margin-bottom: 0em;
+    padding-top: 0em;
+    padding-bottom: 0em;
   }
 	.entry-content {
 		display: none;
@@ -28,6 +32,11 @@ $theme-color3: #999;
     color: darken($theme-color3, 15);
     font-size: 20px;
     font-weight: bold;
+    margin-top: 0em;
+    margin-bottom: 0em;
+    padding-top: 0em;
+    padding-bottom: 0em;
+    text-decoration: none;
   }
   .entry-content {
     display: inline;
