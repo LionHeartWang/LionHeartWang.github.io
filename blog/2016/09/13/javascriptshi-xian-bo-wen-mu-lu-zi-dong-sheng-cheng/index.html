@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>JavaScript实现博文目录自动生成 - Workspace of LionHeart</title>
+  <meta name="author" content="Wang Yiguang">
+
+  
+  <meta name="description" content="JavaScript实现博文目录自动生成 Sep 13th, 2016 5:16 pm 导航[-] 自建的博客站点，常常需要博文目录自动生成的功能，本文介绍一种JavaScript实现的解决方案。 实现参考了 http://www.iyanlei.com/markdown_catelog. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lionheartwang.github.io/blog/2016/09/13/javascriptshi-xian-bo-wen-mu-lu-zi-dong-sheng-cheng/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Workspace of LionHeart" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<link href='https://fonts.googleapis.com/css?family=Tillana:400,500,600,700,800|Trade+Winds|Henny+Penny|Mountains+of+Christmas:400,700|Nothing+You+Could+Do' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Workspace of LionHeart</a></h1>
+  
+    <h2>Focus on Spark, Hadoop and other distribute systems</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="lionheartwang.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/team">Team</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">JavaScript实现博文目录自动生成</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2016-09-13T17:16:48+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:16 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<div class="blogAnchor">
+  <p id="anchorContentToggle" title="收起">导航[-]</p>
+  <div class="anchorContent" id="anchorContent"> </div>
+</div>
+
+  <div class="entry-content"><p>自建的博客站点，常常需要博文目录自动生成的功能，本文介绍一种JavaScript实现的解决方案。</p>
+
+<p>实现参考了 <a href="http://www.iyanlei.com/markdown_catelog.html%E3%80%82">http://www.iyanlei.com/markdown_catelog.html%E3%80%82</a></p>
+
+<!--more-->
+
+
+<h2>目录自动生成</h2>
+
+<p>以本站博客的生成代码为例。我们需要借助JQuery实现，因此首先加载JQuery库。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>相关HTML</h3>
+
+<p>在博文顶部留出一块区域用作目录：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;blogAnchor&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;p</span> <span class="na">id=</span><span class="s">&quot;anchorContentToggle&quot;</span> <span class="na">title=</span><span class="s">&quot;收起&quot;</span><span class="nt">&gt;</span>导航[-]<span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;anchorContent&quot;</span> <span class="na">id=</span><span class="s">&quot;anchorContent&quot;</span><span class="nt">&gt;</span> <span class="nt">&lt;/div&gt;</span>
+</span><span class='line'><span class="nt">&lt;/div&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在博文末尾添加一段JavaScript代码，扫描当前页面的h2~h6元素。</p>
+
+<h3>使用JQuery生成目录</h3>
+
+<p>为每个标题生成一个超链接a元素，添加到anchorContent区域中。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">&quot;/javascripts/libs/blogDirectory.js&quot;</span> <span class="na">type=</span><span class="s">&quot;text/javascript&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>blogDirectory.js具体实现如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.entry-content&quot;</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s2">&quot;h2,h3,h4,h5,h6&quot;</span><span class="p">).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">item</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">tag</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">item</span><span class="p">).</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">localName</span><span class="p">;</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="nx">item</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;wow&quot;</span> <span class="o">+</span> <span class="nx">i</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#anchorContent&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span>
+</span><span class='line'>    <span class="s1">&#39;&lt;p&gt;&lt;a class = &quot;title-&#39;</span> <span class="o">+</span> <span class="nx">tag</span> <span class="o">+</span>
+</span><span class='line'>    <span class="s1">&#39; anchor-link&quot; onclick = &quot;return false;&quot; href = &quot;#&quot; link = &quot;#wow&#39;</span> <span class="o">+</span> <span class="nx">i</span> <span class="o">+</span>
+</span><span class='line'>    <span class="s1">&#39;&quot;&gt;&#39;</span> <span class="o">+</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">text</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;&lt;/a&gt;&lt;/p&gt;&#39;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.title-h2&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;margin-left&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.title-h3&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;margin-left&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.title-h4&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;margin-left&quot;</span><span class="p">,</span> <span class="mi">40</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.title-h5&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;margin-left&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.title-h6&quot;</span><span class="p">).</span><span class="nx">css</span><span class="p">(</span><span class="s2">&quot;margin-left&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>代码根据标题的级别控制CSS样式表单，对不同的级别的标题使用了不同的缩进。</p>
+
+<h2>点击收放功能</h2>
+
+<p>向blogDirectory.js中添加一段代码，即可实现点击收放功能。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#anchorContentToggle&quot;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="nx">text</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">html</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="nx">text</span><span class="o">==</span><span class="s2">&quot;导航[-]&quot;</span><span class="p">){</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s2">&quot;导航[+]&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">({</span><span class="s2">&quot;title&quot;</span><span class="o">:</span><span class="s2">&quot;展开&quot;</span><span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="s2">&quot;导航[-]&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">({</span><span class="s2">&quot;title&quot;</span><span class="o">:</span><span class="s2">&quot;收起&quot;</span><span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;#anchorContent&quot;</span><span class="p">).</span><span class="nx">toggle</span><span class="p">();</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>实现的方法就是注册anchorContentToggle元素的点击响应函数。</p>
+
+<p>通过调用anchorContent元素的toggle方法来调整anchorContent的可见性，达到收放的效果。</p>
+
+<h2>锚点自动跳转</h2>
+
+<p>我们希望点击目录中的某个条目，能够跳转到博文中相应的位置，这可以借助锚点实现。</p>
+
+<p>向blogDirectory.js中继续添加代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">$</span><span class="p">(</span><span class="s2">&quot;.anchor-link&quot;</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">$</span><span class="p">(</span><span class="s2">&quot;html,body&quot;</span><span class="p">).</span><span class="nx">animate</span><span class="p">({</span><span class="nx">scrollTop</span><span class="o">:</span> <span class="nx">$</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s2">&quot;link&quot;</span><span class="p">)).</span><span class="nx">offset</span><span class="p">().</span><span class="nx">top</span><span class="p">},</span> <span class="mi">400</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>实现了每个条目的点击响应函数，即跳转到相应的锚点位置，这里使用了JQuery animate方法来实现平滑过渡。</p>
+
+<h2>样式调节美化</h2>
+
+<p>到这里，目录的基本功能已经实现了。我们需要调整一下样式，美化一下目录。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='css'><span class='line'><span class="nc">.anchorContent</span> <span class="nt">a</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#999</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">14px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">text-decoration</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nc">.anchorContent</span> <span class="nt">a</span><span class="nd">:hover</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="err">$</span><span class="n">theme</span><span class="o">-</span><span class="n">color1</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">16px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">font-weight</span><span class="o">:</span> <span class="k">bold</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">padding-left</span><span class="o">:</span> <span class="m">5px</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">#anchorContentToggle</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">color</span><span class="o">:</span> <span class="m">#a61c00</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">cursor</span><span class="o">:</span> <span class="k">pointer</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">font-size</span><span class="o">:</span> <span class="m">16px</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">font-weight</span><span class="o">:</span> <span class="k">bold</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样鼠标扫过相关条目会有字号颜色的改变，起到突出显示的效果。</p>
+
+<p>最终效果如下：</p>
+
+<p><img src="/images/blog/03-blog_directory.png"></p>
+</div>
+  <script src="/javascripts/blogDirectory.js" type="text/javascript"></script>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wang Yiguang</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2016-09-13T17:16:48+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>5:16 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/javascript/'>javascript</a>, <a class='category' href='/blog/categories/前端/'>前端</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2016/09/13/javascriptshi-xian-bo-wen-mu-lu-zi-dong-sheng-cheng/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2016/09/13/javascriptshi-xian-bo-wen-mu-lu-zi-dong-sheng-cheng/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2016/08/24/spark-historyserver-configuration/" title="Previous Post: Spark HistoryServer 配置和使用方法">&laquo; Spark HistoryServer 配置和使用方法</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section id="recent_posts">
+  <h1>Recent Posts</h1>
+  
+	  <p><a href="/blog/2016/09/13/javascriptshi-xian-bo-wen-mu-lu-zi-dong-sheng-cheng/">JavaScript实现博文目录自动生成</a></p>
+  
+	  <p><a href="/blog/2016/08/24/spark-historyserver-configuration/">Spark HistoryServer 配置和使用方法</a></p>
+  
+	  <p><a href="/blog/2016/08/18/no-pass-world-ssh-method/">免密码远程登录/拷贝方法</a></p>
+  
+	  <p><a href="/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/">Mysql常用操作方法</a></p>
+  
+	  <p><a href="/blog/2016/05/27/linux-shellpei-se-zhi-nan/">Linux Shell配色指南</a></p>
+  
+</section>
+
+<section id="categories_aside">
+  <h1>Categories</h1>
+  
+	<p><a href='/blog/categories/技术资源'>技术资源 <span>(5)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/08/18/no-pass-world-ssh-method/">免密码远程登录/拷贝方法</a> 18/08/2016</li>
+    
+		<li><a href="/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/">mysql常用操作方法</a> 06/07/2016</li>
+    
+		<li><a href="/blog/2016/05/27/linux-shellpei-se-zhi-nan/">Linux Shell配色指南</a> 27/05/2016</li>
+    
+		<li><a href="/blog/2016/04/07/fei-rootzhang-hu-kuai-su-an-zhuang-mysql/">非Root账户快速安装mySQL</a> 07/04/2016</li>
+    
+		<li><a href="/blog/2016/02/03/%E4%BD%BF%E7%94%A8Octopress%E6%90%AD%E5%BB%BAGitHub%E5%8D%9A%E5%AE%A2/">使用Octopress搭建Github博客</a> 03/02/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/设计模式'>设计模式 <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/02/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0/">设计模式概述</a> 05/02/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/读书笔记'>读书笔记 <span>(4)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/03/12/jian-suo-mo-xing-yu-sou-suo-pai-xu/">检索模型与搜索排序</a> 12/03/2016</li>
+    
+		<li><a href="/blog/2016/02/20/sou-suo-yin-qing-suo-yin/">搜索引擎索引</a> 20/02/2016</li>
+    
+		<li><a href="/blog/2016/02/08/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E5%8F%8A%E5%85%B6%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84/">搜索引擎及其技术架构</a> 08/02/2016</li>
+    
+		<li><a href="/blog/2016/02/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0/">设计模式概述</a> 05/02/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/搜索引擎'>搜索引擎 <span>(3)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/03/12/jian-suo-mo-xing-yu-sou-suo-pai-xu/">检索模型与搜索排序</a> 12/03/2016</li>
+    
+		<li><a href="/blog/2016/02/20/sou-suo-yin-qing-suo-yin/">搜索引擎索引</a> 20/02/2016</li>
+    
+		<li><a href="/blog/2016/02/08/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E5%8F%8A%E5%85%B6%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84/">搜索引擎及其技术架构</a> 08/02/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/spark'>spark <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/08/24/spark-historyserver-configuration/">Spark HistoryServer 配置和使用方法</a> 24/08/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/大数据'>大数据 <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/08/24/spark-historyserver-configuration/">Spark HistoryServer 配置和使用方法</a> 24/08/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/javascript'>javascript <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/09/13/javascriptshi-xian-bo-wen-mu-lu-zi-dong-sheng-cheng/">JavaScript实现博文目录自动生成</a> 13/09/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/前端'>前端 <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/09/13/javascriptshi-xian-bo-wen-mu-lu-zi-dong-sheng-cheng/">JavaScript实现博文目录自动生成</a> 13/09/2016</li>
+    
+  </ul-->
+  
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2016 - Wang Yiguang -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<script src="/javascripts/libs/blogDirectory.js" type="text/javascript"></script>
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

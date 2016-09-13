@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Javascript | Workspace of LionHeart]]></title>
+  <link href="http://lionheartwang.github.io/blog/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://lionheartwang.github.io/"/>
+  <updated>2016-09-13T17:23:06+08:00</updated>
+  <id>http://lionheartwang.github.io/</id>
+  <author>
+    <name><![CDATA[Wang Yiguang]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[JavaScript实现博文目录自动生成]]></title>
+    <link href="http://lionheartwang.github.io/blog/2016/09/13/javascriptshi-xian-bo-wen-mu-lu-zi-dong-sheng-cheng/"/>
+    <updated>2016-09-13T17:16:48+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2016/09/13/javascriptshi-xian-bo-wen-mu-lu-zi-dong-sheng-cheng</id>
+    <content type="html"><![CDATA[<p>自建的博客站点，常常需要博文目录自动生成的功能，本文介绍一种JavaScript实现的解决方案。</p>
+
+<p>实现参考了 <a href="http://www.iyanlei.com/markdown_catelog.html%E3%80%82">http://www.iyanlei.com/markdown_catelog.html%E3%80%82</a></p>
+
+<!--more-->
+
+
+<h2>目录自动生成</h2>
+
+<p>以本站博客的生成代码为例。我们需要借助JQuery实现，因此首先加载JQuery库。</p>
+
+<p>```html</p>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+
+<pre><code>
+### 相关HTML
+
+在博文顶部留出一块区域用作目录：
+</code></pre>
+
+<div class="blogAnchor">
+  <p id="anchorContentToggle" title="收起">导航[-]</p>
+  <div class="anchorContent" id="anchorContent"> </div>
+</div>
+
+
+<pre><code>
+在博文末尾添加一段JavaScript代码，扫描当前页面的h2~h6元素。
+
+### 使用JQuery生成目录
+
+为每个标题生成一个超链接a元素，添加到anchorContent区域中。
+</code></pre>
+
+<script src="http://lionheartwang.github.io/javascripts/libs/blogDirectory.js" type="text/javascript"></script>
+
+
+<pre><code>
+blogDirectory.js具体实现如下：
+</code></pre>
+
+<p>$(&ldquo;.entry-content&rdquo;).find(&ldquo;h2,h3,h4,h5,h6&rdquo;).each(function(i, item) {
+  var tag = $(item).get(0).localName;
+  $(item).attr(&ldquo;id&rdquo;, &ldquo;wow&rdquo; + i);
+  $(&ldquo;#anchorContent&rdquo;).append(
+    &lsquo;<p><a class = "title-' + tag +
+    ' anchor-link" onclick = "return false;" href = "#" link = "#wow' + i +
+    '">&rsquo; + $(this).text() + &lsquo;</a></p>&rsquo;);
+  $(&ldquo;.title-h2&rdquo;).css(&ldquo;margin-left&rdquo;, 0);
+  $(&ldquo;.title-h3&rdquo;).css(&ldquo;margin-left&rdquo;, 20);
+  $(&ldquo;.title-h4&rdquo;).css(&ldquo;margin-left&rdquo;, 40);
+  $(&ldquo;.title-h5&rdquo;).css(&ldquo;margin-left&rdquo;, 60);
+  $(&ldquo;.title-h6&rdquo;).css(&ldquo;margin-left&rdquo;, 80);
+});
+```</p>
+
+<p>代码根据标题的级别控制CSS样式表单，对不同的级别的标题使用了不同的缩进。</p>
+
+<h2>点击收放功能</h2>
+
+<p>向blogDirectory.js中添加一段代码，即可实现点击收放功能。</p>
+
+<pre><code class="javascript">$("#anchorContentToggle").click(function(){
+    var text = $(this).html();
+    if(text=="导航[-]"){
+        $(this).html("导航[+]");
+        $(this).attr({"title":"展开"});
+    }else{
+        $(this).html("导航[-]");
+        $(this).attr({"title":"收起"});
+    }
+    $("#anchorContent").toggle();
+});
+</code></pre>
+
+<p>实现的方法就是注册anchorContentToggle元素的点击响应函数。</p>
+
+<p>通过调用anchorContent元素的toggle方法来调整anchorContent的可见性，达到收放的效果。</p>
+
+<h2>锚点自动跳转</h2>
+
+<p>我们希望点击目录中的某个条目，能够跳转到博文中相应的位置，这可以借助锚点实现。</p>
+
+<p>向blogDirectory.js中继续添加代码：</p>
+
+<pre><code>$(".anchor-link").click(function(){
+    $("html,body").animate({scrollTop: $($(this).attr("link")).offset().top}, 400);
+});
+</code></pre>
+
+<p>实现了每个条目的点击响应函数，即跳转到相应的锚点位置，这里使用了JQuery animate方法来实现平滑过渡。</p>
+
+<h2>样式调节美化</h2>
+
+<p>到这里，目录的基本功能已经实现了。我们需要调整一下样式，美化一下目录。</p>
+
+<pre><code class="css">.anchorContent a {
+  color: #999;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.anchorContent a:hover {
+  color: $theme-color1;
+  font-size: 16px;
+  font-weight: bold;
+  padding-left: 5px;
+}
+
+#anchorContentToggle {
+  color: #a61c00;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+</code></pre>
+
+<p>这样鼠标扫过相关条目会有字号颜色的改变，起到突出显示的效果。</p>
+
+<p>最终效果如下：</p>
+
+<p><img src="/images/blog/03-blog_directory.png"></p>
+]]></content>
+  </entry>
+  
+</feed>

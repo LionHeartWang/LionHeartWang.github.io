@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://lionheartwang.github.io/blog/2016/09/13/javascriptshi-xian-bo-wen-mu-lu-zi-dong-sheng-cheng/</loc>
+<lastmod>2016-09-13T17:16:48+08:00</lastmod>
+</url>
+<url>
 <loc>http://lionheartwang.github.io/blog/2016/08/24/spark-historyserver-configuration/</loc>
 <lastmod>2016-08-24T17:17:58+08:00</lastmod>
 </url>
@@ -66,5 +70,11 @@
 </url>
 <url>
 <loc>http://lionheartwang.github.io/blog/categories/%25E5%25A4%25A7%25E6%2595%25B0%25E6%258D%25AE/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/blog/categories/javascript/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/blog/categories/%25E5%2589%258D%25E7%25AB%25AF/</loc>
 </url>
 </urlset>
