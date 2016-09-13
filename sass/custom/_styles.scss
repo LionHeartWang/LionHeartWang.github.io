@@ -20,9 +20,9 @@ $theme-color3: #999;
     padding-top: 0em;
     padding-bottom: 0em;
   }
-	.entry-content {
-		display: none;
-	}
+  .entry-content {
+    display: none;
+  }
 }
 
 .blog-index article:hover {
@@ -30,7 +30,7 @@ $theme-color3: #999;
 
   .entry-title a {
     color: darken($theme-color3, 15);
-    font-size: 20px;
+    font-size: 21px;
     font-weight: bold;
     margin-top: 0em;
     margin-bottom: 0em;
@@ -156,38 +156,110 @@ article footer p span {
   padding-bottom: 1em;
 }
 
+// Blog Archives
+#blog-archives article {
+  h1 a {
+    color: $theme-color1;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 0em;
+    margin-bottom: 0em;
+    padding-top: 0em;
+    padding-bottom: 0em;
+    text-decoration: none;
+  }
+}
+
+#blog-archives article:hover {
+  background: $sidebar-bg;
+
+  h1 a {
+    color: darken($theme-color3, 15);
+    font-size: 21px;
+    font-weight: bold;
+    margin-top: 0em;
+    margin-bottom: 0em;
+    padding-top: 0em;
+    padding-bottom: 0em;
+    text-decoration: none;
+  }
+}
+
+.pagination a {
+  color: $theme-color3;
+}
+
+.pagination a:hover {
+  color: $theme-color1;
+}
 
 // Categories aside
 #categories_aside h1 {
   color: $theme-color1;
   margin-top: 3em;
+  margin-bottom: 6px;
 }
 
-#categories_aside h2 {
-  color: $theme-color2;
-  margin-top: 0.5em;
+#categories_aside a {
+  font-size: 14px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  text-decoration: none;
 }
 
+#categories_aside a:hover {
+  color: $theme-color1;
+  font-size: 14px;
+  font-weight: bold;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  text-decoration: none;
+}
+
+#categories_aside p {
+  font-size: 14px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
 
 // Recent Posts
 #recent_posts h1 {
   color: $theme-color1;
-  margin-bottom: 0.5em;
-}
-
-#recent_posts h2 {
-  color: $theme-color2;
-  margin-top: 0.5em;
+  margin-bottom: 6px;
 }
 
 #recent_posts a {
   font-size: 14px;
-  line-height: 10px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  text-decoration: none;
+}
+
+#recent_posts a:hover {
+  color: $theme-color1;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  text-decoration: none;
 }
 
 #recent_posts p {
   font-size: 14px;
-  line-height: 5px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 // Directory
