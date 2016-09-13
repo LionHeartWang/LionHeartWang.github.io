@@ -1,11 +1,11 @@
 <section id="categories_aside">
   <h1>Categories</h1>
   {% for category in site.categories %}
-  <h2>{{ category | first }} <span>({{ category | last | size }})</span></h2>
-  <ul class="arc-list">
+	<p><a href='/blog/categories/{{ category | first }}'>{{ category | first }} <span>({{ category | last | size }})</span></a></p>
+  <!--ul class="arc-list">
     {% for post in category.last %}
 		<li><a href="{{ post.url }}">{{ post.title }}</a> {{post.date | date:"%d/%m/%Y"}}</li>
     {% endfor %}
-  </ul>
+  </ul-->
   {% endfor %}
 </section>
