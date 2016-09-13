@@ -307,9 +307,37 @@ article footer p span {
 }
 
 // About Team
-#about-team h2 {
-  padding-top: 0.5em;
-  margin-top: 0.5em;
-  color: $theme-color2;
-  font-size: bold 24px;
+#about-team {
+	h1 {
+		color: $theme-color1;
+		font-size: 22px;
+	}
+
+  h2 {
+    border-bottom: 1px solid darken($sidebar-border, 10);
+    padding-top: 8px;
+    padding-bottom: 6px;
+    margin-top: 0.5em;
+    margin-bottom: 0em;
+    color: $theme-color2;
+    font-size: bold 20px;
+  }
+
+  h3 {
+    font-size: bold 18px;
+    padding-top: 5px;
+    padding-bottom: 3px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  p {
+    font-size: 14px;
+    margin-top: 3px;
+    margin-bottom: 3px;
+  }
+
+  li {
+    font-size: 14px;
+    margin-left: 2em;
+  }
 }
