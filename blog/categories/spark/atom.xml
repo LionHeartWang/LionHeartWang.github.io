@@ -4,7 +4,7 @@
   <title><![CDATA[Spark | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/spark/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-10-19T19:16:50+08:00</updated>
+  <updated>2016-10-19T19:21:12+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,128 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Spark日志配置方法]]></title>
+    <link href="http://lionheartwang.github.io/blog/2016/10/19/sparkri-zhi-pei-zhi-fang-fa/"/>
+    <updated>2016-10-19T19:13:38+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2016/10/19/sparkri-zhi-pei-zhi-fang-fa</id>
+    <content type="html"><![CDATA[<p>本文介绍Spark日志级别控制方法。</p>
+
+<p>Apache Spark 默认使用 log4j 作为日志工具。
+Baidu Spark 根据不同的发布版本，使用 log4j 或者 logback 作为日志工具。</p>
+
+<!--more-->
+
+
+<h2>Driver日志级别设置</h2>
+
+<p>日志配置默认在Spark客户端conf目录下，log4j配置log4j.properties文件，logback配置logback.xml文件。</p>
+
+<h3>log4j配置示例</h3>
+
+<p>示例配置文件log4j.properties如下：</p>
+
+<pre><code class="bash"># Set everything to be logged to the console
+log4j.rootCategory=INFO, DRFA
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.target=System.err
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n
+log4j.appender.DRFA=org.apache.log4j.DailyRollingFileAppender
+log4j.appender.DRFA.File=log/spark.log
+log4j.appender.DRFA.layout=org.apache.log4j.PatternLayout
+log4j.appender.DRFA.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} [%t] %p %c{1}: %m%n
+# Settings to quiet third party logs that are too verbose
+log4j.logger.org.eclipse.jetty=WARN
+log4j.logger.org.eclipse.jetty.util.component.AbstractLifeCycle=ERROR
+log4j.logger.org.apache.spark.repl.SparkIMain$exprTyper=INFO
+log4j.logger.org.apache.spark.repl.SparkILoop$SparkILoopInterpreter=INFO
+log4j.logger.org.apache.hadoop.fs.DfsInputStream=INFO
+log4j.logger.org.apache.hadoop.hive.ql.io.orc.RecordReaderImpl=INFO
+log4j.logger.org.apache.hadoop.hive.ql.io.*=DEBUG
+</code></pre>
+
+<p>其中：</p>
+
+<ul>
+<li>log4j.rootCategory配置总体的默认日志级别。</li>
+<li>log4j.appender.DRFA.File用来配置日志重定向的目标文件。</li>
+<li>log4j.appender.DRFA.layout.ConversionPattern用来配置日志的输出格式。</li>
+<li>log4j.logger.xxx.xxx.xxx用来配置指定类的日志级别，xxx.xxx.xxx代表类路径。</li>
+</ul>
+
+
+<h3>logback配置示例</h3>
+
+<p>示例配置文件logback.xml如下：</p>
+
+<pre><code class="xml">&lt;?xml version="1.0"?&gt;
+&lt;?xml-stylesheet type="text/xsl" href="configuration.xsl"?&gt;
+&lt;configuration&gt;
+  &lt;appender name="RFILE" class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;
+    &lt;file&gt;log/spark.log&lt;/file&gt;
+    &lt;rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"&gt;
+      &lt;fileNamePattern&gt;log/spark.%d{yyyy-MM-dd}.log&lt;/fileNamePattern&gt;
+      &lt;maxHistory&gt;30&lt;/maxHistory&gt;
+    &lt;/rollingPolicy&gt;
+    &lt;encoder&gt;
+      &lt;pattern&gt; %date %level [%logger] - %msg%n&lt;/pattern&gt;
+    &lt;/encoder&gt;
+  &lt;/appender&gt;
+  &lt;logger name="org.apache.hadoop.hive.ql.io.*"  level="INFO" /&gt;
+  &lt;root level="info"&gt;
+    &lt;appender-ref ref="RFILE" /&gt;
+  &lt;/root&gt;
+&lt;/configuration&gt;
+</code></pre>
+
+<p>其中：</p>
+
+<ul>
+<li><root>用来配置总体的默认日志级别。</li>
+<li><file>用来配置日志重定向的目标文件。</li>
+<li><pattern>用来配置日志的输出格式。</li>
+<li><logger>用来配置指定类的日志级别。</li>
+</ul>
+
+
+<h2>Executor日志级别设置</h2>
+
+<p>executor日志级别配置同driver端类似，但需要将executor的日志配置文件上传，并通过executor的Java参数指定使用的配置文件名。</p>
+
+<h3>log4j配置示例</h3>
+
+<p>配置好executor的log4j配置文件，命名随意，假设为executor-log4j.properties，放在conf目录下。</p>
+
+<p>配置spark-conf.defaults文件，在 spark.executor.extraJavaOptions 中增加:</p>
+
+<pre><code class="bash">spark.executor.extraJavaOptions -Dlog4j.configuration=executor-log4j.properties
+</code></pre>
+
+<p>启动Spark作业时增加–files参数。</p>
+
+<pre><code class="bash">$spark-submit --files /path/to/conf/executor-log4j.properties xxx
+则作业运行时的日志级别将由executor-log4j.properties文件控制。
+</code></pre>
+
+<h3>logback配置示例</h3>
+
+<p>配置好executor的logback配置文件，命名随意，假设为executor-logback.xml，放在conf目录下。</p>
+
+<p>配置spark-conf.defaults文件，在 spark.executor.extraJavaOptions 中增加:</p>
+
+<pre><code class="bash">spark.executor.extraJavaOptions -Dlogback.configurationFile=executor-logback.xml
+</code></pre>
+
+<p>启动Spark作业时增加–files参数。</p>
+
+<pre><code class="bash">$spark-submit --files /path/to/conf/executor-logback.xml xxx
+</code></pre>
+
+<p>则作业运行时的日志级别将由executor-logback.xml文件控制。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Spark HistoryServer 配置和使用方法]]></title>
