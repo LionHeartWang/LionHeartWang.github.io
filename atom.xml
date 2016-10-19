@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-09-13T18:38:34+08:00</updated>
+  <updated>2016-10-19T19:16:50+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,175 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Spark日志配置方法]]></title>
+    <link href="http://lionheartwang.github.io/blog/2016/10/19/sparkri-zhi-pei-zhi-fang-fa/"/>
+    <updated>2016-10-19T19:13:38+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2016/10/19/sparkri-zhi-pei-zhi-fang-fa</id>
+    <content type="html"><![CDATA[<p>本文介绍Spark日志级别控制方法。</p>
+
+<p>Apache Spark 默认使用 log4j 作为日志工具。
+Baidu Spark 根据不同的发布版本，使用 log4j 或者 logback 作为日志工具。</p>
+
+<!--more-->
+
+
+<h2>Driver日志级别设置</h2>
+
+<p>日志配置默认在Spark客户端conf目录下，log4j配置log4j.properties文件，logback配置logback.xml文件。</p>
+
+<h3>log4j配置示例</h3>
+
+<p>示例配置文件log4j.properties如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Set everything to be logged to the console</span>
+</span><span class='line'>log4j.rootCategory<span class="o">=</span>INFO, DRFA
+</span><span class='line'>log4j.appender.console<span class="o">=</span>org.apache.log4j.ConsoleAppender
+</span><span class='line'>log4j.appender.console.target<span class="o">=</span>System.err
+</span><span class='line'>log4j.appender.console.layout<span class="o">=</span>org.apache.log4j.PatternLayout
+</span><span class='line'>log4j.appender.console.layout.ConversionPattern<span class="o">=</span>%d<span class="o">{</span>yy/MM/dd HH:mm:ss<span class="o">}</span> %p %c<span class="o">{</span>1<span class="o">}</span>: %m%n
+</span><span class='line'>log4j.appender.DRFA<span class="o">=</span>org.apache.log4j.DailyRollingFileAppender
+</span><span class='line'>log4j.appender.DRFA.File<span class="o">=</span>log/spark.log
+</span><span class='line'>log4j.appender.DRFA.layout<span class="o">=</span>org.apache.log4j.PatternLayout
+</span><span class='line'>log4j.appender.DRFA.layout.ConversionPattern<span class="o">=</span>%d<span class="o">{</span>yy/MM/dd HH:mm:ss<span class="o">}</span> <span class="o">[</span>%t<span class="o">]</span> %p %c<span class="o">{</span>1<span class="o">}</span>: %m%n
+</span><span class='line'><span class="c"># Settings to quiet third party logs that are too verbose</span>
+</span><span class='line'>log4j.logger.org.eclipse.jetty<span class="o">=</span>WARN
+</span><span class='line'>log4j.logger.org.eclipse.jetty.util.component.AbstractLifeCycle<span class="o">=</span>ERROR
+</span><span class='line'>log4j.logger.org.apache.spark.repl.SparkIMain<span class="nv">$exprTyper</span><span class="o">=</span>INFO
+</span><span class='line'>log4j.logger.org.apache.spark.repl.SparkILoop<span class="nv">$SparkILoopInterpreter</span><span class="o">=</span>INFO
+</span><span class='line'>log4j.logger.org.apache.hadoop.fs.DfsInputStream<span class="o">=</span>INFO
+</span><span class='line'>log4j.logger.org.apache.hadoop.hive.ql.io.orc.RecordReaderImpl<span class="o">=</span>INFO
+</span><span class='line'>log4j.logger.org.apache.hadoop.hive.ql.io.*<span class="o">=</span>DEBUG
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中：</p>
+
+<ul>
+<li>log4j.rootCategory配置总体的默认日志级别。</li>
+<li>log4j.appender.DRFA.File用来配置日志重定向的目标文件。</li>
+<li>log4j.appender.DRFA.layout.ConversionPattern用来配置日志的输出格式。</li>
+<li>log4j.logger.xxx.xxx.xxx用来配置指定类的日志级别，xxx.xxx.xxx代表类路径。</li>
+</ul>
+
+
+<h3>logback配置示例</h3>
+
+<p>示例配置文件logback.xml如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+</span><span class='line'><span class="cp">&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;configuration.xsl&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&quot;RFILE&quot;</span> <span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;file&gt;</span>log/spark.log<span class="nt">&lt;/file&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;rollingPolicy</span> <span class="na">class=</span><span class="s">&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;fileNamePattern&gt;</span>log/spark.%d{yyyy-MM-dd}.log<span class="nt">&lt;/fileNamePattern&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;maxHistory&gt;</span>30<span class="nt">&lt;/maxHistory&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/rollingPolicy&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;encoder&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;pattern&gt;</span> %date %level [%logger] - %msg%n<span class="nt">&lt;/pattern&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/encoder&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/appender&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">&quot;org.apache.hadoop.hive.ql.io.*&quot;</span>  <span class="na">level=</span><span class="s">&quot;INFO&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;root</span> <span class="na">level=</span><span class="s">&quot;info&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">&quot;RFILE&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/root&gt;</span>
+</span><span class='line'><span class="nt">&lt;/configuration&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中：</p>
+
+<ul>
+<li><root>用来配置总体的默认日志级别。</li>
+<li><file>用来配置日志重定向的目标文件。</li>
+<li><pattern>用来配置日志的输出格式。</li>
+<li><logger>用来配置指定类的日志级别。</li>
+</ul>
+
+
+<h2>Executor日志级别设置</h2>
+
+<p>executor日志级别配置同driver端类似，但需要将executor的日志配置文件上传，并通过executor的Java参数指定使用的配置文件名。</p>
+
+<h3>log4j配置示例</h3>
+
+<p>配置好executor的log4j配置文件，命名随意，假设为executor-log4j.properties，放在conf目录下。</p>
+
+<p>配置spark-conf.defaults文件，在 spark.executor.extraJavaOptions 中增加:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>spark.executor.extraJavaOptions -Dlog4j.configuration<span class="o">=</span>executor-log4j.properties
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>启动Spark作业时增加–files参数。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$spark</span>-submit --files /path/to/conf/executor-log4j.properties xxx
+</span><span class='line'>则作业运行时的日志级别将由executor-log4j.properties文件控制。
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>logback配置示例</h3>
+
+<p>配置好executor的logback配置文件，命名随意，假设为executor-logback.xml，放在conf目录下。</p>
+
+<p>配置spark-conf.defaults文件，在 spark.executor.extraJavaOptions 中增加:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>spark.executor.extraJavaOptions -Dlogback.configurationFile<span class="o">=</span>executor-logback.xml
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>启动Spark作业时增加–files参数。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$spark</span>-submit --files /path/to/conf/executor-logback.xml xxx
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>则作业运行时的日志级别将由executor-logback.xml文件控制。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[JavaScript实现博文目录自动生成]]></title>
