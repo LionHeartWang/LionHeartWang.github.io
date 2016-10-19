@@ -3,7 +3,7 @@ layout: post
 title: "Spark日志配置方法"
 date: 2016-10-19 19:13:38 +0800
 comments: true
-categories: 
+categories: [Spark, 大数据] 
 ---
 本文介绍Spark日志级别控制方法。
 
