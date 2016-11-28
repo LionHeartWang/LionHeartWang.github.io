@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://lionheartwang.github.io/blog/2016/11/28/spark-core-message-queue-mechanism/</loc>
+<lastmod>2016-11-28T14:31:03+08:00</lastmod>
+</url>
+<url>
 <loc>http://lionheartwang.github.io/blog/2016/10/19/sparkri-zhi-pei-zhi-fang-fa/</loc>
 <lastmod>2016-10-19T19:13:38+08:00</lastmod>
 </url>

@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2016-10-19T19:21:12+08:00</updated>
+  <updated>2016-11-28T14:49:08+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,632 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Spark Core 消息队列机制]]></title>
+    <link href="http://lionheartwang.github.io/blog/2016/11/28/spark-core-message-queue-mechanism/"/>
+    <updated>2016-11-28T14:31:03+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2016/11/28/spark-core-message-queue-mechanism</id>
+    <content type="html"><![CDATA[<p>本文介绍Spark中的消息队列机制，首先SparkListenerEvent，SparkListener和SparkListenerBus等基本数据结构实现。</p>
+
+<p>重点介绍了异步消息总线LiveListenerBus的实现。随后介绍了Spark消息队列的整体工作流程。</p>
+
+<!--more-->
+
+
+<h2>SparkListenerEvent</h2>
+
+<p>Spark中的消息由SparkListenerEvent表示。其本身定义只是一个接口：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">trait</span> <span class="nc">SparkListenerEvent</span> <span class="o">{</span>
+</span><span class='line'>  <span class="cm">/* Whether output this event to the event log */</span>
+</span><span class='line'>  <span class="k">protected</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span> <span class="k">def</span> <span class="n">logEvent</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">true</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>SparkListenerEvent有多个具体的实现，每种实现代表了Spark运行过程中的一种事件。</p>
+
+<ul>
+<li>SparkListenerStageSubmitted</li>
+<li>SparkListenerStageCompleted</li>
+<li>SparkListenerTaskStart</li>
+<li>SparkListenerTaskGettingResult</li>
+<li>SparkListenerTaskEnd</li>
+<li>SparkListenerJobStart</li>
+<li>SparkListenerJobEnd</li>
+<li>SparkListenerEnvironmentUpdate</li>
+<li>SparkListenerBlockManagerAdded</li>
+<li>SparkListenerBlockManagerRemoved</li>
+<li>SparkListenerUnpersistRDD</li>
+<li>SparkListenerExecutorAdded</li>
+<li>SparkListenerExecutorRemoved</li>
+<li>SparkListenerBlockUpdated</li>
+<li>SparkListenerExecutorMetricsUpdate</li>
+<li>SparkListenerApplicationStart</li>
+<li>SparkListenerApplicationEnd</li>
+<li>SparkListenerLogStart</li>
+</ul>
+
+
+<p>根据名称可以知道每一种事件代表的含义。</p>
+
+<h2>SparkListener</h2>
+
+<p>SparkListeners负责监听SparkListenerEvents。</p>
+
+<p>所有Spark消息SparkListenerEvents 被异步的发送给已经注册过的SparkListeners。</p>
+
+<p>SparkListenerInterface定义了SparkListener的接口：</p>
+
+<ul>
+<li>onStageCompleted</li>
+<li>onStageSubmitted</li>
+<li>onTaskStart</li>
+<li>onTaskGettingResult</li>
+<li>onTaskEnd</li>
+<li>onJobStart</li>
+<li>onJobEnd</li>
+<li>onEnvironmentUpdate</li>
+<li>onBlockManagerAdded</li>
+<li>onBlockManagerRemoved</li>
+<li>onUnpersistRDD</li>
+<li>onApplicationStart</li>
+<li>onApplicationEnd</li>
+<li>onExecutorMetricsUpdate</li>
+<li>onExecutorAdded</li>
+<li>onExecutorRemoved</li>
+<li>onBlockUpdated</li>
+<li>onOtherEvent</li>
+</ul>
+
+
+<p>根据名称可以知道每一个方法是对应事件消息的响应函数。SparkListener的实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">abstract</span> <span class="k">class</span> <span class="nc">SparkListener</span> <span class="k">extends</span> <span class="nc">SparkListenerInterface</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onStageCompleted</span><span class="o">(</span><span class="n">stageCompleted</span><span class="k">:</span> <span class="kt">SparkListenerStageCompleted</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onStageSubmitted</span><span class="o">(</span><span class="n">stageSubmitted</span><span class="k">:</span> <span class="kt">SparkListenerStageSubmitted</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onTaskStart</span><span class="o">(</span><span class="n">taskStart</span><span class="k">:</span> <span class="kt">SparkListenerTaskStart</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onTaskGettingResult</span><span class="o">(</span><span class="n">taskGettingResult</span><span class="k">:</span> <span class="kt">SparkListenerTaskGettingResult</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onTaskEnd</span><span class="o">(</span><span class="n">taskEnd</span><span class="k">:</span> <span class="kt">SparkListenerTaskEnd</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onJobStart</span><span class="o">(</span><span class="n">jobStart</span><span class="k">:</span> <span class="kt">SparkListenerJobStart</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onJobEnd</span><span class="o">(</span><span class="n">jobEnd</span><span class="k">:</span> <span class="kt">SparkListenerJobEnd</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onEnvironmentUpdate</span><span class="o">(</span><span class="n">environmentUpdate</span><span class="k">:</span> <span class="kt">SparkListenerEnvironmentUpdate</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onBlockManagerAdded</span><span class="o">(</span><span class="n">blockManagerAdded</span><span class="k">:</span> <span class="kt">SparkListenerBlockManagerAdded</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onBlockManagerRemoved</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">blockManagerRemoved</span><span class="k">:</span> <span class="kt">SparkListenerBlockManagerRemoved</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onUnpersistRDD</span><span class="o">(</span><span class="n">unpersistRDD</span><span class="k">:</span> <span class="kt">SparkListenerUnpersistRDD</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onApplicationStart</span><span class="o">(</span><span class="n">applicationStart</span><span class="k">:</span> <span class="kt">SparkListenerApplicationStart</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onApplicationEnd</span><span class="o">(</span><span class="n">applicationEnd</span><span class="k">:</span> <span class="kt">SparkListenerApplicationEnd</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onExecutorMetricsUpdate</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">executorMetricsUpdate</span><span class="k">:</span> <span class="kt">SparkListenerExecutorMetricsUpdate</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onExecutorAdded</span><span class="o">(</span><span class="n">executorAdded</span><span class="k">:</span> <span class="kt">SparkListenerExecutorAdded</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onExecutorRemoved</span><span class="o">(</span><span class="n">executorRemoved</span><span class="k">:</span> <span class="kt">SparkListenerExecutorRemoved</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onBlockUpdated</span><span class="o">(</span><span class="n">blockUpdated</span><span class="k">:</span> <span class="kt">SparkListenerBlockUpdated</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">onOtherEvent</span><span class="o">(</span><span class="n">event</span><span class="k">:</span> <span class="kt">SparkListenerEvent</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span> <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Spark运行过程中会用到很多个SparkListener，每一种都有自己的用途。</p>
+
+<p>例如EventLoggingListener用来将监听到的事件持久化到文件中，ExecutorAllocationListener用那个通知对应的ExecutorAllocationManager增加或移除executor等。</p>
+
+<h2>SparkListenerBus</h2>
+
+<p>SparkListener需要被注册到SparkListenerBus中才能起作用，SparkListenerBus负责分发监听到的Event给SparkListener。</p>
+
+<p>SparkListenerBus继承自ListenerBus接口，并重载了doPostEvent方法。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">private</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span> <span class="k">trait</span> <span class="nc">SparkListenerBus</span>
+</span><span class='line'>  <span class="k">extends</span> <span class="nc">ListenerBus</span><span class="o">[</span><span class="kt">SparkListenerInterface</span>, <span class="kt">SparkListenerEvent</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">def</span> <span class="n">doPostEvent</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">listener</span><span class="k">:</span> <span class="kt">SparkListenerInterface</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">event</span><span class="k">:</span> <span class="kt">SparkListenerEvent</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">event</span> <span class="k">match</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">case</span> <span class="n">stageSubmitted</span><span class="k">:</span> <span class="kt">SparkListenerStageSubmitted</span> <span class="o">=&gt;</span>
+</span><span class='line'>        <span class="n">listener</span><span class="o">.</span><span class="n">onStageSubmitted</span><span class="o">(</span><span class="n">stageSubmitted</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">case</span> <span class="n">stageCompleted</span><span class="k">:</span> <span class="kt">SparkListenerStageCompleted</span> <span class="o">=&gt;</span>
+</span><span class='line'>        <span class="n">listener</span><span class="o">.</span><span class="n">onStageCompleted</span><span class="o">(</span><span class="n">stageCompleted</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">case</span> <span class="n">jobStart</span><span class="k">:</span> <span class="kt">SparkListenerJobStart</span> <span class="o">=&gt;</span>
+</span><span class='line'>        <span class="n">listener</span><span class="o">.</span><span class="n">onJobStart</span><span class="o">(</span><span class="n">jobStart</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">case</span> <span class="n">jobEnd</span><span class="k">:</span> <span class="kt">SparkListenerJobEnd</span> <span class="o">=&gt;</span>
+</span><span class='line'>        <span class="n">listener</span><span class="o">.</span><span class="n">onJobEnd</span><span class="o">(</span><span class="n">jobEnd</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">...</span>
+</span><span class='line'>      <span class="k">case</span> <span class="n">blockUpdated</span><span class="k">:</span> <span class="kt">SparkListenerBlockUpdated</span> <span class="o">=&gt;</span>
+</span><span class='line'>        <span class="n">listener</span><span class="o">.</span><span class="n">onBlockUpdated</span><span class="o">(</span><span class="n">blockUpdated</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">case</span> <span class="n">logStart</span><span class="k">:</span> <span class="kt">SparkListenerLogStart</span> <span class="o">=&gt;</span> <span class="c1">// ignore event log metadata</span>
+</span><span class='line'>      <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="n">listener</span><span class="o">.</span><span class="n">onOtherEvent</span><span class="o">(</span><span class="n">event</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>该接口实现了消息的路由，根据事件类型调用相应的处理函数。</p>
+
+<h3>ListenerBus</h3>
+
+<p>ListenerBus接口的实现如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">private</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span> <span class="k">trait</span> <span class="nc">ListenerBus</span><span class="o">[</span><span class="kt">L</span> <span class="k">&lt;:</span> <span class="kt">AnyRef</span>, <span class="kt">E</span><span class="o">]</span> <span class="nc">extends</span> <span class="nc">Logging</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// Marked `private[spark]` for access in tests.</span>
+</span><span class='line'>  <span class="k">private</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span> <span class="k">val</span> <span class="n">listeners</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">CopyOnWriteArrayList</span><span class="o">[</span><span class="kt">L</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">final</span> <span class="k">def</span> <span class="n">addListener</span><span class="o">(</span><span class="n">listener</span><span class="k">:</span> <span class="kt">L</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">listeners</span><span class="o">.</span><span class="n">add</span><span class="o">(</span><span class="n">listener</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">final</span> <span class="k">def</span> <span class="n">removeListener</span><span class="o">(</span><span class="n">listener</span><span class="k">:</span> <span class="kt">L</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">listeners</span><span class="o">.</span><span class="n">remove</span><span class="o">(</span><span class="n">listener</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">   * Post the event to all registered listeners. The `postToAll` caller should guarantee calling</span>
+</span><span class='line'><span class="cm">   * `postToAll` in the same thread for all events.</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="k">final</span> <span class="k">def</span> <span class="n">postToAll</span><span class="o">(</span><span class="n">event</span><span class="k">:</span> <span class="kt">E</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// JavaConverters can create a JIterableWrapper if we use asScala.</span>
+</span><span class='line'>    <span class="c1">// However, this method will be called frequently. To avoid the wrapper cost, here we use</span>
+</span><span class='line'>    <span class="c1">// Java Iterator directly.</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">iter</span> <span class="k">=</span> <span class="n">listeners</span><span class="o">.</span><span class="n">iterator</span>
+</span><span class='line'>    <span class="k">while</span> <span class="o">(</span><span class="n">iter</span><span class="o">.</span><span class="n">hasNext</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">listener</span> <span class="k">=</span> <span class="n">iter</span><span class="o">.</span><span class="n">next</span><span class="o">()</span>
+</span><span class='line'>      <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">doPostEvent</span><span class="o">(</span><span class="n">listener</span><span class="o">,</span> <span class="n">event</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span> <span class="k">catch</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nc">NonFatal</span><span class="o">(</span><span class="n">e</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>          <span class="n">logError</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Listener ${Utils.getFormattedClassName(listener)} threw an exception&quot;</span><span class="o">,</span> <span class="n">e</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">   * Post an event to the specified listener. `onPostEvent` is guaranteed to be called in the same</span>
+</span><span class='line'><span class="cm">   * thread for all listeners.</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="k">protected</span> <span class="k">def</span> <span class="n">doPostEvent</span><span class="o">(</span><span class="n">listener</span><span class="k">:</span> <span class="kt">L</span><span class="o">,</span> <span class="n">event</span><span class="k">:</span> <span class="kt">E</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">private</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span> <span class="k">def</span> <span class="n">findListenersByClass</span><span class="o">[</span><span class="kt">T</span> <span class="k">&lt;:</span> <span class="kt">L</span> <span class="kt">:</span> <span class="kt">ClassTag</span><span class="o">]()</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">c</span> <span class="k">=</span> <span class="n">implicitly</span><span class="o">[</span><span class="kt">ClassTag</span><span class="o">[</span><span class="kt">T</span><span class="o">]].</span><span class="n">runtimeClass</span>
+</span><span class='line'>    <span class="n">listeners</span><span class="o">.</span><span class="n">asScala</span><span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">getClass</span> <span class="o">==</span> <span class="n">c</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">T</span><span class="o">]).</span><span class="n">toSeq</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>本质上所有注册的Listener用一个数组记录下来，post操作就是根据事件找到对应的listener然后把event交给listener处理。</p>
+
+<h3>LiveListenerBus</h3>
+
+<p>SparkContext中会创建一个LiveListenerBus实例，LiveListenerBus是SparkListenerBus的一个具体实现，主要功能如下:</p>
+
+<ul>
+<li>保存有消息队列,负责消息的缓存</li>
+<li>保存有注册过的listener,负责消息的分发</li>
+</ul>
+
+
+<p>消息队列用LinkBlockQueue实现：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">// Cap the capacity of the event queue so we get an explicit error (rather than</span>
+</span><span class='line'><span class="c1">// an OOM exception) if it&#39;s perpetually being added to more quickly than it&#39;s being drained.</span>
+</span><span class='line'><span class="k">private</span> <span class="k">lazy</span> <span class="k">val</span> <span class="nc">EVENT_QUEUE_CAPACITY</span> <span class="k">=</span> <span class="n">validateAndGetQueueSize</span><span class="o">()</span>
+</span><span class='line'><span class="k">private</span> <span class="k">lazy</span> <span class="k">val</span> <span class="n">eventQueue</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">LinkedBlockingQueue</span><span class="o">[</span><span class="kt">SparkListenerEvent</span><span class="o">](</span><span class="nc">EVENT_QUEUE_CAPACITY</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>事件队列的长度EVENT_QUEUE_CAPACITY由spark.scheduler.listenerbus.eventqueue.size参数配置，默认为10000。</p>
+
+<p>当缓存事件数量达到上限后,新来的事件会被丢弃。</p>
+
+<p>消息的产生和分发按照 <b><font color=red>生产者-消费者模型</font></b> 实现。</p>
+
+<p><b><font color=red>消息的分发(消费者)</font></b> 是通过一个listener线程异步处理的，代码如下。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">private</span> <span class="k">val</span> <span class="n">listenerThread</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="n">name</span><span class="o">)</span> <span class="o">{</span>  <span class="c1">// &lt;-- 线程名为SparkListenerBus</span>
+</span><span class='line'>  <span class="n">setDaemon</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">run</span><span class="o">()</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="nc">Utils</span><span class="o">.</span><span class="n">tryOrStopSparkContext</span><span class="o">(</span><span class="n">sparkContext</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nc">LiveListenerBus</span><span class="o">.</span><span class="n">withinListenerThread</span><span class="o">.</span><span class="n">withValue</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">while</span> <span class="o">(</span><span class="kc">true</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">eventLock</span><span class="o">.</span><span class="n">acquire</span><span class="o">()</span>
+</span><span class='line'>        <span class="n">self</span><span class="o">.</span><span class="n">synchronized</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">processingEvent</span> <span class="k">=</span> <span class="kc">true</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>          <span class="k">val</span> <span class="n">event</span> <span class="k">=</span> <span class="n">eventQueue</span><span class="o">.</span><span class="n">poll</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">event</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="c1">// Get out of the while loop and shutdown the daemon thread</span>
+</span><span class='line'>            <span class="k">if</span> <span class="o">(!</span><span class="n">stopped</span><span class="o">.</span><span class="n">get</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>              <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalStateException</span><span class="o">(</span><span class="s">&quot;Polling `null` from eventQueue means&quot;</span> <span class="o">+</span>
+</span><span class='line'>                <span class="s">&quot; the listener bus has been stopped. So `stopped` must be true&quot;</span><span class="o">)</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>            <span class="k">return</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>          <span class="n">postToAll</span><span class="o">(</span><span class="n">event</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">self</span><span class="o">.</span><span class="n">synchronized</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">processingEvent</span> <span class="k">=</span> <span class="kc">false</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>为了保证生产者和消费者对消息队列的并发访问，在每次需要获取消息的时候,调用eventLock.acquire()来获取信号量, 信号量的值就是当前队列中所含有的事件数量。</p>
+
+<p>如果正常获取到事件,就调用postToAll将事件分发给所有listener, 继续下一次循环。</p>
+
+<p>如果获取到null值, 则有下面两种情况:</p>
+
+<ul>
+<li>整个application正常结束, 此时stopped值已经被设置为true。</li>
+<li>系统发生了错误, 立即终止运行。</li>
+</ul>
+
+
+<p><font color=red><b>消息的产生(生产者)</font></b> 通过在Spark运行时调用LiveListenerBus的post方法来添加。实现如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">post</span><span class="o">(</span><span class="n">event</span><span class="k">:</span> <span class="kt">SparkListenerEvent</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">stopped</span><span class="o">.</span><span class="n">get</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// Drop further events to make `listenerThread` exit ASAP</span>
+</span><span class='line'>    <span class="n">logError</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;$name has already stopped! Dropping event $event&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">return</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">eventAdded</span> <span class="k">=</span> <span class="n">eventQueue</span><span class="o">.</span><span class="n">offer</span><span class="o">(</span><span class="n">event</span><span class="o">)</span>  <span class="c1">// &lt;-- 这里将新来的事件添加到消息队列中</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">eventAdded</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">eventLock</span><span class="o">.</span><span class="n">release</span><span class="o">()</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">onDropEvent</span><span class="o">(</span><span class="n">event</span><span class="o">)</span>  <span class="c1">// &lt;-- 没有添加成功，则丢弃事件</span>
+</span><span class='line'>    <span class="n">droppedEventsCounter</span><span class="o">.</span><span class="n">incrementAndGet</span><span class="o">()</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">droppedEvents</span> <span class="k">=</span> <span class="n">droppedEventsCounter</span><span class="o">.</span><span class="n">get</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">droppedEvents</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// Don&#39;t log too frequently</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="n">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">lastReportTimestamp</span> <span class="o">&gt;=</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// There may be multiple threads trying to decrease droppedEventsCounter.</span>
+</span><span class='line'>      <span class="c1">// Use &quot;compareAndSet&quot; to make sure only one thread can win.</span>
+</span><span class='line'>      <span class="c1">// And if another thread is increasing droppedEventsCounter, &quot;compareAndSet&quot; will fail and</span>
+</span><span class='line'>      <span class="c1">// then that thread will update it.</span>
+</span><span class='line'>      <span class="k">if</span> <span class="o">(</span><span class="n">droppedEventsCounter</span><span class="o">.</span><span class="n">compareAndSet</span><span class="o">(</span><span class="n">droppedEvents</span><span class="o">,</span> <span class="mi">0</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">prevLastReportTimestamp</span> <span class="k">=</span> <span class="n">lastReportTimestamp</span>
+</span><span class='line'>        <span class="n">lastReportTimestamp</span> <span class="k">=</span> <span class="nc">System</span><span class="o">.</span><span class="n">currentTimeMillis</span><span class="o">()</span>
+</span><span class='line'>        <span class="n">logWarning</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Dropped $droppedEvents SparkListenerEvents since &quot;</span> <span class="o">+</span>
+</span><span class='line'>          <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Date</span><span class="o">(</span><span class="n">prevLastReportTimestamp</span><span class="o">))</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>每成功放入一个事件,就调用eventLock.release()来增加信号量额值，以供消费者线程来进行消费. 如果队列满了,就调用onDropEvent来处理。</p>
+
+<h2>消息队列建立/发送流程</h2>
+
+<p>在SparkContext中创建了LiveListenerBus类类型的成员变量listenerBus。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">// An asynchronous listener bus for Spark events</span>
+</span><span class='line'><span class="k">private</span><span class="o">[</span><span class="kt">spark</span><span class="o">]</span> <span class="k">val</span> <span class="n">listenerBus</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">LiveListenerBus</span><span class="o">(</span><span class="k">this</span><span class="o">)</span>
+</span><span class='line'><span class="n">随后创建各种listener</span><span class="err">，</span><span class="n">并注册到listenerBus中</span><span class="err">，</span><span class="n">通过调用listenerBus的start</span><span class="o">()</span><span class="n">方法启动消息分发流程</span><span class="err">。</span>
+</span><span class='line'><span class="k">private</span> <span class="k">def</span> <span class="n">setupAndStartListenerBus</span><span class="o">()</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">// Use reflection to instantiate listeners specified via `spark.extraListeners`</span>
+</span><span class='line'>  <span class="k">try</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">listenerClassNames</span><span class="k">:</span> <span class="kt">Seq</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=</span>
+</span><span class='line'>      <span class="n">conf</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;spark.extraListeners&quot;</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">).</span><span class="n">split</span><span class="o">(</span><span class="sc">&#39;,&#39;</span><span class="o">).</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">trim</span><span class="o">).</span><span class="n">filter</span><span class="o">(</span><span class="k">_</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="o">(</span><span class="n">className</span> <span class="k">&lt;-</span> <span class="n">listenerClassNames</span><span class="o">)</span> <span class="o">{</span>  <span class="c1">// &lt;-- 如果指定了额外的SparkListenr类，可通过反射机制实例化并注册到listenerBus</span>
+</span><span class='line'>      <span class="c1">// Use reflection to find the right constructor</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">constructors</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">val</span> <span class="n">listenerClass</span> <span class="k">=</span> <span class="nc">Utils</span><span class="o">.</span><span class="n">classForName</span><span class="o">(</span><span class="n">className</span><span class="o">)</span>
+</span><span class='line'>        <span class="n">listenerClass</span>
+</span><span class='line'>            <span class="o">.</span><span class="n">getConstructors</span>
+</span><span class='line'>            <span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Array</span><span class="o">[</span><span class="kt">Constructor</span><span class="o">[</span><span class="k">_</span> <span class="k">&lt;:</span> <span class="kt">SparkListenerInterface</span><span class="o">]]]</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">constructorTakingSparkConf</span> <span class="k">=</span> <span class="n">constructors</span><span class="o">.</span><span class="n">find</span> <span class="o">{</span> <span class="n">c</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="n">c</span><span class="o">.</span><span class="n">getParameterTypes</span><span class="o">.</span><span class="n">sameElements</span><span class="o">(</span><span class="nc">Array</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">SparkConf</span><span class="o">]))</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">lazy</span> <span class="k">val</span> <span class="n">zeroArgumentConstructor</span> <span class="k">=</span> <span class="n">constructors</span><span class="o">.</span><span class="n">find</span> <span class="o">{</span> <span class="n">c</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="n">c</span><span class="o">.</span><span class="n">getParameterTypes</span><span class="o">.</span><span class="n">isEmpty</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">listener</span><span class="k">:</span> <span class="kt">SparkListenerInterface</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">constructorTakingSparkConf</span><span class="o">.</span><span class="n">isDefined</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">constructorTakingSparkConf</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">newInstance</span><span class="o">(</span><span class="n">conf</span><span class="o">)</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">zeroArgumentConstructor</span><span class="o">.</span><span class="n">isDefined</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">zeroArgumentConstructor</span><span class="o">.</span><span class="n">get</span><span class="o">.</span><span class="n">newInstance</span><span class="o">()</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>          <span class="o">...</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>      <span class="n">listenerBus</span><span class="o">.</span><span class="n">addListener</span><span class="o">(</span><span class="n">listener</span><span class="o">)</span>
+</span><span class='line'>      <span class="n">logInfo</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Registered listener $className&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">catch</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">...</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">listenerBus</span><span class="o">.</span><span class="n">start</span><span class="o">()</span>
+</span><span class='line'>  <span class="nc">_listenerBusStarted</span> <span class="k">=</span> <span class="kc">true</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中，listenerBus.start() 实现如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">start</span><span class="o">()</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">started</span><span class="o">.</span><span class="n">compareAndSet</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span> <span class="kc">true</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">listenerThread</span><span class="o">.</span><span class="n">start</span><span class="o">()</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalStateException</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;$name already started!&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行过程中产生的事件会post到listenerBus中。</p>
+
+<p>当作业运行结束后会调用listenerBus.stop()来停止SparkListenerBus线程。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">stop</span><span class="o">()</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(!</span><span class="n">started</span><span class="o">.</span><span class="n">get</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalStateException</span><span class="o">(</span><span class="n">s</span><span class="s">&quot;Attempted to stop $name that has not yet started!&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">stopped</span><span class="o">.</span><span class="n">compareAndSet</span><span class="o">(</span><span class="kc">false</span><span class="o">,</span> <span class="kc">true</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// Call eventLock.release() so that listenerThread will poll `null` from `eventQueue` and know</span>
+</span><span class='line'>    <span class="c1">// `stop` is called.</span>
+</span><span class='line'>    <span class="n">eventLock</span><span class="o">.</span><span class="n">release</span><span class="o">()</span>
+</span><span class='line'>    <span class="n">listenerThread</span><span class="o">.</span><span class="n">join</span><span class="o">()</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// Keep quiet</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这里可以看到：</p>
+
+<p><b><font color=red>在stop函数中调用了eventLock.release()来增加信号量的值. 然而并未向消息队列中加入新的消息。</p>
+
+<p>这就导致在消费者线程listenerThread读取队列时会返回null值,进而达到结束listenerThread线程的目的。</font></b></p>
+
+<p>以上就是Spark Core中消息队列机制的整体工作流程。</p>
+
+<p><b>参考资料</b></p>
+
+<ol>
+<li>Spark 2.0 源码：<a href="https://github.com/apache/spark/tree/branch-2.0">https://github.com/apache/spark/tree/branch-2.0</a></li>
+<li>Spark消息队列机制源码学习Blog：<a href="http://blog.csdn.net/sivolin/article/details/47316099">http://blog.csdn.net/sivolin/article/details/47316099</a></li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Spark日志配置方法]]></title>
