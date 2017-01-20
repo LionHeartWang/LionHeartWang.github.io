@@ -3,7 +3,7 @@ layout: post
 title: "ZooKeeper安装使用指南"
 date: 2017-01-20 15:56:22 +0800
 comments: true
-categories: [大数据] 
+categories: [大数据, 技术资源] 
 ---
 ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务。
 
