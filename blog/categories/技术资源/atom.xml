@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/技术资源/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-01-20T16:00:42+08:00</updated>
+  <updated>2017-01-20T16:08:35+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,177 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[ZooKeeper安装使用指南]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan/"/>
+    <updated>2017-01-20T15:56:22+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan</id>
+    <content type="html"><![CDATA[<p>ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务。</p>
+
+<p>作为分布式应用提供一致性服务的软件，ZooKeeper 封装了易错的关键服务，提供简单高效、功能稳定接口给用户</p>
+
+<p>本文介绍 ZooKeeper 的配置方法和客户端使用方法。</p>
+
+<!--more-->
+
+
+<h2>ZooKeeper 安装</h2>
+
+<p>以ZooKeeper 3.4.8为例，下载 <a href="http://mirrors.hust.edu.cn/apache/zookeeper/zookeeper-3.4.8/">ZooKeeper 3.4.8</a>
+下载解压后配置conf/zoo.cfg，配置clientPort，dataDir等。
+示例配置：</p>
+
+<pre><code class="bash"># The number of milliseconds of each tick
+tickTime=2000
+# The number of ticks that the initial synchronization phase can take
+initLimit=10
+# The number of ticks that can pass between sending a request and getting an acknowledgement
+syncLimit=5
+# the directory where the snapshot is stored. do not use /tmp for storage, /tmp here is just example sakes.
+dataDir=/tmp/zookeeper
+# the port at which the clients will connect
+clientPort=2181
+</code></pre>
+
+<h2>ZooKeeper 使用</h2>
+
+<p>配置好Zk后需要先启动ZkServer，然后可以用Zk Client直接以命令行的方式操作Zk。</p>
+
+<h3>Server端</h3>
+
+<p>配置好后启动zk：</p>
+
+<pre><code class="bash">$sh bin/zkServer.sh start &gt; zookeeper.out
+</code></pre>
+
+<h3>Client端</h3>
+
+<p>ZooKeeper客户端的使用非常简单，启动：</p>
+
+<pre><code class="bash"># ip和端口根据启动情况修改
+$sh bin/zkCli.sh -server 127.0.0.1:2181
+</code></pre>
+
+<p>之后可以用ls、delete、get等命令查询或修改各ZK节点的值。命令帮助如下：</p>
+
+<pre><code>ZooKeeper -server host:port cmd args
+    connect host:port
+    get path [watch]
+    ls path [watch]
+    set path data [version]
+    rmr path
+    delquota [-n|-b] path
+    quit
+    printwatches on|off
+    create [-s] [-e] path data acl
+    stat path [watch]
+    close
+    ls2 path [watch]
+    history
+    listquota path
+    setAcl path acl
+    getAcl path
+    sync path
+    redo cmdno
+    addauth scheme auth
+    delete path [version]
+    setquota -n|-b val path
+</code></pre>
+
+<h2>ZooKeeper API</h2>
+
+<p>除了通过客户端操作ZooKeeper，还可以调用ZooKeeper提供的API操作ZooKeeper的节点。</p>
+
+<p>这里以ZooKeeper 3.4.5为例，介绍常用的几个Java API。</p>
+
+<h3>建立连接</h3>
+
+<p>在应用程序中使用Zk需要先创建ZooKeeper对象，后续的操作都是基于该对象进行的。</p>
+
+<pre><code class="java">public ZooKeeper(String connectString, int sessionTimeout, Watcher watcher) throws IOException  
+</code></pre>
+
+<p>参数说明：</p>
+
+<ul>
+<li>connectString： zookeeper server列表, 以逗号隔开。ZooKeeper对象初始化后, 将从列表中选择一个server, 并尝试建立连接。如果失败,则会从剩余项中选择并再次尝试建立连接。</li>
+<li>sessionTimeout：指定连接的超时时间.</li>
+<li>watcher： 事件回调接口。</li>
+</ul>
+
+
+<h3>创建/删除znode</h3>
+
+<p>ZooKeeper对象的create/delete方法用于创建/删除 znode。如果该node存在, 则返回该node的状态信息, 否则返回null。</p>
+
+<pre><code class="java">public String create(String path, byte[] data, List acl, CreateMode createMode); 
+public void delete(final String path, int version);  
+</code></pre>
+
+<p>参数说明：</p>
+
+<ul>
+<li>path： znode的路径。</li>
+<li>data：与znode关联的数据。</li>
+<li>acl：指定权限信息</li>
+<li>createMode：指定znode类型，按持久化节点与临时节点，以及自动编号节点与非自动编号节点两个维度划分，共4类。</li>
+<li>version：指定要更新的数据的版本, 如果version和真实的版本不同, 更新操作将失败.。指定version为-1则忽略版本检查。</li>
+</ul>
+
+
+<h3>获取子znode列表</h3>
+
+<p>ZooKeeper对象的getChildren方法用于获取子node列表。</p>
+
+<pre><code class="java">public List getChildren(String path, boolean watch); 
+</code></pre>
+
+<p>参数说明：</p>
+
+<ul>
+<li>path： znode的路径。</li>
+<li>watch参数用于指定是否监听path node的创建, 删除事件, 以及数据更新事件。</li>
+</ul>
+
+
+<h3>判断znode是否存在</h3>
+
+<p>ZooKeeper对象的exists方法用于判断指定znode是否存在。如果该node存在, 则返回该node的状态信息, 否则返回null。</p>
+
+<pre><code class="java">public Stat exists(String path, boolean watch);  
+</code></pre>
+
+<p>参数说明：</p>
+
+<ul>
+<li>path： znode的路径。</li>
+<li>watch：用于指定是否监听path node的创建, 删除事件, 以及数据更新事件。</li>
+</ul>
+
+
+<h3>获取/更新znode数据</h3>
+
+<p>ZooKeeper对象的getData/setData方法用于获取/更新 znode关联的数据。</p>
+
+<pre><code class="java">public byte[] getData(String path, boolean watch, Stat stat);  
+public Stat setData(final String path, byte data[], int version); 
+</code></pre>
+
+<p>参数说明：</p>
+
+<ul>
+<li>path： znode的路径。</li>
+<li>stat：传出参数, getData方法会将path node的状态信息设置到该参数中。</li>
+<li>data：与znode关联的数据。</li>
+<li>watch：用于指定是否监听path node的创建, 删除事件, 以及数据更新事件。</li>
+<li>version：指定要更新的数据的版本, 如果version和真实的版本不同, 更新操作将失败.。指定version为-1则忽略版本检查。</li>
+</ul>
+
+
+<p>更全的API介绍参考 ZooKeeper 3.4.5 API</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[免密码远程登录/拷贝方法]]></title>
@@ -310,120 +481,6 @@ mysql&gt;
 </code></pre>
 
 <p>配置环境变量将mysql-5.5.48-linux2.6-x86_64/bin目录添加到path，即可正常使用mysql命令。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用Octopress搭建Github博客]]></title>
-    <link href="http://lionheartwang.github.io/blog/2016/02/03/%E4%BD%BF%E7%94%A8Octopress%E6%90%AD%E5%BB%BAGitHub%E5%8D%9A%E5%AE%A2/"/>
-    <updated>2016-02-03T11:42:56+08:00</updated>
-    <id>http://lionheartwang.github.io/blog/2016/02/03/使用Octopress搭建GitHub博客</id>
-    <content type="html"><![CDATA[<p>本文介绍如何使用Octopress搭建Github博客。</p>
-
-<!--more-->
-
-
-<h2>Octopress安装与配置</h2>
-
-<h3>安装ruby</h3>
-
-<p>查看ruby版本</p>
-
-<pre><code>ruby --version  # 必须显示1.9.3
-</code></pre>
-
-<p>安装方法：</p>
-
-<pre><code>$curl -L https://get.rvm.io | bash -s stable --ruby
-$rvm install 1.9.3
-$rvm use 1.9.3
-$rvm rubygems latest
-</code></pre>
-
-<p>若有显示命名未找到，直接下载安装即可。</p>
-
-<h3>安装octopress</h3>
-
-<p>在安装octopress之前，确保已安装git。</p>
-
-<pre><code> $git clone git://github.com/imathis/octopress.git octopress
- $cd octopress
- $gem install bundler
- $bundle install
- $rake install
-</code></pre>
-
-<h2>建立Github主页</h2>
-
-<p>需要注册Github账户。登录后在GitHub上创建一个仓库。仓库名称：username.github.io</p>
-
-<h3>博客生成</h3>
-
-<p>博客的源码放到source分支下，并把生成的内容提交到master分支。
-在octopress目录下使用如下命令生成博客内容。</p>
-
-<pre><code>$rake generate //生成
-</code></pre>
-
-<h3>博客预览</h3>
-
-<p>可使用如下命令在本地预览生成效果。</p>
-
-<pre><code>$rake preview //预览
-</code></pre>
-
-<p>执行成功后可通过本地浏览器在 <a href="http://localhost:4000">http://localhost:4000</a> 查看到先前生成的博客内容。</p>
-
-<h3>博客发布</h3>
-
-<p>如果预览没有问题，想要发布博客到Github主页。
-首先执行如下命令：</p>
-
-<pre><code>$rake setup_github_pages
-</code></pre>
-
-<p>执行后要求输入仓库的url，可以在Github仓库内容页面找到项目的ssh或http URL链接。</p>
-
-<p>如：git@github.com:username/username.github.io.git</p>
-
-<p>直接复制粘贴该链接即可。</p>
-
-<p>上述操作设置了发布的目标位置为用户Github主页。</p>
-
-<pre><code>$rake deploy 
-$git add .
-$git commit -m "comment"
-$git push origin source
-</code></pre>
-
-<p>生成后的博客文件存放在_deploy目录下, 通过上述操作提交到Github博客项目。</p>
-
-<p>至此就能够在username.github.io上看到了博客内容了。</p>
-
-<h2>发布新文章</h2>
-
-<p>发布新文章时可使用如下命令：</p>
-
-<pre><code>$rake new_post["title"]
-</code></pre>
-
-<p>生成的新文章在source/_post/目录下，文件名构成为时间和标题的拼接。</p>
-
-<p>后续发布操作依然是执行</p>
-
-<pre><code>$rake generate
-$rake preview
-</code></pre>
-
-<p>此时可以预览文章，然后执行</p>
-
-<pre><code>$rake deploy 
-$git add .
-$git commit -m "comment"
-$git push origin source
-</code></pre>
-
-<p>此时在Github博客主页就能看到新发布的文章了。</p>
 ]]></content>
   </entry>
   
