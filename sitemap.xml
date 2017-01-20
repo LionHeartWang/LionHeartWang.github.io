@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://lionheartwang.github.io/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan/</loc>
+<lastmod>2017-01-20T15:56:22+08:00</lastmod>
+</url>
+<url>
 <loc>http://lionheartwang.github.io/blog/2016/11/28/spark-core-message-queue-mechanism/</loc>
 <lastmod>2016-11-28T14:31:03+08:00</lastmod>
 </url>
@@ -84,8 +88,5 @@
 </url>
 <url>
 <loc>http://lionheartwang.github.io/blog/categories/%25E5%2589%258D%25E7%25AB%25AF/</loc>
-</url>
-<url>
-<loc>http://lionheartwang.github.io/posts/2/</loc>
 </url>
 </urlset>
