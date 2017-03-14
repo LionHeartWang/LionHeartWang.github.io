@@ -104,12 +104,12 @@
 
 <p>查看ruby版本</p>
 
-<pre><code>ruby --version  # 必须显示1.9.3
+<pre><code class="bash">ruby --version  # 必须显示1.9.3
 </code></pre>
 
 <p>安装方法：</p>
 
-<pre><code>$curl -L https://get.rvm.io | bash -s stable --ruby
+<pre><code class="bash">$curl -L https://get.rvm.io | bash -s stable --ruby
 $rvm install 1.9.3
 $rvm use 1.9.3
 $rvm rubygems latest
@@ -121,7 +121,7 @@ $rvm rubygems latest
 
 <p>在安装octopress之前，确保已安装git。</p>
 
-<pre><code> $git clone git://github.com/imathis/octopress.git octopress
+<pre><code class="bash"> $git clone git://github.com/imathis/octopress.git octopress
  $cd octopress
  $gem install bundler
  $bundle install
@@ -137,14 +137,14 @@ $rvm rubygems latest
 <p>博客的源码放到source分支下，并把生成的内容提交到master分支。
 在octopress目录下使用如下命令生成博客内容。</p>
 
-<pre><code>$rake generate //生成
+<pre><code class="bash">$rake generate //生成
 </code></pre>
 
 <h3>博客预览</h3>
 
 <p>可使用如下命令在本地预览生成效果。</p>
 
-<pre><code>$rake preview //预览
+<pre><code class="bash">$rake preview //预览
 </code></pre>
 
 <p>执行成功后可通过本地浏览器在 <a href="http://localhost:4000">http://localhost:4000</a> 查看到先前生成的博客内容。</p>
@@ -154,7 +154,7 @@ $rvm rubygems latest
 <p>如果预览没有问题，想要发布博客到Github主页。
 首先执行如下命令：</p>
 
-<pre><code>$rake setup_github_pages
+<pre><code class="bash">$rake setup_github_pages
 </code></pre>
 
 <p>执行后要求输入仓库的url，可以在Github仓库内容页面找到项目的ssh或http URL链接。</p>
@@ -165,7 +165,7 @@ $rvm rubygems latest
 
 <p>上述操作设置了发布的目标位置为用户Github主页。</p>
 
-<pre><code>$rake deploy 
+<pre><code class="bash">$rake deploy 
 $git add .
 $git commit -m "comment"
 $git push origin source
@@ -179,26 +179,78 @@ $git push origin source
 
 <p>发布新文章时可使用如下命令：</p>
 
-<pre><code>$rake new_post["title"]
+<pre><code class="bash">$rake new_post["title"]
 </code></pre>
 
 <p>生成的新文章在source/_post/目录下，文件名构成为时间和标题的拼接。</p>
 
 <p>后续发布操作依然是执行</p>
 
-<pre><code>$rake generate
+<pre><code class="bash">$rake generate
 $rake preview
 </code></pre>
 
 <p>此时可以预览文章，然后执行</p>
 
-<pre><code>$rake deploy 
+<pre><code class="bash">$rake deploy 
 $git add .
 $git commit -m "comment"
 $git push origin source
 </code></pre>
 
 <p>此时在Github博客主页就能看到新发布的文章了。</p>
+
+<h2>迁移博客</h2>
+
+<h3>重新下载博客源码</h3>
+
+<p>如果更换电脑，那么需要重新从github上下载博客的源码，执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$git</span> clone -b <span class="nb">source </span>git@github.com:username/username.github.io.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下载到本地后进入项目目录，然后执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$git</span> clone git@github.com:username/username.github.io.git _deploy
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>重新下载依赖</h3>
+
+<p>需要重新安装gem，然后执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$gem</span> install bundler
+</span><span class='line'><span class="nv">$bundle</span> install
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意：</p>
+
+<ul>
+<li>由于以前已经建立好工程，因此<b><font color=red>无需运行rake install</font></b>。</li>
+<li>如果运行反而会冲掉之前设置好的theme。</li>
+</ul>
+
+
+<h3>重新生成博文</h3>
+
+<p>执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> generate
+</span><span class='line'><span class="nv">$rake</span> preview
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在本地4000端口可以看到博客预览，同Github博客主页的应当是相同的。</p>
+
+<p>后续就可以在新电脑上更新发布博文了。</p>
 </div>
   <script src="/javascripts/blogDirectory.js" type="text/javascript"></script>
 
@@ -252,7 +304,7 @@ $git push origin source
     <section id="recent_posts">
   <h1>Recent Posts</h1>
   
-	  <p><a href="/blog/2017/03/14/intall-thrift-on-mac/">Intall-thrift-on-mac</a></p>
+	  <p><a href="/blog/2017/03/14/intall-thrift-on-mac/">Mac安装Thrift方法</a></p>
   
 	  <p><a href="/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan/">ZooKeeper安装使用指南</a></p>
   
@@ -270,7 +322,7 @@ $git push origin source
 	<p><a href='/blog/categories/技术资源'>技术资源 <span>(7)</span></a></p>
   <!--ul class="arc-list">
     
-		<li><a href="/blog/2017/03/14/intall-thrift-on-mac/">intall-thrift-on-mac</a> 14/03/2017</li>
+		<li><a href="/blog/2017/03/14/intall-thrift-on-mac/">Mac安装Thrift方法</a> 14/03/2017</li>
     
 		<li><a href="/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan/">ZooKeeper安装使用指南</a> 20/01/2017</li>
     

@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Intall-thrift-on-mac - Workspace of LionHeart</title>
+  <title>Mac安装Thrift方法 - Workspace of LionHeart</title>
   <meta name="author" content="Wang Yiguang">
 
   
-  <meta name="description" content="Intall-thrift-on-mac Mar 14th, 2017 5:25 pm 导航[-] 本文介绍如何在新版本Mac上安装thrift 0.9.3. mac安装thrift方法 新版mac使用brew默认安装的是最新版本的thrift 0.10.1 但现有项目主要依赖0.9.x， &hellip;">
+  <meta name="description" content="Mac安装Thrift方法 Mar 14th, 2017 5:25 pm 导航[-] 新版mac使用brew默认安装的是最新版本的thrift 0.10.1 但现有项目主要依赖0.9.x，因此需要在mac上手动安装thrift。 本文介绍如何在新版本Mac上安装thrift 0.9.3. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,7 +71,7 @@
   
   <header>
     
-      <h1 class="entry-title">Intall-thrift-on-mac</h1>
+      <h1 class="entry-title">Mac安装Thrift方法</h1>
     
     
       <p class="meta">
@@ -93,16 +93,14 @@
   <div class="anchorContent" id="anchorContent"> </div>
 </div>
 
-  <div class="entry-content"><p>本文介绍如何在新版本Mac上安装thrift 0.9.3.</p>
+  <div class="entry-content"><p>新版mac使用brew默认安装的是最新版本的thrift 0.10.1</p>
+
+<p>但现有项目主要依赖0.9.x，因此需要在mac上手动安装thrift。</p>
+
+<p>本文介绍如何在新版本Mac上安装thrift 0.9.3.</p>
 
 <!--more-->
 
-
-<h1>mac安装thrift方法</h1>
-
-<p>新版mac使用brew默认安装的是最新版本的thrift 0.10.1</p>
-
-<p>但现有项目主要依赖0.9.x，因此需要在mac上手动安装thrift。</p>
 
 <h2>安装依赖</h2>
 
@@ -125,29 +123,47 @@
 
 <p>以0.9.3为例：</p>
 
-<blockquote><p>wget <a href="http://archive.apache.org/dist/thrift/0.9.3/thrift-0.9.3.tar.gz">http://archive.apache.org/dist/thrift/0.9.3/thrift-0.9.3.tar.gz</a></p></blockquote>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$wget</span> http://archive.apache.org/dist/thrift/0.9.3/thrift-0.9.3.tar.gz
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>下载后解压：</p>
 
-<blockquote><p>tar zxvf thrift-0.9.3.tar.gz</p></blockquote>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$tar</span> zxvf thrift-0.9.3.tar.gz
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>编译安装thrift</h2>
 
 <p>运行configure进行配置，注意这里指定了前面记下的openssl的路径：</p>
 
-<blockquote><p>./configure &ndash;with-openssl=/usr/local/opt/openssl &ndash;without-perl &ndash;without-php</p></blockquote>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$.</span>/configure --with-openssl<span class="o">=</span>/usr/local/opt/openssl --without-perl --without-php
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>编译：</p>
 
-<blockquote><p>./make</p></blockquote>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$.</span>/make
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>安装：</p>
 
-<blockquote><p>./make install</p></blockquote>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$.</span>/make install
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>安装后运行：</p>
 
-<blockquote><p>thrift &ndash;version</p></blockquote>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$thrift</span> --version
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>输出：Thrift version 0.9.3</p>
 
@@ -205,7 +221,7 @@
     <section id="recent_posts">
   <h1>Recent Posts</h1>
   
-	  <p><a href="/blog/2017/03/14/intall-thrift-on-mac/">Intall-thrift-on-mac</a></p>
+	  <p><a href="/blog/2017/03/14/intall-thrift-on-mac/">Mac安装Thrift方法</a></p>
   
 	  <p><a href="/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan/">ZooKeeper安装使用指南</a></p>
   
@@ -223,7 +239,7 @@
 	<p><a href='/blog/categories/技术资源'>技术资源 <span>(7)</span></a></p>
   <!--ul class="arc-list">
     
-		<li><a href="/blog/2017/03/14/intall-thrift-on-mac/">intall-thrift-on-mac</a> 14/03/2017</li>
+		<li><a href="/blog/2017/03/14/intall-thrift-on-mac/">Mac安装Thrift方法</a> 14/03/2017</li>
     
 		<li><a href="/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan/">ZooKeeper安装使用指南</a> 20/01/2017</li>
     

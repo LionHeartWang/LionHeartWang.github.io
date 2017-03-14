@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/技术资源/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-03-14T17:28:58+08:00</updated>
+  <updated>2017-03-14T17:53:46+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -14,20 +14,18 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Intall-thrift-on-mac]]></title>
+    <title type="html"><![CDATA[Mac安装Thrift方法]]></title>
     <link href="http://lionheartwang.github.io/blog/2017/03/14/intall-thrift-on-mac/"/>
     <updated>2017-03-14T17:25:31+08:00</updated>
     <id>http://lionheartwang.github.io/blog/2017/03/14/intall-thrift-on-mac</id>
-    <content type="html"><![CDATA[<p>本文介绍如何在新版本Mac上安装thrift 0.9.3.</p>
+    <content type="html"><![CDATA[<p>新版mac使用brew默认安装的是最新版本的thrift 0.10.1</p>
+
+<p>但现有项目主要依赖0.9.x，因此需要在mac上手动安装thrift。</p>
+
+<p>本文介绍如何在新版本Mac上安装thrift 0.9.3.</p>
 
 <!--more-->
 
-
-<h1>mac安装thrift方法</h1>
-
-<p>新版mac使用brew默认安装的是最新版本的thrift 0.10.1</p>
-
-<p>但现有项目主要依赖0.9.x，因此需要在mac上手动安装thrift。</p>
 
 <h2>安装依赖</h2>
 
@@ -50,29 +48,35 @@
 
 <p>以0.9.3为例：</p>
 
-<blockquote><p>wget <a href="http://archive.apache.org/dist/thrift/0.9.3/thrift-0.9.3.tar.gz">http://archive.apache.org/dist/thrift/0.9.3/thrift-0.9.3.tar.gz</a></p></blockquote>
+<pre><code class="bash">$wget http://archive.apache.org/dist/thrift/0.9.3/thrift-0.9.3.tar.gz
+</code></pre>
 
 <p>下载后解压：</p>
 
-<blockquote><p>tar zxvf thrift-0.9.3.tar.gz</p></blockquote>
+<pre><code class="bash">$tar zxvf thrift-0.9.3.tar.gz
+</code></pre>
 
 <h2>编译安装thrift</h2>
 
 <p>运行configure进行配置，注意这里指定了前面记下的openssl的路径：</p>
 
-<blockquote><p>./configure &ndash;with-openssl=/usr/local/opt/openssl &ndash;without-perl &ndash;without-php</p></blockquote>
+<pre><code class="bash">$./configure --with-openssl=/usr/local/opt/openssl --without-perl --without-php
+</code></pre>
 
 <p>编译：</p>
 
-<blockquote><p>./make</p></blockquote>
+<pre><code class="bash">$./make
+</code></pre>
 
 <p>安装：</p>
 
-<blockquote><p>./make install</p></blockquote>
+<pre><code class="bash">$./make install
+</code></pre>
 
 <p>安装后运行：</p>
 
-<blockquote><p>thrift &ndash;version</p></blockquote>
+<pre><code class="bash">$thrift --version
+</code></pre>
 
 <p>输出：Thrift version 0.9.3</p>
 
