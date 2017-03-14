@@ -9,7 +9,8 @@
   <meta name="author" content="Wang Yiguang">
 
   
-  <meta name="description" content="使用Octopress搭建Github博客 Feb 3rd, 2016 11:42 am 导航[-] 本文介绍如何使用Octopress搭建Github博客。 Octopress安装与配置 安装ruby 查看ruby版本 ruby --version # 必须显示1.9.3 安装方法： $ &hellip;">
+  <meta name="description" content="使用Octopress搭建Github博客 Feb 3rd, 2016 11:42 am 导航[-] 本文介绍如何使用Octopress搭建Github博客。 Octopress安装与配置 安装ruby 查看ruby版本 1
+ruby --version # 必须显示1.9.3 安装方法： 1 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -104,16 +105,23 @@
 
 <p>查看ruby版本</p>
 
-<pre><code class="bash">ruby --version  # 必须显示1.9.3
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ruby --version  <span class="c"># 必须显示1.9.3</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>安装方法：</p>
 
-<pre><code class="bash">$curl -L https://get.rvm.io | bash -s stable --ruby
-$rvm install 1.9.3
-$rvm use 1.9.3
-$rvm rubygems latest
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$curl</span> -L https://get.rvm.io <span class="p">|</span> bash -s stable --ruby
+</span><span class='line'><span class="nv">$rvm</span> install 1.9.3
+</span><span class='line'><span class="nv">$rvm</span> use 1.9.3
+</span><span class='line'><span class="nv">$rvm</span> rubygems latest
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>若有显示命名未找到，直接下载安装即可。</p>
 
@@ -121,12 +129,18 @@ $rvm rubygems latest
 
 <p>在安装octopress之前，确保已安装git。</p>
 
-<pre><code class="bash"> $git clone git://github.com/imathis/octopress.git octopress
- $cd octopress
- $gem install bundler
- $bundle install
- $rake install
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="nv">$git</span> clone git://github.com/imathis/octopress.git octopress
+</span><span class='line'> <span class="nv">$cd</span> octopress
+</span><span class='line'> <span class="nv">$gem</span> install bundler
+</span><span class='line'> <span class="nv">$bundle</span> install
+</span><span class='line'> <span class="nv">$rake</span> install
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>建立Github主页</h2>
 
@@ -137,15 +151,19 @@ $rvm rubygems latest
 <p>博客的源码放到source分支下，并把生成的内容提交到master分支。
 在octopress目录下使用如下命令生成博客内容。</p>
 
-<pre><code class="bash">$rake generate //生成
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> generate //生成
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h3>博客预览</h3>
 
 <p>可使用如下命令在本地预览生成效果。</p>
 
-<pre><code class="bash">$rake preview //预览
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> preview //预览
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>执行成功后可通过本地浏览器在 <a href="http://localhost:4000">http://localhost:4000</a> 查看到先前生成的博客内容。</p>
 
@@ -154,8 +172,10 @@ $rvm rubygems latest
 <p>如果预览没有问题，想要发布博客到Github主页。
 首先执行如下命令：</p>
 
-<pre><code class="bash">$rake setup_github_pages
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> setup_github_pages
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>执行后要求输入仓库的url，可以在Github仓库内容页面找到项目的ssh或http URL链接。</p>
 
@@ -165,11 +185,16 @@ $rvm rubygems latest
 
 <p>上述操作设置了发布的目标位置为用户Github主页。</p>
 
-<pre><code class="bash">$rake deploy 
-$git add .
-$git commit -m "comment"
-$git push origin source
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> deploy
+</span><span class='line'><span class="nv">$git</span> add .
+</span><span class='line'><span class="nv">$git</span> commit -m <span class="s2">&quot;comment&quot;</span>
+</span><span class='line'><span class="nv">$git</span> push origin <span class="nb">source</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>生成后的博客文件存放在_deploy目录下, 通过上述操作提交到Github博客项目。</p>
 
@@ -179,32 +204,44 @@ $git push origin source
 
 <p>发布新文章时可使用如下命令：</p>
 
-<pre><code class="bash">$rake new_post["title"]
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> new_post<span class="o">[</span><span class="s2">&quot;title&quot;</span><span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>生成的新文章在source/_post/目录下，文件名构成为时间和标题的拼接。</p>
 
 <p>后续发布操作依然是执行</p>
 
-<pre><code class="bash">$rake generate
-$rake preview
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> generate
+</span><span class='line'><span class="nv">$rake</span> preview
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>此时可以预览文章，然后执行</p>
 
-<pre><code class="bash">$rake deploy 
-$git add .
-$git commit -m "comment"
-$git push origin source
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> deploy
+</span><span class='line'><span class="nv">$git</span> add .
+</span><span class='line'><span class="nv">$git</span> commit -m <span class="s2">&quot;comment&quot;</span>
+</span><span class='line'><span class="nv">$git</span> push origin <span class="nb">source</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>此时在Github博客主页就能看到新发布的文章了。</p>
 
 <h2>迁移博客</h2>
 
+<p>如果更换电脑，那么需要重新从github上下载博客的源码, 并重新下载依赖。</p>
+
 <h3>重新下载博客源码</h3>
 
-<p>如果更换电脑，那么需要重新从github上下载博客的源码，执行：</p>
+<p>首先重新从github上下载博客的源码，执行：</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$git</span> clone -b <span class="nb">source </span>git@github.com:username/username.github.io.git
