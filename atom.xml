@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-02-21T19:49:44+08:00</updated>
+  <updated>2017-03-14T17:28:58+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,73 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Intall-thrift-on-mac]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/03/14/intall-thrift-on-mac/"/>
+    <updated>2017-03-14T17:25:31+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/03/14/intall-thrift-on-mac</id>
+    <content type="html"><![CDATA[<p>本文介绍如何在新版本Mac上安装thrift 0.9.3.</p>
+
+<!--more-->
+
+
+<h1>mac安装thrift方法</h1>
+
+<p>新版mac使用brew默认安装的是最新版本的thrift 0.10.1</p>
+
+<p>但现有项目主要依赖0.9.x，因此需要在mac上手动安装thrift。</p>
+
+<h2>安装依赖</h2>
+
+<p>确保安装了如下依赖：</p>
+
+<ul>
+<li>openssl</li>
+<li>libevent</li>
+<li>bison 版本> 2.5</li>
+</ul>
+
+
+<p>注意：</p>
+
+<p>mac高版本安装openssl之后可能提示openssl为keg-only的版本</p>
+
+<p>需要记下其安装目录，默认为/usr/local/opt/openssl.</p>
+
+<h2>下载thrift</h2>
+
+<p>以0.9.3为例：</p>
+
+<blockquote><p>wget <a href="http://archive.apache.org/dist/thrift/0.9.3/thrift-0.9.3.tar.gz">http://archive.apache.org/dist/thrift/0.9.3/thrift-0.9.3.tar.gz</a></p></blockquote>
+
+<p>下载后解压：</p>
+
+<blockquote><p>tar zxvf thrift-0.9.3.tar.gz</p></blockquote>
+
+<h2>编译安装thrift</h2>
+
+<p>运行configure进行配置，注意这里指定了前面记下的openssl的路径：</p>
+
+<blockquote><p>./configure &ndash;with-openssl=/usr/local/opt/openssl &ndash;without-perl &ndash;without-php</p></blockquote>
+
+<p>编译：</p>
+
+<blockquote><p>./make</p></blockquote>
+
+<p>安装：</p>
+
+<blockquote><p>./make install</p></blockquote>
+
+<p>安装后运行：</p>
+
+<blockquote><p>thrift &ndash;version</p></blockquote>
+
+<p>输出：Thrift version 0.9.3</p>
+
+<p>表明<font color=green><b>安装成功</b></font>。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ZooKeeper安装使用指南]]></title>

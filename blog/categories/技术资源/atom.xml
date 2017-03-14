@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/技术资源/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-02-21T19:49:44+08:00</updated>
+  <updated>2017-03-14T17:28:58+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,73 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Intall-thrift-on-mac]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/03/14/intall-thrift-on-mac/"/>
+    <updated>2017-03-14T17:25:31+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/03/14/intall-thrift-on-mac</id>
+    <content type="html"><![CDATA[<p>本文介绍如何在新版本Mac上安装thrift 0.9.3.</p>
+
+<!--more-->
+
+
+<h1>mac安装thrift方法</h1>
+
+<p>新版mac使用brew默认安装的是最新版本的thrift 0.10.1</p>
+
+<p>但现有项目主要依赖0.9.x，因此需要在mac上手动安装thrift。</p>
+
+<h2>安装依赖</h2>
+
+<p>确保安装了如下依赖：</p>
+
+<ul>
+<li>openssl</li>
+<li>libevent</li>
+<li>bison 版本> 2.5</li>
+</ul>
+
+
+<p>注意：</p>
+
+<p>mac高版本安装openssl之后可能提示openssl为keg-only的版本</p>
+
+<p>需要记下其安装目录，默认为/usr/local/opt/openssl.</p>
+
+<h2>下载thrift</h2>
+
+<p>以0.9.3为例：</p>
+
+<blockquote><p>wget <a href="http://archive.apache.org/dist/thrift/0.9.3/thrift-0.9.3.tar.gz">http://archive.apache.org/dist/thrift/0.9.3/thrift-0.9.3.tar.gz</a></p></blockquote>
+
+<p>下载后解压：</p>
+
+<blockquote><p>tar zxvf thrift-0.9.3.tar.gz</p></blockquote>
+
+<h2>编译安装thrift</h2>
+
+<p>运行configure进行配置，注意这里指定了前面记下的openssl的路径：</p>
+
+<blockquote><p>./configure &ndash;with-openssl=/usr/local/opt/openssl &ndash;without-perl &ndash;without-php</p></blockquote>
+
+<p>编译：</p>
+
+<blockquote><p>./make</p></blockquote>
+
+<p>安装：</p>
+
+<blockquote><p>./make install</p></blockquote>
+
+<p>安装后运行：</p>
+
+<blockquote><p>thrift &ndash;version</p></blockquote>
+
+<p>输出：Thrift version 0.9.3</p>
+
+<p>表明<font color=green><b>安装成功</b></font>。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ZooKeeper安装使用指南]]></title>
@@ -408,79 +475,6 @@ unset LS_COLORS
 <p><img src="/images/blog/01-color.png"></p>
 
 <p>实际使用根据需要配置即可。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[非Root账户快速安装mySQL]]></title>
-    <link href="http://lionheartwang.github.io/blog/2016/04/07/fei-rootzhang-hu-kuai-su-an-zhuang-mysql/"/>
-    <updated>2016-04-07T21:37:37+08:00</updated>
-    <id>http://lionheartwang.github.io/blog/2016/04/07/fei-rootzhang-hu-kuai-su-an-zhuang-mysql</id>
-    <content type="html"><![CDATA[<p>生产环境中尝尝需要使用mySQL，但线上机器往往工作在非root账户下，没有root密码也不能使用sudo。</p>
-
-<p>本文介绍非Root账户如何快速安装mySQL。</p>
-
-<!--more-->
-
-
-<h2>下载安装MYSQL</h2>
-
-<p>从官网下载mySQL二进制包： mySQL 5.5.48
-下载后解压进入目录</p>
-
-<pre><code>$tar zxvf mysql-5.5.48-linux2.6-x86_64.tar.gz
-$cd mysql-5.5.48-linux2.6-x86_64
-</code></pre>
-
-<p>执行</p>
-
-<pre><code>$./scripts/mysql_install_db --defaults-file=/home/wyg/work/mysql/my.cnf \
-  --user=wyg --basedir=/home/wyg/work/mysql/mysql-5.5.48-linux2.6-x86_64 \
-  --datadir=/home/wyg/work/mysql/sql_data --socket=/tmp/mysql.sock
-</code></pre>
-
-<h2>配置MYSQL</h2>
-
-<p>创建配置文件my.cnf如下</p>
-
-<pre><code>[client]
-password       = your_password
-port            = 3306
-socket = /tmp/mysql.sock
-[server]
-user = wyg
-basedir = /home/wyg/work/mysql/mysql-5.5.48-linux2.6-x86_64
-datadir = /home/wyg/work/mysql/sql_data
-socket = /tmp/mysql.sock
-port = 3306
-</code></pre>
-
-<h2>启动MYSQL</h2>
-
-<p>执行如下命令启动mysql服务</p>
-
-<pre><code>$./mysqld --defaults-file=/home/wyg/work/mysql/my.cnf &amp;
-</code></pre>
-
-<p>随后执行mysq命令</p>
-
-<pre><code>$mysql
-</code></pre>
-
-<p>如果进入mysql客户端，则安装成功。</p>
-
-<pre><code>Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 4
-Server version: 5.5.48 MySQL Community Server (GPL)
-Copyright (c) 2000, 2016, Oracle and/or its affiliates. All rights reserved.
-Oracle is a registered trademark of Oracle Corporation and/or its
-affiliates. Other names may be trademarks of their respective
-owners.
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-mysql&gt;
-</code></pre>
-
-<p>配置环境变量将mysql-5.5.48-linux2.6-x86_64/bin目录添加到path，即可正常使用mysql命令。</p>
 ]]></content>
   </entry>
   
