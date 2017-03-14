@@ -15,7 +15,7 @@ categories: 技术资源
 查看ruby版本
 
 ```bash
-ruby --version  # 必须显示1.9.3
+$ruby --version  # 必须显示1.9.3
 ```
 
 安装方法：
