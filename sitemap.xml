@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://lionheartwang.github.io/blog/2017/04/17/remote-debug-via-intelij/</loc>
+<lastmod>2017-04-17T18:50:33+08:00</lastmod>
+</url>
+<url>
 <loc>http://lionheartwang.github.io/blog/2017/03/14/intall-thrift-on-mac/</loc>
 <lastmod>2017-03-14T17:25:31+08:00</lastmod>
 </url>

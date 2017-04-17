@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-03-25T00:21:09+08:00</updated>
+  <updated>2017-04-17T19:02:56+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,55 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用InteliJ远程调试程序]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/04/17/remote-debug-via-intelij/"/>
+    <updated>2017-04-17T18:50:33+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/04/17/remote-debug-via-intelij</id>
+    <content type="html"><![CDATA[<p>本文介绍如何使用InteliJ远程调试Java/Scala程序。</p>
+
+<!--more-->
+
+
+<h2>以调试模式启动程序</h2>
+
+<p>JVM添加如下启动参数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">JAVA_DEBUG_OPTS</span><span class="o">=</span><span class="s2">&quot;-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=&lt;debugPort&gt;&quot;</span>
+</span><span class='line'>java <span class="nv">$JAVA_DEBUG_OPTS</span> &lt;className&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中：</p>
+
+<ul>
+<li>debugPort为调试服务端口，供InteliJ调试器连接，后面会用到。</li>
+<li>className为待执行的程序类。</li>
+</ul>
+
+
+<p>启动后会提示如下信息：</p>
+
+<blockquote><p>Listening for transport dt_socket at address: xxxx</p></blockquote>
+
+<h2>调试器远程连接</h2>
+
+<p>在InteliJ菜单选择<code>Run</code> -> <code>Edit Configuration</code>，进入运行配置界面。</p>
+
+<p>选择<code>+</code>添加一项新的配置，内容如下图所示：</p>
+
+<p><img src="http://lionheartwang.github.io/images/blog/04-remoteDebug01.png"></p>
+
+<p>填好配置名称，IP、端口即可。IP、端口要和之前远程启动的程序一致。</p>
+
+<p>然后就可以在源码中设置断点，在InteliJ中进行调试了。</p>
+
+<p><img src="http://lionheartwang.github.io/images/blog/05-remoteDebug02.png"></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Mac安装Thrift方法]]></title>

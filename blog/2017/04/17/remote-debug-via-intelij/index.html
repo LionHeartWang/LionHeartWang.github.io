@@ -5,11 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>大数据 - Workspace of LionHeart</title>
+  <title>使用InteliJ远程调试程序 - Workspace of LionHeart</title>
   <meta name="author" content="Wang Yiguang">
 
   
-  <meta name="description" content="Category: 大数据">
+  <meta name="description" content="使用InteliJ远程调试程序 Apr 17th, 2017 6:50 pm 导航[-] 本文介绍如何使用InteliJ远程调试Java/Scala程序。 以调试模式启动程序 JVM添加如下启动参数： 1
+2
+JAVA_DEBUG_OPTS=&quot;-Xdebug -Xrunjdwp: &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://lionheartwang.github.io/blog/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">
+  <link rel="canonical" href="http://lionheartwang.github.io/blog/2017/04/17/remote-debug-via-intelij/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Workspace of LionHeart" type="application/atom+xml">
@@ -67,80 +69,117 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">大数据</h1>
+    
+      <h1 class="entry-title">使用InteliJ远程调试程序</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-04-17T18:50:33+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:50 pm</span></time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
-
-  
-  <h2>2017</h2>
-
-<article>
-  
-<h1><a href="/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan/">ZooKeeper安装使用指南</a></h1>
-<time datetime="2017-01-20T15:56:22+08:00" pubdate><span class='month'>Jan</span> <span class='day'>20</span> <span class='year'>2017</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/大数据/'>大数据</a>, <a class='category' href='/blog/categories/技术资源/'>技术资源</a></span>
-</footer>
-
-
-</article>
-
-
-
-  
-  <h2>2016</h2>
-
-<article>
-  
-<h1><a href="/blog/2016/11/28/spark-core-message-queue-mechanism/">Spark Core 消息队列机制</a></h1>
-<time datetime="2016-11-28T14:31:03+08:00" pubdate><span class='month'>Nov</span> <span class='day'>28</span> <span class='year'>2016</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/spark/'>spark</a>, <a class='category' href='/blog/categories/大数据/'>大数据</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2016/10/19/sparkri-zhi-pei-zhi-fang-fa/">Spark日志配置方法</a></h1>
-<time datetime="2016-10-19T19:13:38+08:00" pubdate><span class='month'>Oct</span> <span class='day'>19</span> <span class='year'>2016</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/spark/'>spark</a>, <a class='category' href='/blog/categories/大数据/'>大数据</a></span>
-</footer>
-
-
-</article>
-
-
-
-<article>
-  
-<h1><a href="/blog/2016/08/24/spark-historyserver-configuration/">Spark HistoryServer 配置和使用方法</a></h1>
-<time datetime="2016-08-24T17:17:58+08:00" pubdate><span class='month'>Aug</span> <span class='day'>24</span> <span class='year'>2016</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/spark/'>spark</a>, <a class='category' href='/blog/categories/大数据/'>大数据</a></span>
-</footer>
-
-
-</article>
-
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<div class="blogAnchor">
+  <p id="anchorContentToggle" title="收起">导航[-]</p>
+  <div class="anchorContent" id="anchorContent"> </div>
 </div>
 
+  <div class="entry-content"><p>本文介绍如何使用InteliJ远程调试Java/Scala程序。</p>
+
+<!--more-->
+
+
+<h2>以调试模式启动程序</h2>
+
+<p>JVM添加如下启动参数：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">JAVA_DEBUG_OPTS</span><span class="o">=</span><span class="s2">&quot;-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=&lt;debugPort&gt;&quot;</span>
+</span><span class='line'>java <span class="nv">$JAVA_DEBUG_OPTS</span> &lt;className&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中：</p>
+
+<ul>
+<li>debugPort为调试服务端口，供InteliJ调试器连接，后面会用到。</li>
+<li>className为待执行的程序类。</li>
+</ul>
+
+
+<p>启动后会提示如下信息：</p>
+
+<blockquote><p>Listening for transport dt_socket at address: xxxx</p></blockquote>
+
+<h2>调试器远程连接</h2>
+
+<p>在InteliJ菜单选择<code>Run</code> -> <code>Edit Configuration</code>，进入运行配置界面。</p>
+
+<p>选择<code>+</code>添加一项新的配置，内容如下图所示：</p>
+
+<p><img src="/images/blog/04-remoteDebug01.png"></p>
+
+<p>填好配置名称，IP、端口即可。IP、端口要和之前远程启动的程序一致。</p>
+
+<p>然后就可以在源码中设置断点，在InteliJ中进行调试了。</p>
+
+<p><img src="/images/blog/05-remoteDebug02.png"></p>
+</div>
+  <script src="/javascripts/blogDirectory.js" type="text/javascript"></script>
+
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Wang Yiguang</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-04-17T18:50:33+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:50 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/技术资源/'>技术资源</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2017/04/17/remote-debug-via-intelij/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2017/04/17/remote-debug-via-intelij/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/03/14/intall-thrift-on-mac/" title="Previous Post: Mac安装Thrift方法">&laquo; Mac安装Thrift方法</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
 </div>

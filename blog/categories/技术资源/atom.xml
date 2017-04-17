@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/技术资源/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-03-25T00:21:09+08:00</updated>
+  <updated>2017-04-17T19:02:56+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,52 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用InteliJ远程调试程序]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/04/17/remote-debug-via-intelij/"/>
+    <updated>2017-04-17T18:50:33+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/04/17/remote-debug-via-intelij</id>
+    <content type="html"><![CDATA[<p>本文介绍如何使用InteliJ远程调试Java/Scala程序。</p>
+
+<!--more-->
+
+
+<h2>以调试模式启动程序</h2>
+
+<p>JVM添加如下启动参数：</p>
+
+<pre><code class="bash">JAVA_DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=&lt;debugPort&gt;"
+java $JAVA_DEBUG_OPTS &lt;className&gt;
+</code></pre>
+
+<p>其中：</p>
+
+<ul>
+<li>debugPort为调试服务端口，供InteliJ调试器连接，后面会用到。</li>
+<li>className为待执行的程序类。</li>
+</ul>
+
+
+<p>启动后会提示如下信息：</p>
+
+<blockquote><p>Listening for transport dt_socket at address: xxxx</p></blockquote>
+
+<h2>调试器远程连接</h2>
+
+<p>在InteliJ菜单选择<code>Run</code> -> <code>Edit Configuration</code>，进入运行配置界面。</p>
+
+<p>选择<code>+</code>添加一项新的配置，内容如下图所示：</p>
+
+<p><img src="/images/blog/04-remoteDebug01.png"></p>
+
+<p>填好配置名称，IP、端口即可。IP、端口要和之前远程启动的程序一致。</p>
+
+<p>然后就可以在源码中设置断点，在InteliJ中进行调试了。</p>
+
+<p><img src="/images/blog/05-remoteDebug02.png"></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Mac安装Thrift方法]]></title>
@@ -408,77 +454,6 @@ user 登录用户名
 </code></pre>
 
 <p>这样就完成了mysql数据从老机器到新机器的迁移。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Linux Shell配色指南]]></title>
-    <link href="http://lionheartwang.github.io/blog/2016/05/27/linux-shellpei-se-zhi-nan/"/>
-    <updated>2016-05-27T16:52:57+08:00</updated>
-    <id>http://lionheartwang.github.io/blog/2016/05/27/linux-shellpei-se-zhi-nan</id>
-    <content type="html"><![CDATA[<p>本文介绍如何配置Linux Shell终端配色。</p>
-
-<!--more-->
-
-
-<h2>PS1变量详解</h2>
-
-<p>我们能够通过配置PS1变量使提示符成为彩色。
-在PS1中配置字符序列颜色的格式为：</p>
-
-<blockquote><p>   [\e[F;Bm]</p></blockquote>
-
-<p>基本上是夹在 &ldquo;\e["（转义开方括号）和 "m&rdquo; 之间数字值。假如指定一个以上的数字代码，则用分号将他们分开。</p>
-
-<p>其中：</p>
-
-<ul>
-<li>F 为字体颜色，编号30~37；</li>
-<li>B 为背景色，编号40~47。</li>
-</ul>
-
-
-<p>可通过 \e[0m 关闭颜色输出；特别的，当B为1时，将显示加亮加粗的文字，请看下面的颜色表和代码表。</p>
-
-<pre><code>    前景 背景 颜色
-    -------------------------
-    30 40 黑色
-    31 41 红色
-    32 42 绿色
-    33 43 黄色
-    34 44 蓝色
-    35 45 紫色
-    36 46 青色
-    37 47 白色
-    代码 意义
-    -------------------------
-    0 OFF
-    1 高亮显示
-    4 underline
-    5 闪烁
-    7 反白显示
-    8 不可见
-</code></pre>
-
-<p>假如想要配置终端提示符的样式只要把$PS1在~/.bahrc指定即可。</p>
-
-<p>&ldquo;\e[0m&rdquo;    假如将数字代码指定为零，则他就会通知终端将前景、背景和加粗配置重置为他们的默认值。</p>
-
-<h2>示例配置</h2>
-
-<p>修改~/.bashrc，增加如下内容</p>
-
-<pre><code># set color options for terminal
-export CLICOLOR=1
-PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[00m\]:\[\033[01;35;35m\]\w\[\033[00m\]\$\033[1;32;32m\]'
-unset LS_COLORS
-</code></pre>
-
-<p>重新登录，查看配色：</p>
-
-<p><img src="/images/blog/01-color.png"></p>
-
-<p>实际使用根据需要配置即可。</p>
 ]]></content>
   </entry>
   
