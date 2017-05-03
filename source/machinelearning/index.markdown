@@ -1,7 +1,7 @@
 ---
 layout: page
-title: "算法"
-date: 2017-03-25 00:19
+title: "机器学习"
+date: 2017-04-29 13:25
 comments: true
 sharing: true
 footer: true
