@@ -77,6 +77,12 @@
 <loc>http://lionheartwang.github.io/algorithm/</loc>
 </url>
 <url>
+<loc>http://lionheartwang.github.io/bigdata/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/machinelearning/</loc>
+</url>
+<url>
 <loc>http://lionheartwang.github.io/blog/categories/%E6%8A%80%E6%9C%AF%E8%B5%84%E6%BA%90/</loc>
 </url>
 <url>
@@ -99,5 +105,8 @@
 </url>
 <url>
 <loc>http://lionheartwang.github.io/blog/categories/%E5%89%8D%E7%AB%AF/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/posts/2/</loc>
 </url>
 </urlset>
