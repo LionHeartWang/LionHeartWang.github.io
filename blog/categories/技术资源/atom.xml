@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/技术资源/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-06-18T23:22:47+08:00</updated>
+  <updated>2017-06-18T23:26:26+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -18,7 +18,12 @@
     <link href="http://lionheartwang.github.io/blog/2017/06/18/dockerchang-yong-ming-ling-jie-shao/"/>
     <updated>2017-06-18T22:52:05+08:00</updated>
     <id>http://lionheartwang.github.io/blog/2017/06/18/dockerchang-yong-ming-ling-jie-shao</id>
-    <content type="html"><![CDATA[<h2>镜像相关</h2>
+    <content type="html"><![CDATA[<p>本文介绍常用的docker命令。</p>
+
+<!--more-->
+
+
+<h2>镜像相关</h2>
 
 <p>查看本地具有的镜像</p>
 
