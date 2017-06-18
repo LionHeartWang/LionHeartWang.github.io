@@ -6,6 +6,10 @@ comments: true
 categories: [技术资源] 
 ---
 
+本文介绍常用的docker命令。
+
+<!--more-->
+
 ## 镜像相关
 
 查看本地具有的镜像
