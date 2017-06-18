@@ -5,11 +5,13 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>大数据 - Workspace of LionHeart</title>
+  <title>Docker常用命令介绍 - Workspace of LionHeart</title>
   <meta name="author" content="Wang Yiguang">
 
   
-  <meta name="description" content="大数据 Apr 29th, 2017 1:25 pm Apr 29th, 2017 1:25 pm Tweet Recent Posts Docker常用命令介绍 使用InteliJ远程调试程序 Mac安装Thrift方法 ZooKeeper安装使用指南 Spark Core 消息队列机制 &hellip;">
+  <meta name="description" content="Docker常用命令介绍 Jun 18th, 2017 10:52 pm 导航[-] 镜像相关 查看本地具有的镜像 1
+sudo docker images 登录远程镜像仓库 1
+docker login &lt;镜像仓库地址&gt; 例如： docker login test. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +20,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://lionheartwang.github.io/bigdata/">
+  <link rel="canonical" href="http://lionheartwang.github.io/blog/2017/06/18/dockerchang-yong-ming-ling-jie-shao/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Workspace of LionHeart" type="application/atom+xml">
@@ -70,44 +72,149 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">大数据</h1>
-    <p class="meta">
-
-
-
-
-<time class='entry-date' datetime='2017-04-29T13:25:00+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>1:25 pm</span></time></p>
-  </header>
-  
-  
-
-  
-    <footer>
+    
+      <h1 class="entry-title">Docker常用命令介绍</h1>
+    
+    
       <p class="meta">
         
-        
 
 
 
 
-<time class='entry-date' datetime='2017-04-29T13:25:00+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>1:25 pm</span></time>
+<time class='entry-date' datetime='2017-06-18T22:52:05+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:52 pm</span></time>
         
       </p>
+    
+  </header>
+
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<div class="blogAnchor">
+  <p id="anchorContentToggle" title="收起">导航[-]</p>
+  <div class="anchorContent" id="anchorContent"> </div>
+</div>
+
+  <div class="entry-content"><h2>镜像相关</h2>
+
+<p>查看本地具有的镜像</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo docker images</span></code></pre></td></tr></table></div></figure>
+
+
+<p>登录远程镜像仓库</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>docker login &lt;镜像仓库地址&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>例如：</p>
+
+<blockquote><p>docker login test.lionheart.com</p></blockquote>
+
+<p>命名镜像</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker tag &lt;镜像id&gt; &lt;镜像仓库地址&gt;/&lt;镜像空间名&gt;/&lt;镜像名&gt;:&lt;镜像tag&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命名镜像后可推送镜像到远端仓库：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker push &lt;镜像仓库地址&gt;/&lt;镜像空间名&gt;/&lt;镜像名&gt;:&lt;镜像tag&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>例如：</p>
+
+<blockquote><p>docker tag 12ab34cd56ef test.lionheart.com/wangyiguang/dockertest:1.0</p>
+
+<p>docker push test.lionheart.com/wangyiguang/dockertest:1.0</p></blockquote>
+
+<h2>容器相关</h2>
+
+<p>启动container：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo docker run -tid --name &lt;镜像名&gt; --net<span class="o">=</span>host -l <span class="s2">&quot;&lt;资源配置&gt;&quot;</span> &lt;镜像id&gt; /bin/bash
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>示例：</p>
+
+<blockquote><p>sudo docker run -tid &ndash;name lionhearttest &ndash;net=host  \</p>
+
+<p>-l &ldquo;GpuCount=1&rdquo; -l &ldquo;PerGpuCache=100000&rdquo; 12ab34cd56ef /bin/bash</p></blockquote>
+
+<p>查看所有container：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo docker ps -a
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker tag image_id <span class="nv">$image_center_addr</span>/<span class="nv">$image_namespace</span>/<span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以当前容器创建镜像：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo docker commit &lt;容器id&gt; &lt;镜像名&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  <script src="/javascripts/blogDirectory.js" type="text/javascript"></script>
+
+
+  <footer>
+    <p class="meta">
       
-        <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/bigdata/index.html" data-via="" data-counturl="http://lionheartwang.github.io/bigdata/index.html" >Tweet</a>
+
+<span class="byline author vcard">Posted by <span class="fn">Wang Yiguang</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-06-18T22:52:05+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>18</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>10:52 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/技术资源/'>技术资源</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2017/06/18/dockerchang-yong-ming-ling-jie-shao/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2017/06/18/dockerchang-yong-ming-ling-jie-shao/" >Tweet</a>
   
   
   
 </div>
 
+    
+    <p class="meta">
       
-    </footer>
-  
+        <a class="basic-alignment left" href="/blog/2017/04/17/remote-debug-via-intelij/" title="Previous Post: 使用InteliJ远程调试程序">&laquo; 使用InteliJ远程调试程序</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
 </div>

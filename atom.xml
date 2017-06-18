@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-04-29T13:34:04+08:00</updated>
+  <updated>2017-06-18T23:22:47+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,87 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Docker常用命令介绍]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/06/18/dockerchang-yong-ming-ling-jie-shao/"/>
+    <updated>2017-06-18T22:52:05+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/06/18/dockerchang-yong-ming-ling-jie-shao</id>
+    <content type="html"><![CDATA[<h2>镜像相关</h2>
+
+<p>查看本地具有的镜像</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo docker images</span></code></pre></td></tr></table></div></figure>
+
+
+<p>登录远程镜像仓库</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>docker login &lt;镜像仓库地址&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>例如：</p>
+
+<blockquote><p>docker login test.lionheart.com</p></blockquote>
+
+<p>命名镜像</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker tag &lt;镜像id&gt; &lt;镜像仓库地址&gt;/&lt;镜像空间名&gt;/&lt;镜像名&gt;:&lt;镜像tag&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命名镜像后可推送镜像到远端仓库：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker push &lt;镜像仓库地址&gt;/&lt;镜像空间名&gt;/&lt;镜像名&gt;:&lt;镜像tag&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>例如：</p>
+
+<blockquote><p>docker tag 12ab34cd56ef test.lionheart.com/wangyiguang/dockertest:1.0</p>
+
+<p>docker push test.lionheart.com/wangyiguang/dockertest:1.0</p></blockquote>
+
+<h2>容器相关</h2>
+
+<p>启动container：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo docker run -tid --name &lt;镜像名&gt; --net<span class="o">=</span>host -l <span class="s2">&quot;&lt;资源配置&gt;&quot;</span> &lt;镜像id&gt; /bin/bash
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>示例：</p>
+
+<blockquote><p>sudo docker run -tid &ndash;name lionhearttest &ndash;net=host  \</p>
+
+<p>-l &ldquo;GpuCount=1&rdquo; -l &ldquo;PerGpuCache=100000&rdquo; 12ab34cd56ef /bin/bash</p></blockquote>
+
+<p>查看所有container：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo docker ps -a
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>docker tag image_id <span class="nv">$image_center_addr</span>/<span class="nv">$image_namespace</span>/<span class="nv">$IMAGE_NAME</span>:<span class="nv">$TAG</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以当前容器创建镜像：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo docker commit &lt;容器id&gt; &lt;镜像名&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用InteliJ远程调试程序]]></title>

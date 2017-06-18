@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/技术资源/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-04-29T13:34:04+08:00</updated>
+  <updated>2017-06-18T23:22:47+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,71 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Docker常用命令介绍]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/06/18/dockerchang-yong-ming-ling-jie-shao/"/>
+    <updated>2017-06-18T22:52:05+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/06/18/dockerchang-yong-ming-ling-jie-shao</id>
+    <content type="html"><![CDATA[<h2>镜像相关</h2>
+
+<p>查看本地具有的镜像</p>
+
+<pre><code>sudo docker images
+</code></pre>
+
+<p>登录远程镜像仓库</p>
+
+<pre><code>docker login &lt;镜像仓库地址&gt;
+</code></pre>
+
+<p>例如：</p>
+
+<blockquote><p>docker login test.lionheart.com</p></blockquote>
+
+<p>命名镜像</p>
+
+<pre><code class="bash">docker tag &lt;镜像id&gt; &lt;镜像仓库地址&gt;/&lt;镜像空间名&gt;/&lt;镜像名&gt;:&lt;镜像tag&gt;
+</code></pre>
+
+<p>命名镜像后可推送镜像到远端仓库：</p>
+
+<pre><code class="bash">docker push &lt;镜像仓库地址&gt;/&lt;镜像空间名&gt;/&lt;镜像名&gt;:&lt;镜像tag&gt;
+</code></pre>
+
+<p>例如：</p>
+
+<blockquote><p>docker tag 12ab34cd56ef test.lionheart.com/wangyiguang/dockertest:1.0</p>
+
+<p>docker push test.lionheart.com/wangyiguang/dockertest:1.0</p></blockquote>
+
+<h2>容器相关</h2>
+
+<p>启动container：</p>
+
+<pre><code class="bash">sudo docker run -tid --name &lt;镜像名&gt; --net=host -l "&lt;资源配置&gt;" &lt;镜像id&gt; /bin/bash
+</code></pre>
+
+<p>示例：</p>
+
+<blockquote><p>sudo docker run -tid &ndash;name lionhearttest &ndash;net=host  \</p>
+
+<p>-l &ldquo;GpuCount=1&rdquo; -l &ldquo;PerGpuCache=100000&rdquo; 12ab34cd56ef /bin/bash</p></blockquote>
+
+<p>查看所有container：</p>
+
+<pre><code class="bash">sudo docker ps -a
+</code></pre>
+
+<pre><code class="bash">docker tag image_id $image_center_addr/$image_namespace/$IMAGE_NAME:$TAG
+</code></pre>
+
+<p>以当前容器创建镜像：</p>
+
+<pre><code class="bash">sudo docker commit &lt;容器id&gt; &lt;镜像名&gt;
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用InteliJ远程调试程序]]></title>
@@ -353,107 +418,6 @@ user 登录用户名
 </code></pre>
 
 <p>这样，本地机器A和远程机器B用户名不一致也可 ssh hostname 免密码直接登陆。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Mysql常用操作方法]]></title>
-    <link href="http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/"/>
-    <updated>2016-07-06T19:24:22+08:00</updated>
-    <id>http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa</id>
-    <content type="html"><![CDATA[<p>本文介绍一些mysql实用操作方法。</p>
-
-<!--more-->
-
-
-<h2>启动/登录</h2>
-
-<p>安装完毕后，使用如下命令：</p>
-
-<pre><code>$bin/mysqld_safe --user=mysql &amp;
-</code></pre>
-
-<p>启动后即可登录</p>
-
-<pre><code>$mysql
-</code></pre>
-
-<p>出现如下登录界面表示启动成功：</p>
-
-<p><img src="/images/blog/02-mysql_login.png"></p>
-
-<p>更一般地，可以登录远程mysql数据库。命令如下：</p>
-
-<pre><code>$mysql -h&lt;目标ip/hostname&gt; -u&lt;用户名&gt; -p&lt;密码&gt;
-</code></pre>
-
-<h2>用户权限管理</h2>
-
-<p>一般mysql安装完在本地可以root账户免密码登录。可以为root账户设置密码。</p>
-
-<h3>设置root账户密码</h3>
-
-<p>使用mysqladmin命令设置，形式如下：</p>
-
-<pre><code>$mysqladmin -u root password "&lt;新的root密码&gt;"
-</code></pre>
-
-<p>设置完毕后root帐号登录j就需要输入密码：</p>
-
-<pre><code>$mysql -uroot -p&lt;新的root密码&gt;
-</code></pre>
-
-<h3>添加用户</h3>
-
-<p>添加新用户并授予权限使用如下语句：</p>
-
-<pre><code>mysql&gt; GRANT &lt;权限1, 权限2...&gt; PRIVILEGES ON &lt;授权数据库名&gt;.&lt;授权表名&gt; TO '&lt;用户名&gt;'@'&lt;授权访问的IP&gt;' IDENTIFIED BY '&lt;密码&gt;' WITH GRANT OPTION;
-</code></pre>
-
-<p>其中WITH GRANT OPTION可选，表明该用户是否有权限授予权限。</p>
-
-<p>另外可以使用通配符'*&lsquo;，&rsquo;%&lsquo;，例如如下语句：</p>
-
-<pre><code>mysql&gt; GRANT ALL PRIVILEGES ON *.* TO 'wyg'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION;
-</code></pre>
-
-<p>该语句为用户wyg授权，以123456为密码，具有从任意IP访问所有数据库中所有表的所有权限，并具有授权权限。</p>
-
-<h2>备份/还原数据库</h2>
-
-<p>生产环境中经常需要对数据库进行迁移，这就需要备份/还原数据库。</p>
-
-<h3>备份数据</h3>
-
-<p>使用mysqldump命令，语法如下：</p>
-
-<pre><code>$mysqldump -u&lt;用户名&gt; -p&lt;密码&gt; --databases &lt;数据库1，数据库2...&gt; &gt; &lt;输出文件&gt;
-</code></pre>
-
-<p>该语句将指定的database的数据信息备份到输出文件中，输出文件是一个sql文件。</p>
-
-<p>可以用&ndash;all-databases 将整个数据库的所有database的数据备份。</p>
-
-<h3>还原数据</h3>
-
-<p>在输出文件的当前目录登录mysql，然后执行：</p>
-
-<pre><code>mysql&gt; source &lt;输入文件&gt;
-</code></pre>
-
-<p>执行完成后当前输入文件中的数据信息就录入当前mysql中。</p>
-
-<p>例如，在一台老的数据库机器上执行：</p>
-
-<pre><code>$mysqldump -uwyg -p123456 --all-databases &gt; all.sql
-</code></pre>
-
-<p>然后拷贝all.sql到新机器，登录mysql执行:</p>
-
-<pre><code>mysql&gt; source all.sql
-</code></pre>
-
-<p>这样就完成了mysql数据从老机器到新机器的迁移。</p>
 ]]></content>
   </entry>
   
