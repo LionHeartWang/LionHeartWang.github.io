@@ -34,12 +34,16 @@ $theme-color3: #999;
     font-weight: bold;
     margin-top: 0em;
     margin-bottom: 0em;
+    margin-left: 0.5em;
     padding-top: 0em;
     padding-bottom: 0em;
     text-decoration: none;
   }
   .entry-content {
     display: inline;
+    p {
+      margin-left: 1em;
+    }
   }
 }
 
