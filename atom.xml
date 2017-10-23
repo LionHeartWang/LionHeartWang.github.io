@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-06-22T00:08:11+08:00</updated>
+  <updated>2017-10-24T00:30:35+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,95 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux NFS配置及使用方法]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/10/24/linux-nfs-configuration/"/>
+    <updated>2017-10-24T00:27:55+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/10/24/linux-nfs-configuration</id>
+    <content type="html"><![CDATA[<p>NFS是Network  File System（网络文件系统）。主要功能是通过网络让不同的服务器之间可以共享文件或者目录。</p>
+
+<p>本文以CentOS系统为例介绍Linux下NFS的配置和使用方法。</p>
+
+<p>NFS在文件传送过程中依赖与RPC（远程过程调用）协议，配置步骤介绍如下。</p>
+
+<!-- More -->
+
+
+<h2>安装软件包</h2>
+
+<p>安装nfs软件包，server和client机器都需要安装</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo yum -y install nfs-utils nfs-utils-lib
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>配置NFS Server</h2>
+
+<p>假设用来共享目录的NFS Server机器是192.168.0.1，需要登录该机器配置挂载目录。</p>
+
+<p>登录后编辑/etc/exports文件内容，输入需要挂载的机器IP，以及服务端共享的路径。</p>
+
+<p>假设需要访问NFS共享目录的机器为192.168.0.2 ~ 192.168.0.6，配置/etc/exports如下所示：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/path/to/mount 192.168.0.2<span class="o">(</span>rw,sync,no_root_squash<span class="o">)</span>
+</span><span class='line'>/path/to/mount 192.168.0.3<span class="o">(</span>rw,sync,no_root_squash<span class="o">)</span>
+</span><span class='line'>/path/to/mount 192.168.0.4<span class="o">(</span>rw,sync,no_root_squash<span class="o">)</span>
+</span><span class='line'>/path/to/mount 192.168.0.5<span class="o">(</span>rw,sync,no_root_squash<span class="o">)</span>
+</span><span class='line'>/path/to/mount 192.168.0.6<span class="o">(</span>rw,sync,no_root_squash<span class="o">)</span>
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中/path/to/mount根据需要配置为欲挂载的路径即可。</p>
+
+<h2>启动NFS Server</h2>
+
+<p>在192.168.0.1上执行如下命令启动NFS Server</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo service rpcbind restart
+</span><span class='line'>sudo service nfs restart
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行如下命令，则会显示挂载的机器IP列表：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>showmount -e 192.168.0.1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>配置NFS Client</h2>
+
+<p>分别登陆每台需要挂载的client机器，运行如下命令进行共享文件夹挂载。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo mkdir /target/to/mount
+</span><span class='line'>sudo mount -t nfs 192.168.0.1:/path/to/mount /target/to/mount
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中：</p>
+
+<ul>
+<li>/path/to/mount为之前配置的NFS Server上挂载的路径。</li>
+<li>/target/to/mount为本地机器欲挂载到的目标路径。</li>
+</ul>
+
+
+<p>挂载完成后，在192.168.0.2 ~ 192.168.0.6上就可以向访问本地路径一样访问192.168.0.1的/path/to/mount目录了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Docker常用命令介绍]]></title>

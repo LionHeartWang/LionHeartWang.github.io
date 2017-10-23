@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/技术资源/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-06-22T00:08:11+08:00</updated>
+  <updated>2017-10-24T00:30:35+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,78 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Linux NFS配置及使用方法]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/10/24/linux-nfs-configuration/"/>
+    <updated>2017-10-24T00:27:55+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/10/24/linux-nfs-configuration</id>
+    <content type="html"><![CDATA[<p>NFS是Network  File System（网络文件系统）。主要功能是通过网络让不同的服务器之间可以共享文件或者目录。</p>
+
+<p>本文以CentOS系统为例介绍Linux下NFS的配置和使用方法。</p>
+
+<p>NFS在文件传送过程中依赖与RPC（远程过程调用）协议，配置步骤介绍如下。</p>
+
+<!-- More -->
+
+
+<h2>安装软件包</h2>
+
+<p>安装nfs软件包，server和client机器都需要安装</p>
+
+<pre><code class="bash">sudo yum -y install nfs-utils nfs-utils-lib
+</code></pre>
+
+<h2>配置NFS Server</h2>
+
+<p>假设用来共享目录的NFS Server机器是192.168.0.1，需要登录该机器配置挂载目录。</p>
+
+<p>登录后编辑/etc/exports文件内容，输入需要挂载的机器IP，以及服务端共享的路径。</p>
+
+<p>假设需要访问NFS共享目录的机器为192.168.0.2 ~ 192.168.0.6，配置/etc/exports如下所示：</p>
+
+<pre><code>/path/to/mount 192.168.0.2(rw,sync,no_root_squash)
+/path/to/mount 192.168.0.3(rw,sync,no_root_squash)
+/path/to/mount 192.168.0.4(rw,sync,no_root_squash)
+/path/to/mount 192.168.0.5(rw,sync,no_root_squash)
+/path/to/mount 192.168.0.6(rw,sync,no_root_squash)
+...
+</code></pre>
+
+<p>其中/path/to/mount根据需要配置为欲挂载的路径即可。</p>
+
+<h2>启动NFS Server</h2>
+
+<p>在192.168.0.1上执行如下命令启动NFS Server</p>
+
+<pre><code class="bash">sudo service rpcbind restart
+sudo service nfs restart
+</code></pre>
+
+<p>执行如下命令，则会显示挂载的机器IP列表：</p>
+
+<pre><code class="bash">showmount -e 192.168.0.1
+</code></pre>
+
+<h2>配置NFS Client</h2>
+
+<p>分别登陆每台需要挂载的client机器，运行如下命令进行共享文件夹挂载。</p>
+
+<pre><code>sudo mkdir /target/to/mount
+sudo mount -t nfs 192.168.0.1:/path/to/mount /target/to/mount
+</code></pre>
+
+<p>其中：</p>
+
+<ul>
+<li>/path/to/mount为之前配置的NFS Server上挂载的路径。</li>
+<li>/target/to/mount为本地机器欲挂载到的目标路径。</li>
+</ul>
+
+
+<p>挂载完成后，在192.168.0.2 ~ 192.168.0.6上就可以向访问本地路径一样访问192.168.0.1的/path/to/mount目录了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Docker常用命令介绍]]></title>
@@ -368,61 +440,6 @@ public Stat setData(final String path, byte data[], int version);
 
 
 <p>更全的API介绍参考 ZooKeeper 3.4.5 API</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[免密码远程登录/拷贝方法]]></title>
-    <link href="http://lionheartwang.github.io/blog/2016/08/18/no-pass-world-ssh-method/"/>
-    <updated>2016-08-18T15:41:28+08:00</updated>
-    <id>http://lionheartwang.github.io/blog/2016/08/18/no-pass-world-ssh-method</id>
-    <content type="html"><![CDATA[<p>生产环境中尝尝需要在机器间建立信任关系，远程登录或拷贝大量数据，本文介绍非如何快速免密码登录机器或拷贝数据。</p>
-
-<!--more-->
-
-
-<h2>生成密钥</h2>
-
-<p>设有源机器 A，目标机器 B。现需要从A免密码登录B，或从B拷贝数据到A。</p>
-
-<p>首先需要生成密钥。登录A机器，执行</p>
-
-<pre><code>$ssh-keygen -t rsa
-</code></pre>
-
-<p>一路回车到底。这时在A主机~/.ssh目录下生成了私钥id_rsa以及陪对的id_rsa.pub公钥文件。</p>
-
-<h2>复制公钥</h2>
-
-<p>接下来把公钥复制到远程主机B。</p>
-
-<p>即把公钥id_rsa.pub追加写入到机器B的 ~/.ssh/authorized_keys文件中即可。</p>
-
-<p>执行如下命令：</p>
-
-<pre><code>$cat ~/.ssh/id_rsa.pub | ssh user@host "mkdir ~/.ssh; cat &gt;&gt; ~/.ssh/authorized_keys"
-</code></pre>
-
-<p>如有多台远程主机多次复制即可。</p>
-
-<p>此时已经可以免密码从B拷贝数据到A或从A ssh登录到B。</p>
-
-<p>如果机器A和B用户一致的话，就可以直接从A ssh hostname 直接登陆B。</p>
-
-<p>若不一致则可通过ssh username@hostname登录。</p>
-
-<h2>配置ssh</h2>
-
-<p>对于本地机器用户和远程登录用户名不同的情况可通过修改本地登陆用户的 ~/.ssh/config 文件解决。</p>
-
-<p>向 ~/.ssh/config 中添加内容如下：</p>
-
-<pre><code>Host 机器B的hostname
-user 登录用户名
-...
-</code></pre>
-
-<p>这样，本地机器A和远程机器B用户名不一致也可 ssh hostname 免密码直接登陆。</p>
 ]]></content>
   </entry>
   
