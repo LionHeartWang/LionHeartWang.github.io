@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/技术资源/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-10-24T00:35:56+08:00</updated>
+  <updated>2017-11-14T00:15:00+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,115 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用Fuse挂载hdfs到本地目录方法]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/11/14/gua-zai-hdfsdao-ben-di-mu-lu-fang-fa/"/>
+    <updated>2017-11-14T00:10:27+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/11/14/gua-zai-hdfsdao-ben-di-mu-lu-fang-fa</id>
+    <content type="html"><![CDATA[<p>网上关于挂载HDFS到本地的介绍大多基于较早版本的Hadoop。
+本文以Hadoop-2.8.0为例，介绍通过Fuse挂载HDFS到本地的方法。</p>
+
+<!--more-->
+
+
+<h2>安装Fuse</h2>
+
+<p>对每台节点，执行如下命令一键安装</p>
+
+<pre><code class="bash">sudo yum -y install fuse fuse-libs
+</code></pre>
+
+<h2>编译fuse-dfs工具</h2>
+
+<p>下载hadoop-2.8.0源码，解压编译</p>
+
+<pre><code class="bash">tar zxvf hadoop-2.8.0.tar.gz
+cd hadoop-2.8.0
+mvn package -Drequire.fuse=true -DskipTests -Dmaven.javadoc.skip=true -Dtar
+</code></pre>
+
+<p>编译后会生成fuse_dfs的可执行文件，位于</p>
+
+<blockquote><p>./hadoop-hdfs-project/hadoop-hdfs-native-client/target/main/native/fuse-dfs/fuse_dfs</p></blockquote>
+
+<p>另外会生成一个对该可执行程序的封装脚本，位于</p>
+
+<blockquote><p>./hadoop-hdfs-project/hadoop-hdfs-native-client/src/main/native/fuse-dfs/fuse_dfs_wrapper.sh</p></blockquote>
+
+<h2>配置环境变量</h2>
+
+<p>可以为fuse_dfs_wrapper.sh建立软链接到当前目录方便后续使用。</p>
+
+<pre><code class="bash">ln -s /&lt;Hadoop源码路径&gt;/hadoop-hdfs-project/hadoop-hdfs-native-client/src/main/native/fuse-dfs/fuse_dfs_wrapper.sh .
+</code></pre>
+
+<p>编辑fuse_dfs_wrapper.sh内容，有一些需要根据具体情况修改：</p>
+
+<pre><code class="bash">HADOOP_HOME=/path/to/your/hadoop
+HADOOP_PREFIX=/path/to/your/hadoop/src/
+
+export FUSEDFS_PATH="$HADOOP_PREFIX/hadoop-hdfs-project/hadoop-hdfs-native-client/target/main/native/fuse-dfs"
+export LIBHDFS_PATH="$HADOOP_PREFIX/hadoop-hdfs-project/hadoop-hdfs-native-client/target/native/target/usr/local/lib"
+HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
+if [ "$OS_ARCH" = "" ]; then
+  export OS_ARCH=amd64
+fi
+
+# 这里需要替换为JDK的安装路径
+JAVA_HOME=/home/yiguang.wyg/tools/jdk1.8.0_121
+
+if [ "$LD_LIBRARY_PATH" = "" ]; then
+  export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/$OS_ARCH/server:/usr/local/lib
+fi
+
+JARS=`find "$HADOOP_PREFIX/hadoop-hdfs-project" -name "*.jar" | xargs`
+for jar in $JARS; do
+  CLASSPATH=$jar:$CLASSPATH
+done
+
+JARS=`find "$HADOOP_PREFIX/hadoop-client" -name "*.jar" | xargs`
+for jar in $JARS; do
+  CLASSPATH=$jar:$CLASSPATH
+done
+
+export CLASSPATH=$HADOOP_CONF_DIR:$CLASSPATH
+export PATH=$FUSEDFS_PATH:$PATH
+export LD_LIBRARY_PATH=$LIBHDFS_PATH:$JAVA_HOME/jre/lib/$OS_ARCH/server:$LD_LIBRARY_PATH
+
+fuse_dfs "$@"
+</code></pre>
+
+<p>重点需要配置好HADOOP_HOME和HADOOP_PREFIX，分别为hadoop安装路径和hadoop源码路径。</p>
+
+<h2>挂载HDFS</h2>
+
+<p>挂载HDFS之前需要确保HDFS已经启动。</p>
+
+<p>创建挂载目录</p>
+
+<pre><code class="bash">sudo mkdir /mnt/hdfs
+</code></pre>
+
+<p>执行：</p>
+
+<pre><code class="bash">sudo sh fuse_dfs_wrapper.sh hdfs://&lt;hdfs路径&gt; /mnt/hdfs
+</code></pre>
+
+<p>输出：</p>
+
+<blockquote><p>INFO /&hellip;/hadoop-2.8.0-src/hadoop-hdfs-project/hadoop-hdfs-native-client/src/main/native/fuse-dfs/fuse_options.c:164 Adding FUSE arg /mnt/hdfs</p></blockquote>
+
+<p>进入挂载目录，如果能访问到HDFS中的内容，说明挂载成功。
+<code>
+cd /mnt/hdfs
+ls
+</code></p>
+
+<p>挂载成功后，就可以将HDFS当做本地路径使用了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux NFS配置及使用方法]]></title>
@@ -24,7 +133,7 @@
 
 <p>NFS在文件传送过程中依赖与RPC（远程过程调用）协议，配置步骤介绍如下。</p>
 
-<!-- More -->
+<!-- more -->
 
 
 <h2>安装软件包</h2>
@@ -269,177 +378,6 @@ java $JAVA_DEBUG_OPTS &lt;className&gt;
 <p>输出：Thrift version 0.9.3</p>
 
 <p>表明<font color=green><b>安装成功</b></font>。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[ZooKeeper安装使用指南]]></title>
-    <link href="http://lionheartwang.github.io/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan/"/>
-    <updated>2017-01-20T15:56:22+08:00</updated>
-    <id>http://lionheartwang.github.io/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan</id>
-    <content type="html"><![CDATA[<p>ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务。</p>
-
-<p>作为分布式应用提供一致性服务的软件，ZooKeeper 封装了易错的关键服务，提供简单高效、功能稳定接口给用户</p>
-
-<p>本文介绍 ZooKeeper 的配置方法和客户端使用方法。</p>
-
-<!--more-->
-
-
-<h2>ZooKeeper 安装</h2>
-
-<p>以ZooKeeper 3.4.8为例，下载 <a href="http://mirrors.hust.edu.cn/apache/zookeeper/zookeeper-3.4.8/">ZooKeeper 3.4.8</a>
-下载解压后配置conf/zoo.cfg，配置clientPort，dataDir等。
-示例配置：</p>
-
-<pre><code class="bash"># The number of milliseconds of each tick
-tickTime=2000
-# The number of ticks that the initial synchronization phase can take
-initLimit=10
-# The number of ticks that can pass between sending a request and getting an acknowledgement
-syncLimit=5
-# the directory where the snapshot is stored. do not use /tmp for storage, /tmp here is just example sakes.
-dataDir=/tmp/zookeeper
-# the port at which the clients will connect
-clientPort=2181
-</code></pre>
-
-<h2>ZooKeeper 使用</h2>
-
-<p>配置好Zk后需要先启动ZkServer，然后可以用Zk Client直接以命令行的方式操作Zk。</p>
-
-<h3>Server端</h3>
-
-<p>配置好后启动zk：</p>
-
-<pre><code class="bash">$sh bin/zkServer.sh start &gt; zookeeper.out
-</code></pre>
-
-<h3>Client端</h3>
-
-<p>ZooKeeper客户端的使用非常简单，启动：</p>
-
-<pre><code class="bash"># ip和端口根据启动情况修改
-$sh bin/zkCli.sh -server 127.0.0.1:2181
-</code></pre>
-
-<p>之后可以用ls、delete、get等命令查询或修改各ZK节点的值。命令帮助如下：</p>
-
-<pre><code>ZooKeeper -server host:port cmd args
-    connect host:port
-    get path [watch]
-    ls path [watch]
-    set path data [version]
-    rmr path
-    delquota [-n|-b] path
-    quit
-    printwatches on|off
-    create [-s] [-e] path data acl
-    stat path [watch]
-    close
-    ls2 path [watch]
-    history
-    listquota path
-    setAcl path acl
-    getAcl path
-    sync path
-    redo cmdno
-    addauth scheme auth
-    delete path [version]
-    setquota -n|-b val path
-</code></pre>
-
-<h2>ZooKeeper API</h2>
-
-<p>除了通过客户端操作ZooKeeper，还可以调用ZooKeeper提供的API操作ZooKeeper的节点。</p>
-
-<p>这里以ZooKeeper 3.4.5为例，介绍常用的几个Java API。</p>
-
-<h3>建立连接</h3>
-
-<p>在应用程序中使用Zk需要先创建ZooKeeper对象，后续的操作都是基于该对象进行的。</p>
-
-<pre><code class="java">public ZooKeeper(String connectString, int sessionTimeout, Watcher watcher) throws IOException  
-</code></pre>
-
-<p>参数说明：</p>
-
-<ul>
-<li>connectString： zookeeper server列表, 以逗号隔开。ZooKeeper对象初始化后, 将从列表中选择一个server, 并尝试建立连接。如果失败,则会从剩余项中选择并再次尝试建立连接。</li>
-<li>sessionTimeout：指定连接的超时时间.</li>
-<li>watcher： 事件回调接口。</li>
-</ul>
-
-
-<h3>创建/删除znode</h3>
-
-<p>ZooKeeper对象的create/delete方法用于创建/删除 znode。如果该node存在, 则返回该node的状态信息, 否则返回null。</p>
-
-<pre><code class="java">public String create(String path, byte[] data, List acl, CreateMode createMode); 
-public void delete(final String path, int version);  
-</code></pre>
-
-<p>参数说明：</p>
-
-<ul>
-<li>path： znode的路径。</li>
-<li>data：与znode关联的数据。</li>
-<li>acl：指定权限信息</li>
-<li>createMode：指定znode类型，按持久化节点与临时节点，以及自动编号节点与非自动编号节点两个维度划分，共4类。</li>
-<li>version：指定要更新的数据的版本, 如果version和真实的版本不同, 更新操作将失败.。指定version为-1则忽略版本检查。</li>
-</ul>
-
-
-<h3>获取子znode列表</h3>
-
-<p>ZooKeeper对象的getChildren方法用于获取子node列表。</p>
-
-<pre><code class="java">public List getChildren(String path, boolean watch); 
-</code></pre>
-
-<p>参数说明：</p>
-
-<ul>
-<li>path： znode的路径。</li>
-<li>watch参数用于指定是否监听path node的创建, 删除事件, 以及数据更新事件。</li>
-</ul>
-
-
-<h3>判断znode是否存在</h3>
-
-<p>ZooKeeper对象的exists方法用于判断指定znode是否存在。如果该node存在, 则返回该node的状态信息, 否则返回null。</p>
-
-<pre><code class="java">public Stat exists(String path, boolean watch);  
-</code></pre>
-
-<p>参数说明：</p>
-
-<ul>
-<li>path： znode的路径。</li>
-<li>watch：用于指定是否监听path node的创建, 删除事件, 以及数据更新事件。</li>
-</ul>
-
-
-<h3>获取/更新znode数据</h3>
-
-<p>ZooKeeper对象的getData/setData方法用于获取/更新 znode关联的数据。</p>
-
-<pre><code class="java">public byte[] getData(String path, boolean watch, Stat stat);  
-public Stat setData(final String path, byte data[], int version); 
-</code></pre>
-
-<p>参数说明：</p>
-
-<ul>
-<li>path： znode的路径。</li>
-<li>stat：传出参数, getData方法会将path node的状态信息设置到该参数中。</li>
-<li>data：与znode关联的数据。</li>
-<li>watch：用于指定是否监听path node的创建, 删除事件, 以及数据更新事件。</li>
-<li>version：指定要更新的数据的版本, 如果version和真实的版本不同, 更新操作将失败.。指定version为-1则忽略版本检查。</li>
-</ul>
-
-
-<p>更全的API介绍参考 ZooKeeper 3.4.5 API</p>
 ]]></content>
   </entry>
   

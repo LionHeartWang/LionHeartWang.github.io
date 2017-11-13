@@ -4,7 +4,7 @@
   <title><![CDATA[大数据 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/大数据/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-10-24T00:35:56+08:00</updated>
+  <updated>2017-11-14T00:15:00+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,115 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用Fuse挂载hdfs到本地目录方法]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/11/14/gua-zai-hdfsdao-ben-di-mu-lu-fang-fa/"/>
+    <updated>2017-11-14T00:10:27+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/11/14/gua-zai-hdfsdao-ben-di-mu-lu-fang-fa</id>
+    <content type="html"><![CDATA[<p>网上关于挂载HDFS到本地的介绍大多基于较早版本的Hadoop。
+本文以Hadoop-2.8.0为例，介绍通过Fuse挂载HDFS到本地的方法。</p>
+
+<!--more-->
+
+
+<h2>安装Fuse</h2>
+
+<p>对每台节点，执行如下命令一键安装</p>
+
+<pre><code class="bash">sudo yum -y install fuse fuse-libs
+</code></pre>
+
+<h2>编译fuse-dfs工具</h2>
+
+<p>下载hadoop-2.8.0源码，解压编译</p>
+
+<pre><code class="bash">tar zxvf hadoop-2.8.0.tar.gz
+cd hadoop-2.8.0
+mvn package -Drequire.fuse=true -DskipTests -Dmaven.javadoc.skip=true -Dtar
+</code></pre>
+
+<p>编译后会生成fuse_dfs的可执行文件，位于</p>
+
+<blockquote><p>./hadoop-hdfs-project/hadoop-hdfs-native-client/target/main/native/fuse-dfs/fuse_dfs</p></blockquote>
+
+<p>另外会生成一个对该可执行程序的封装脚本，位于</p>
+
+<blockquote><p>./hadoop-hdfs-project/hadoop-hdfs-native-client/src/main/native/fuse-dfs/fuse_dfs_wrapper.sh</p></blockquote>
+
+<h2>配置环境变量</h2>
+
+<p>可以为fuse_dfs_wrapper.sh建立软链接到当前目录方便后续使用。</p>
+
+<pre><code class="bash">ln -s /&lt;Hadoop源码路径&gt;/hadoop-hdfs-project/hadoop-hdfs-native-client/src/main/native/fuse-dfs/fuse_dfs_wrapper.sh .
+</code></pre>
+
+<p>编辑fuse_dfs_wrapper.sh内容，有一些需要根据具体情况修改：</p>
+
+<pre><code class="bash">HADOOP_HOME=/path/to/your/hadoop
+HADOOP_PREFIX=/path/to/your/hadoop/src/
+
+export FUSEDFS_PATH="$HADOOP_PREFIX/hadoop-hdfs-project/hadoop-hdfs-native-client/target/main/native/fuse-dfs"
+export LIBHDFS_PATH="$HADOOP_PREFIX/hadoop-hdfs-project/hadoop-hdfs-native-client/target/native/target/usr/local/lib"
+HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
+if [ "$OS_ARCH" = "" ]; then
+  export OS_ARCH=amd64
+fi
+
+# 这里需要替换为JDK的安装路径
+JAVA_HOME=/home/yiguang.wyg/tools/jdk1.8.0_121
+
+if [ "$LD_LIBRARY_PATH" = "" ]; then
+  export LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/$OS_ARCH/server:/usr/local/lib
+fi
+
+JARS=`find "$HADOOP_PREFIX/hadoop-hdfs-project" -name "*.jar" | xargs`
+for jar in $JARS; do
+  CLASSPATH=$jar:$CLASSPATH
+done
+
+JARS=`find "$HADOOP_PREFIX/hadoop-client" -name "*.jar" | xargs`
+for jar in $JARS; do
+  CLASSPATH=$jar:$CLASSPATH
+done
+
+export CLASSPATH=$HADOOP_CONF_DIR:$CLASSPATH
+export PATH=$FUSEDFS_PATH:$PATH
+export LD_LIBRARY_PATH=$LIBHDFS_PATH:$JAVA_HOME/jre/lib/$OS_ARCH/server:$LD_LIBRARY_PATH
+
+fuse_dfs "$@"
+</code></pre>
+
+<p>重点需要配置好HADOOP_HOME和HADOOP_PREFIX，分别为hadoop安装路径和hadoop源码路径。</p>
+
+<h2>挂载HDFS</h2>
+
+<p>挂载HDFS之前需要确保HDFS已经启动。</p>
+
+<p>创建挂载目录</p>
+
+<pre><code class="bash">sudo mkdir /mnt/hdfs
+</code></pre>
+
+<p>执行：</p>
+
+<pre><code class="bash">sudo sh fuse_dfs_wrapper.sh hdfs://&lt;hdfs路径&gt; /mnt/hdfs
+</code></pre>
+
+<p>输出：</p>
+
+<blockquote><p>INFO /&hellip;/hadoop-2.8.0-src/hadoop-hdfs-project/hadoop-hdfs-native-client/src/main/native/fuse-dfs/fuse_options.c:164 Adding FUSE arg /mnt/hdfs</p></blockquote>
+
+<p>进入挂载目录，如果能访问到HDFS中的内容，说明挂载成功。
+<code>
+cd /mnt/hdfs
+ls
+</code></p>
+
+<p>挂载成功后，就可以将HDFS当做本地路径使用了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[ZooKeeper安装使用指南]]></title>

@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-10-24T00:35:56+08:00</updated>
+  <updated>2017-11-14T00:15:00+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,164 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用Fuse挂载hdfs到本地目录方法]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/11/14/gua-zai-hdfsdao-ben-di-mu-lu-fang-fa/"/>
+    <updated>2017-11-14T00:10:27+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/11/14/gua-zai-hdfsdao-ben-di-mu-lu-fang-fa</id>
+    <content type="html"><![CDATA[<p>网上关于挂载HDFS到本地的介绍大多基于较早版本的Hadoop。
+本文以Hadoop-2.8.0为例，介绍通过Fuse挂载HDFS到本地的方法。</p>
+
+<!--more-->
+
+
+<h2>安装Fuse</h2>
+
+<p>对每台节点，执行如下命令一键安装</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo yum -y install fuse fuse-libs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>编译fuse-dfs工具</h2>
+
+<p>下载hadoop-2.8.0源码，解压编译</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tar zxvf hadoop-2.8.0.tar.gz
+</span><span class='line'><span class="nb">cd </span>hadoop-2.8.0
+</span><span class='line'>mvn package -Drequire.fuse<span class="o">=</span><span class="nb">true</span> -DskipTests -Dmaven.javadoc.skip<span class="o">=</span><span class="nb">true</span> -Dtar
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>编译后会生成fuse_dfs的可执行文件，位于</p>
+
+<blockquote><p>./hadoop-hdfs-project/hadoop-hdfs-native-client/target/main/native/fuse-dfs/fuse_dfs</p></blockquote>
+
+<p>另外会生成一个对该可执行程序的封装脚本，位于</p>
+
+<blockquote><p>./hadoop-hdfs-project/hadoop-hdfs-native-client/src/main/native/fuse-dfs/fuse_dfs_wrapper.sh</p></blockquote>
+
+<h2>配置环境变量</h2>
+
+<p>可以为fuse_dfs_wrapper.sh建立软链接到当前目录方便后续使用。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ln -s /&lt;Hadoop源码路径&gt;/hadoop-hdfs-project/hadoop-hdfs-native-client/src/main/native/fuse-dfs/fuse_dfs_wrapper.sh .
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>编辑fuse_dfs_wrapper.sh内容，有一些需要根据具体情况修改：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">HADOOP_HOME</span><span class="o">=</span>/path/to/your/hadoop
+</span><span class='line'><span class="nv">HADOOP_PREFIX</span><span class="o">=</span>/path/to/your/hadoop/src/
+</span><span class='line'>
+</span><span class='line'><span class="nb">export </span><span class="nv">FUSEDFS_PATH</span><span class="o">=</span><span class="s2">&quot;$HADOOP_PREFIX/hadoop-hdfs-project/hadoop-hdfs-native-client/target/main/native/fuse-dfs&quot;</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">LIBHDFS_PATH</span><span class="o">=</span><span class="s2">&quot;$HADOOP_PREFIX/hadoop-hdfs-project/hadoop-hdfs-native-client/target/native/target/usr/local/lib&quot;</span>
+</span><span class='line'><span class="nv">HADOOP_CONF_DIR</span><span class="o">=</span><span class="nv">$HADOOP_HOME</span>/etc/hadoop
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;$OS_ARCH&quot;</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>  <span class="nb">export </span><span class="nv">OS_ARCH</span><span class="o">=</span>amd64
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># 这里需要替换为JDK的安装路径</span>
+</span><span class='line'><span class="nv">JAVA_HOME</span><span class="o">=</span>/home/yiguang.wyg/tools/jdk1.8.0_121
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;$LD_LIBRARY_PATH&quot;</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span><span class='line'>  <span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$JAVA_HOME</span>/jre/lib/<span class="nv">$OS_ARCH</span>/server:/usr/local/lib
+</span><span class='line'><span class="k">fi</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">JARS</span><span class="o">=</span><span class="sb">`</span>find <span class="s2">&quot;$HADOOP_PREFIX/hadoop-hdfs-project&quot;</span> -name <span class="s2">&quot;*.jar&quot;</span> <span class="p">|</span> xargs<span class="sb">`</span>
+</span><span class='line'><span class="k">for</span> jar in <span class="nv">$JARS</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nv">CLASSPATH</span><span class="o">=</span><span class="nv">$jar</span>:<span class="nv">$CLASSPATH</span>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">JARS</span><span class="o">=</span><span class="sb">`</span>find <span class="s2">&quot;$HADOOP_PREFIX/hadoop-client&quot;</span> -name <span class="s2">&quot;*.jar&quot;</span> <span class="p">|</span> xargs<span class="sb">`</span>
+</span><span class='line'><span class="k">for</span> jar in <span class="nv">$JARS</span><span class="p">;</span> <span class="k">do</span>
+</span><span class='line'>  <span class="nv">CLASSPATH</span><span class="o">=</span><span class="nv">$jar</span>:<span class="nv">$CLASSPATH</span>
+</span><span class='line'><span class="k">done</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">export </span><span class="nv">CLASSPATH</span><span class="o">=</span><span class="nv">$HADOOP_CONF_DIR</span>:<span class="nv">$CLASSPATH</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$FUSEDFS_PATH</span>:<span class="nv">$PATH</span>
+</span><span class='line'><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LIBHDFS_PATH</span>:<span class="nv">$JAVA_HOME</span>/jre/lib/<span class="nv">$OS_ARCH</span>/server:<span class="nv">$LD_LIBRARY_PATH</span>
+</span><span class='line'>
+</span><span class='line'>fuse_dfs <span class="s2">&quot;$@&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>重点需要配置好HADOOP_HOME和HADOOP_PREFIX，分别为hadoop安装路径和hadoop源码路径。</p>
+
+<h2>挂载HDFS</h2>
+
+<p>挂载HDFS之前需要确保HDFS已经启动。</p>
+
+<p>创建挂载目录</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo mkdir /mnt/hdfs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo sh fuse_dfs_wrapper.sh hdfs://&lt;hdfs路径&gt; /mnt/hdfs
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>输出：</p>
+
+<blockquote><p>INFO /&hellip;/hadoop-2.8.0-src/hadoop-hdfs-project/hadoop-hdfs-native-client/src/main/native/fuse-dfs/fuse_options.c:164 Adding FUSE arg /mnt/hdfs</p></blockquote>
+
+<p>进入挂载目录，如果能访问到HDFS中的内容，说明挂载成功。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">cd</span> /mnt/hdfs
+</span><span class='line'>ls
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>挂载成功后，就可以将HDFS当做本地路径使用了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Linux NFS配置及使用方法]]></title>
@@ -24,7 +182,7 @@
 
 <p>NFS在文件传送过程中依赖与RPC（远程过程调用）协议，配置步骤介绍如下。</p>
 
-<!-- More -->
+<!-- more -->
 
 
 <h2>安装软件包</h2>
