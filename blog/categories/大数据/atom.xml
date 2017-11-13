@@ -4,7 +4,7 @@
   <title><![CDATA[大数据 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/大数据/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-11-14T00:15:00+08:00</updated>
+  <updated>2017-11-14T00:21:06+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[使用Fuse挂载hdfs到本地目录方法]]></title>
+    <title type="html"><![CDATA[使用Fuse挂载HDFS到本地目录方法]]></title>
     <link href="http://lionheartwang.github.io/blog/2017/11/14/gua-zai-hdfsdao-ben-di-mu-lu-fang-fa/"/>
     <updated>2017-11-14T00:10:27+08:00</updated>
     <id>http://lionheartwang.github.io/blog/2017/11/14/gua-zai-hdfsdao-ben-di-mu-lu-fang-fa</id>
