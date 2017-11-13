@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "使用Fuse挂载hdfs到本地目录方法"
+title: "使用Fuse挂载HDFS到本地目录方法"
 date: 2017-11-14 00:10:27 +0800
 comments: true
 categories: [技术资源, 大数据] 
