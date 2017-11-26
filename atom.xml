@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-11-14T00:21:06+08:00</updated>
+  <updated>2017-11-26T19:11:43+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,198 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[使用Landslide基于MarkDown制作在线Slide]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/11/26/shi-yong-landslideji-yu-markdownzhi-zuo-zai-xian-slide/"/>
+    <updated>2017-11-26T19:05:19+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/11/26/shi-yong-landslideji-yu-markdownzhi-zuo-zai-xian-slide</id>
+    <content type="html"><![CDATA[<p>本文介绍使用Landslide工具基于Markdown语法制作在线Slide的方法。</p>
+
+<!-- More -->
+
+
+<h2>Landsilde工具使用</h2>
+
+<p>Landslide是基于Google的<code>html5slides</code>的一个Slide生成工具，可将markdown、ReST 或者 textile文件转化成HTML5的slide。</p>
+
+<p>该转化支持内联模式，即生成一个具有完整功能的HTML文件，将依赖的css等东西放入其中，很容易用来分享。</p>
+
+<p>类似的还有工具还有 remark，相关gitlab项目主页：</p>
+
+<ul>
+<li><a href="https://github.com/adamzap/landslide">https://github.com/adamzap/landslide</a></li>
+<li><a href="https://github.com/gnab/remark/">https://github.com/gnab/remark/</a></li>
+</ul>
+
+
+<p> ### 安装landslide</p>
+
+<p>  方案一 pip安装：</p>
+
+<pre><code class="``bash"> $ pip install landslide
+</code></pre>
+
+<p> 方案二 源码安装：</p>
+
+<pre><code class="`bash">$ git clone https://github.com/adamzap/landslide.git
+$ cd landslide
+$ python setup.py build
+$ sudo python setup.py install
+</code></pre>
+
+<p> ## Markdown书写Slide内容</p>
+
+<p>以markdown语法书写，可以参考landslide提供的示例：</p>
+
+<ul>
+<li><a href="https://github.com/adamzap/landslide/blob/master/examples/markdown/slides.md">https://github.com/adamzap/landslide/blob/master/examples/markdown/slides.md</a></li>
+</ul>
+
+
+<h2>生成PPT页面</h2>
+
+<p>以官方提供的markdown文本为例，文件命名为test.md，完成后执行如下命令生成HTML内容：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>landslide file.md -i -o &gt; test.html
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>命令行参数说明详见下文介绍。</p>
+
+<p>可以直接在浏览器中打开观察效果：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>open test.html
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>支持快捷键，可左右切换slide，详见下文快捷键介绍。</p>
+
+<p><img src="http://lionheartwang.github.io/images/blog/06-landslide_demo.png"></p>
+
+<h2>使用PrinceXML生成PDF</h2>
+
+<p>PrinceXML是一款将html转换为pdf的工具，提供免费带水印版试用。</p>
+
+<p>下载地址：</p>
+
+<ul>
+<li><a href="http://www.princexml.com/download/">http://www.princexml.com/download/</a></li>
+</ul>
+
+
+<p>选择对应版本解压后执行脚本安装：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>sh insatll.sh
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>指定路径安装完毕后即可使用prince命令。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>prince test.html -o test.pdf
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>即可生成需要的PDF PPT文件。</p>
+
+<h2>Landslide快捷键及命令参数介绍</h2>
+
+<h3>PPT页面快捷键</h3>
+
+<p>快捷键如下：</p>
+
+<blockquote><p>Press h to toggle display of help</p>
+
+<p>Press left arrow and right arrow to navigate</p>
+
+<p>Press t to toggle a table of contents for your presentation. Slide titles are links</p>
+
+<p>Press ESC to display the presentation overview (Exposé)</p>
+
+<p>Press n to toggle slide number visibility</p>
+
+<p>Press b to toggle screen blanking</p>
+
+<p>Press c to toggle current slide context (previous and next slides)</p>
+
+<p>Press e to make slides filling the whole available space within the document body</p>
+
+<p>Press S to toggle display of link to the source file for each slide</p>
+
+<p>Press &lsquo;2&rsquo; to toggle notes in your slides (specify with the .notes macro)</p>
+
+<p>Press &lsquo;3&rsquo; to toggle pseudo-3D display (experimental)</p>
+
+<p>Browser zooming is supported</p></blockquote>
+
+<h3>命令行参数介绍</h3>
+
+<p>landslide命令行参数介绍如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>-h, --help            show this <span class="nb">help </span>message and <span class="nb">exit</span>
+</span><span class='line'>-c, --copy-theme      Copy theme directory into current presentation <span class="nb">source </span>directory
+</span><span class='line'>-b, --debug           Will display any exception trace to stdin
+</span><span class='line'>-d FILE, --destination<span class="o">=</span>FILE
+</span><span class='line'>                      The path to the to the destination file: .html or .pdf
+</span><span class='line'>                      extensions allowed <span class="o">(</span>default: presentation.html<span class="o">)</span>
+</span><span class='line'>-e ENCODING, --encoding<span class="o">=</span>ENCODING
+</span><span class='line'>                      The encoding of your files <span class="o">(</span>defaults to utf8<span class="o">)</span>
+</span><span class='line'>-i, --embed     Embed stylesheet and javascript contents,
+</span><span class='line'>                      base64-encoded images in presentation to make a
+</span><span class='line'>                      standalone document
+</span><span class='line'>-l LINENOS, --linenos<span class="o">=</span>LINENOS
+</span><span class='line'>                      How to output linenos in <span class="nb">source </span>code. Three options
+</span><span class='line'>                      availables: no <span class="o">(</span>no line numbers<span class="o">)</span><span class="p">;</span> inline inside pre tag
+</span><span class='line'>                      table <span class="o">(</span>lines numbers in another cell, copy-paste friendly<span class="o">)</span>
+</span><span class='line'>-o, --direct-output   Prints the generated HTML code to stdin<span class="p">;</span> won<span class="s1">&#39;t work with PDF export</span>
+</span><span class='line'><span class="s1">-q, --quiet           Won&#39;</span>t write anything to stdin <span class="o">(</span>silent mode<span class="o">)</span>
+</span><span class='line'>-r, --relative   Make your presentation asset links relative to current
+</span><span class='line'>                      <span class="nb">pwd</span><span class="p">;</span> This may be useful <span class="k">if</span> you intend to publish your
+</span><span class='line'>                      html presentation online.
+</span><span class='line'>-t THEME, --theme<span class="o">=</span>THEME
+</span><span class='line'>                      A theme name, or path to a landlside theme directory
+</span><span class='line'>-v, --verbose  Write informational messages to stdin <span class="o">(</span>enabled by default<span class="o">)</span>
+</span><span class='line'>-w, --watch    Watch the <span class="nb">source </span>directory <span class="k">for</span> changes and auto-regenerate the presentation
+</span><span class='line'>-x EXTENSIONS, --extensions<span class="o">=</span>EXTENSIONS
+</span><span class='line'>                      Comma-separated list of extensions <span class="k">for</span> Markdown
+</span><span class='line'>-m, --math-output     Enable mathematical output using mathjax
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用Fuse挂载HDFS到本地目录方法]]></title>
