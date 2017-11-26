@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-11-26T19:11:43+08:00</updated>
+  <updated>2017-11-26T19:13:19+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -37,7 +37,7 @@
 </ul>
 
 
-<p> ### 安装landslide</p>
+<h3>安装landslide</h3>
 
 <p>  方案一 pip安装：</p>
 
@@ -52,7 +52,7 @@ $ python setup.py build
 $ sudo python setup.py install
 </code></pre>
 
-<p> ## Markdown书写Slide内容</p>
+<h3>Markdown书写Slide内容</h3>
 
 <p>以markdown语法书写，可以参考landslide提供的示例：</p>
 
@@ -61,7 +61,7 @@ $ sudo python setup.py install
 </ul>
 
 
-<h2>生成PPT页面</h2>
+<h3>生成PPT页面</h3>
 
 <p>以官方提供的markdown文本为例，文件命名为test.md，完成后执行如下命令生成HTML内容：</p>
 
