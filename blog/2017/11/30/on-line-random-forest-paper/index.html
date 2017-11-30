@@ -5,13 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Mysql常用操作方法 - Workspace of LionHeart</title>
+  <title>论文阅读: On-line Random Forest - Workspace of LionHeart</title>
   <meta name="author" content="Wang Yiguang">
 
   
-  <meta name="description" content="Mysql常用操作方法 Jul 6th, 2016 7:24 pm 导航[-] 本文介绍一些mysql实用操作方法。 启动/登录 安装完毕后，使用如下命令： 1
-$bin/mysqld_safe --user=mysql & 启动后即可登录 1
-$mysql 出现如下登录界面表示启动成功： &hellip;">
+  <meta name="description" content="论文阅读: On-line Random Forest Nov 30th, 2017 9:25 pm 导航[-] 2009年的一篇论文, 提出了一种在线随机森林算法（ORF）。 原文链接：http://ieeexplore.ieee.org/abstract/document/5457447/? &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +18,7 @@ $mysql 出现如下登录界面表示启动成功： &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/">
+  <link rel="canonical" href="http://lionheartwang.github.io/blog/2017/11/30/on-line-random-forest-paper/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Workspace of LionHeart" type="application/atom+xml">
@@ -76,7 +74,7 @@ $mysql 出现如下登录界面表示启动成功： &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Mysql常用操作方法</h1>
+      <h1 class="entry-title">论文阅读: On-line Random Forest</h1>
     
     
       <p class="meta">
@@ -85,7 +83,7 @@ $mysql 出现如下登录界面表示启动成功： &hellip;">
 
 
 
-<time class='entry-date' datetime='2016-07-06T19:24:22+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:24 pm</span></time>
+<time class='entry-date' datetime='2017-11-30T21:25:38+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>9:25 pm</span></time>
         
       </p>
     
@@ -98,110 +96,57 @@ $mysql 出现如下登录界面表示启动成功： &hellip;">
   <div class="anchorContent" id="anchorContent"> </div>
 </div>
 
-  <div class="entry-content"><p>本文介绍一些mysql实用操作方法。</p>
+  <div class="entry-content"><p>2009年的一篇论文, 提出了一种在线随机森林算法（ORF）。</p>
 
-<!--more-->
+<p>原文链接：<a href="http://ieeexplore.ieee.org/abstract/document/5457447/?reload=true">http://ieeexplore.ieee.org/abstract/document/5457447/?reload=true</a></p>
 
-
-<h2>启动/登录</h2>
-
-<p>安装完毕后，使用如下命令：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$bin/mysqld_safe --user=mysql &</span></code></pre></td></tr></table></div></figure>
+<!-- More -->
 
 
-<p>启动后即可登录</p>
+<h2>本文解决的问题</h2>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysql</span></code></pre></td></tr></table></div></figure>
+<p>经典的随机森林算法是离线训练，每次要基于全局数据生成一系列决策树，但在线环境下难以获得全局数据，因而无法直接使用。</p>
 
+<p>本文提出的算法设计参考了online-bagging的思路，效果接近离线版本的算法。</p>
 
-<p>出现如下登录界面表示启动成功：</p>
+<h2>核心内容</h2>
 
-<p><img src="/images/blog/02-mysql_login.png"></p>
+<p>本文提出的在线online random forest算法中，每棵树可以在线分裂。样本采样时每棵树采样次数基于泊松分布，每个叶子分裂的条件是预测的数量要达到一定的值和每个叶子节点信息。</p>
 
-<p>更一般地，可以登录远程mysql数据库。命令如下：</p>
+<p>每个树的生长主要通过在线接收的实时样本数据，每棵树的叶子节点分裂主要根据该节点的熵或Gini系数。</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysql -h&lt;目标ip/hostname&gt; -u&lt;用户名&gt; -p&lt;密码&gt;</span></code></pre></td></tr></table></div></figure>
+<p>算法流程如下图所示：</p>
 
+<p><img src="image/07-online_random_forest.png" alt="" /></p>
 
-<h2>用户权限管理</h2>
+<p>说明如下：</p>
 
-<p>一般mysql安装完在本地可以root账户免密码登录。可以为root账户设置密码。</p>
-
-<h3>设置root账户密码</h3>
-
-<p>使用mysqladmin命令设置，形式如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqladmin -u root password "&lt;新的root密码&gt;"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>设置完毕后root帐号登录j就需要输入密码：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysql -uroot -p&lt;新的root密码&gt;</span></code></pre></td></tr></table></div></figure>
+<ul>
+<li>步骤3. 用个possion分布确定从采样的次数，其原理见online boosting： <a href="http://www.cnblogs.com/liqizhou/archive/2012/05/10/2494145.html">http://www.cnblogs.com/liqizhou/archive/2012/05/10/2494145.html</a></li>
+<li>步骤6. u代表分类的类别。</li>
+<li>步骤7. j代表第t棵树上叶子节点。</li>
+<li>步骤8. 统计第j个叶子节点的数目和计算Gini。</li>
+<li>步骤9. 判断条件是否分裂的二个条件。</li>
+<li>步骤10. 在符合条件的叶子节点中，选择一个Gini最大的叶子节点作为分类节点。</li>
+</ul>
 
 
-<h3>添加用户</h3>
+<p>有时在线训练过程中希望丢弃较旧的信息，需要适当丢弃随机森林中的某些树。针对这种需求，原文给出了随机森林中树的选择性丢弃方案。</p>
 
-<p>添加新用户并授予权限使用如下语句：</p>
+<p>算法流程如下图所示：</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; GRANT &lt;权限1, 权限2...&gt; PRIVILEGES ON &lt;授权数据库名&gt;.&lt;授权表名&gt; TO '&lt;用户名&gt;'@'&lt;授权访问的IP&gt;' IDENTIFIED BY '&lt;密码&gt;' WITH GRANT OPTION;</span></code></pre></td></tr></table></div></figure>
+<p><img src="image/08-orf_temporal_knowledge_weighting.png" alt="" /></p>
 
+<p>附C++源码实现：</p>
 
-<p>其中WITH GRANT OPTION可选，表明该用户是否有权限授予权限。</p>
-
-<p>另外可以使用通配符'*&lsquo;，&rsquo;%&lsquo;，例如如下语句：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; GRANT ALL PRIVILEGES ON *.* TO 'wyg'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION;</span></code></pre></td></tr></table></div></figure>
+<ul>
+<li><a href="https://github.com/amirsaffari/online-random-forests">https://github.com/amirsaffari/online-random-forests</a></li>
+</ul>
 
 
-<p>该语句为用户wyg授权，以123456为密码，具有从任意IP访问所有数据库中所有表的所有权限，并具有授权权限。</p>
+<h2>本文解决方案效果</h2>
 
-<h2>备份/还原数据库</h2>
-
-<p>生产环境中经常需要对数据库进行迁移，这就需要备份/还原数据库。</p>
-
-<h3>备份数据</h3>
-
-<p>使用mysqldump命令，语法如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqldump -u&lt;用户名&gt; -p&lt;密码&gt; --databases &lt;数据库1，数据库2...&gt; &gt; &lt;输出文件&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>该语句将指定的database的数据信息备份到输出文件中，输出文件是一个sql文件。</p>
-
-<p>可以用&ndash;all-databases 将整个数据库的所有database的数据备份。</p>
-
-<h3>还原数据</h3>
-
-<p>在输出文件的当前目录登录mysql，然后执行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; source &lt;输入文件&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>执行完成后当前输入文件中的数据信息就录入当前mysql中。</p>
-
-<p>例如，在一台老的数据库机器上执行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqldump -uwyg -p123456 --all-databases &gt; all.sql</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后拷贝all.sql到新机器，登录mysql执行:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; source all.sql</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就完成了mysql数据从老机器到新机器的迁移。</p>
+<p>随着样本数量增加，算法效果逼近离线随机森林算法。</p>
 </div>
   <script src="/javascripts/blogDirectory.js" type="text/javascript"></script>
 
@@ -218,12 +163,12 @@ $mysql 出现如下登录界面表示启动成功： &hellip;">
 
 
 
-<time class='entry-date' datetime='2016-07-06T19:24:22+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:24 pm</span></time>
+<time class='entry-date' datetime='2017-11-30T21:25:38+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>9:25 pm</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/技术资源/'>技术资源</a>
+    <a class='category' href='/blog/categories/机器学习/'>机器学习</a>, <a class='category' href='/blog/categories/论文笔记/'>论文笔记</a>
   
 </span>
 
@@ -232,7 +177,7 @@ $mysql 出现如下登录界面表示启动成功： &hellip;">
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2017/11/30/on-line-random-forest-paper/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2017/11/30/on-line-random-forest-paper/" >Tweet</a>
   
   
   
@@ -241,10 +186,8 @@ $mysql 出现如下登录界面表示启动成功： &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2016/05/27/linux-shellpei-se-zhi-nan/" title="Previous Post: Linux Shell配色指南">&laquo; Linux Shell配色指南</a>
+        <a class="basic-alignment left" href="/blog/2017/11/26/shi-yong-landslideji-yu-markdownzhi-zuo-zai-xian-slide/" title="Previous Post: 使用Landslide基于MarkDown制作在线Slide">&laquo; 使用Landslide基于MarkDown制作在线Slide</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2016/08/18/no-pass-world-ssh-method/" title="Next Post: 免密码远程登录/拷贝方法">免密码远程登录/拷贝方法 &raquo;</a>
       
     </p>
   </footer>

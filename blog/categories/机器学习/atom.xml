@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[机器学习 | Workspace of LionHeart]]></title>
+  <link href="http://lionheartwang.github.io/blog/categories/机器学习/atom.xml" rel="self"/>
+  <link href="http://lionheartwang.github.io/"/>
+  <updated>2017-11-30T21:30:07+08:00</updated>
+  <id>http://lionheartwang.github.io/</id>
+  <author>
+    <name><![CDATA[Wang Yiguang]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[论文阅读: On-line Random Forest]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/11/30/on-line-random-forest-paper/"/>
+    <updated>2017-11-30T21:25:38+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/11/30/on-line-random-forest-paper</id>
+    <content type="html"><![CDATA[<p>2009年的一篇论文, 提出了一种在线随机森林算法（ORF）。</p>
+
+<p>原文链接：<a href="http://ieeexplore.ieee.org/abstract/document/5457447/?reload=true">http://ieeexplore.ieee.org/abstract/document/5457447/?reload=true</a></p>
+
+<!-- More -->
+
+
+<h2>本文解决的问题</h2>
+
+<p>经典的随机森林算法是离线训练，每次要基于全局数据生成一系列决策树，但在线环境下难以获得全局数据，因而无法直接使用。</p>
+
+<p>本文提出的算法设计参考了online-bagging的思路，效果接近离线版本的算法。</p>
+
+<h2>核心内容</h2>
+
+<p>本文提出的在线online random forest算法中，每棵树可以在线分裂。样本采样时每棵树采样次数基于泊松分布，每个叶子分裂的条件是预测的数量要达到一定的值和每个叶子节点信息。</p>
+
+<p>每个树的生长主要通过在线接收的实时样本数据，每棵树的叶子节点分裂主要根据该节点的熵或Gini系数。</p>
+
+<p>算法流程如下图所示：</p>
+
+<p><img src="image/07-online_random_forest.png" alt="" /></p>
+
+<p>说明如下：</p>
+
+<ul>
+<li>步骤3. 用个possion分布确定从采样的次数，其原理见online boosting： <a href="http://www.cnblogs.com/liqizhou/archive/2012/05/10/2494145.html">http://www.cnblogs.com/liqizhou/archive/2012/05/10/2494145.html</a></li>
+<li>步骤6. u代表分类的类别。</li>
+<li>步骤7. j代表第t棵树上叶子节点。</li>
+<li>步骤8. 统计第j个叶子节点的数目和计算Gini。</li>
+<li>步骤9. 判断条件是否分裂的二个条件。</li>
+<li>步骤10. 在符合条件的叶子节点中，选择一个Gini最大的叶子节点作为分类节点。</li>
+</ul>
+
+
+<p>有时在线训练过程中希望丢弃较旧的信息，需要适当丢弃随机森林中的某些树。针对这种需求，原文给出了随机森林中树的选择性丢弃方案。</p>
+
+<p>算法流程如下图所示：</p>
+
+<p><img src="image/08-orf_temporal_knowledge_weighting.png" alt="" /></p>
+
+<p>附C++源码实现：</p>
+
+<ul>
+<li><a href="https://github.com/amirsaffari/online-random-forests">https://github.com/amirsaffari/online-random-forests</a></li>
+</ul>
+
+
+<h2>本文解决方案效果</h2>
+
+<p>随着样本数量增加，算法效果逼近离线随机森林算法。</p>
+]]></content>
+  </entry>
+  
+</feed>

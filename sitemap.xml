@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://lionheartwang.github.io/blog/2017/11/30/on-line-random-forest-paper/</loc>
+<lastmod>2017-11-30T21:25:38+08:00</lastmod>
+</url>
+<url>
 <loc>http://lionheartwang.github.io/blog/2017/11/26/shi-yong-landslideji-yu-markdownzhi-zuo-zai-xian-slide/</loc>
 <lastmod>2017-11-26T19:05:19+08:00</lastmod>
 </url>
@@ -121,5 +125,11 @@
 </url>
 <url>
 <loc>http://lionheartwang.github.io/blog/categories/%E5%89%8D%E7%AB%AF/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/blog/categories/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/blog/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/</loc>
 </url>
 </urlset>

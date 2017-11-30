@@ -5,13 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Mysql常用操作方法 - Workspace of LionHeart</title>
+  <title>Workspace of LionHeart</title>
   <meta name="author" content="Wang Yiguang">
 
   
-  <meta name="description" content="Mysql常用操作方法 Jul 6th, 2016 7:24 pm 导航[-] 本文介绍一些mysql实用操作方法。 启动/登录 安装完毕后，使用如下命令： 1
-$bin/mysqld_safe --user=mysql & 启动后即可登录 1
-$mysql 出现如下登录界面表示启动成功： &hellip;">
+  <meta name="description" content="使用Octopress搭建Github博客 Feb 3rd, 2016 11:42 am 本文介绍如何使用Octopress搭建Github博客。 Blog Archives Newer &rarr; Recent Posts 论文阅读: On-line Random Forest &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +18,7 @@ $mysql 出现如下登录界面表示启动成功： &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/">
+  <link rel="canonical" href="http://lionheartwang.github.io/posts/3/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Workspace of LionHeart" type="application/atom+xml">
@@ -71,12 +69,15 @@ $mysql 出现如下登录界面表示启动成功： &hellip;">
 </nav>
   <div id="main">
     <div id="content">
-      <div>
-<article class="hentry" role="article">
+      <div class="blog-index">
   
+  
+  
+    <article>
+      
   <header>
     
-      <h1 class="entry-title">Mysql常用操作方法</h1>
+      <h1 class="entry-title"><a href="/blog/2016/02/03/%E4%BD%BF%E7%94%A8Octopress%E6%90%AD%E5%BB%BAGitHub%E5%8D%9A%E5%AE%A2/">使用Octopress搭建Github博客</a></h1>
     
     
       <p class="meta">
@@ -85,173 +86,34 @@ $mysql 出现如下登录界面表示启动成功： &hellip;">
 
 
 
-<time class='entry-date' datetime='2016-07-06T19:24:22+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:24 pm</span></time>
+<time class='entry-date' datetime='2016-02-03T11:42:56+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2016</span></span> <span class='time'>11:42 am</span></time>
         
       </p>
     
   </header>
 
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<div class="blogAnchor">
-  <p id="anchorContentToggle" title="收起">导航[-]</p>
-  <div class="anchorContent" id="anchorContent"> </div>
+  <div class="entry-content"><p>本文介绍如何使用Octopress搭建Github博客。</p>
+
 </div>
-
-  <div class="entry-content"><p>本文介绍一些mysql实用操作方法。</p>
-
-<!--more-->
-
-
-<h2>启动/登录</h2>
-
-<p>安装完毕后，使用如下命令：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$bin/mysqld_safe --user=mysql &</span></code></pre></td></tr></table></div></figure>
-
-
-<p>启动后即可登录</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysql</span></code></pre></td></tr></table></div></figure>
-
-
-<p>出现如下登录界面表示启动成功：</p>
-
-<p><img src="/images/blog/02-mysql_login.png"></p>
-
-<p>更一般地，可以登录远程mysql数据库。命令如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysql -h&lt;目标ip/hostname&gt; -u&lt;用户名&gt; -p&lt;密码&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>用户权限管理</h2>
-
-<p>一般mysql安装完在本地可以root账户免密码登录。可以为root账户设置密码。</p>
-
-<h3>设置root账户密码</h3>
-
-<p>使用mysqladmin命令设置，形式如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqladmin -u root password "&lt;新的root密码&gt;"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>设置完毕后root帐号登录j就需要输入密码：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysql -uroot -p&lt;新的root密码&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>添加用户</h3>
-
-<p>添加新用户并授予权限使用如下语句：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; GRANT &lt;权限1, 权限2...&gt; PRIVILEGES ON &lt;授权数据库名&gt;.&lt;授权表名&gt; TO '&lt;用户名&gt;'@'&lt;授权访问的IP&gt;' IDENTIFIED BY '&lt;密码&gt;' WITH GRANT OPTION;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中WITH GRANT OPTION可选，表明该用户是否有权限授予权限。</p>
-
-<p>另外可以使用通配符'*&lsquo;，&rsquo;%&lsquo;，例如如下语句：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; GRANT ALL PRIVILEGES ON *.* TO 'wyg'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>该语句为用户wyg授权，以123456为密码，具有从任意IP访问所有数据库中所有表的所有权限，并具有授权权限。</p>
-
-<h2>备份/还原数据库</h2>
-
-<p>生产环境中经常需要对数据库进行迁移，这就需要备份/还原数据库。</p>
-
-<h3>备份数据</h3>
-
-<p>使用mysqldump命令，语法如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqldump -u&lt;用户名&gt; -p&lt;密码&gt; --databases &lt;数据库1，数据库2...&gt; &gt; &lt;输出文件&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>该语句将指定的database的数据信息备份到输出文件中，输出文件是一个sql文件。</p>
-
-<p>可以用&ndash;all-databases 将整个数据库的所有database的数据备份。</p>
-
-<h3>还原数据</h3>
-
-<p>在输出文件的当前目录登录mysql，然后执行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; source &lt;输入文件&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>执行完成后当前输入文件中的数据信息就录入当前mysql中。</p>
-
-<p>例如，在一台老的数据库机器上执行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqldump -uwyg -p123456 --all-databases &gt; all.sql</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后拷贝all.sql到新机器，登录mysql执行:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; source all.sql</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就完成了mysql数据从老机器到新机器的迁移。</p>
-</div>
-  <script src="/javascripts/blogDirectory.js" type="text/javascript"></script>
-
-
-  <footer>
-    <p class="meta">
-      
+  
+  
+	  <!--footer-->
+      <!--a rel="full-article" href="/blog/2016/02/03/%E4%BD%BF%E7%94%A8Octopress%E6%90%AD%E5%BB%BAGitHub%E5%8D%9A%E5%AE%A2/">全文</a-->
+		<!--/footer-->
   
 
-<span class="byline author vcard">Posted by <span class="fn">Wang Yiguang</span></span>
 
-      
-
-
-
-
-<time class='entry-date' datetime='2016-07-06T19:24:22+08:00'><span class='date'><span class='date-month'>Jul</span> <span class='date-day'>6</span><span class='date-suffix'>th</span>, <span class='date-year'>2016</span></span> <span class='time'>7:24 pm</span></time>
-      
-
-<span class="categories">
+    </article>
   
-    <a class='category' href='/blog/categories/技术资源/'>技术资源</a>
-  
-</span>
-
-
-    </p>
+  <div class="pagination">
     
-      <div class="sharing">
-  
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/" >Tweet</a>
-  
-  
-  
-</div>
-
+    <a href="/blog/archives">Blog Archives</a>
     
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2016/05/27/linux-shellpei-se-zhi-nan/" title="Previous Post: Linux Shell配色指南">&laquo; Linux Shell配色指南</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2016/08/18/no-pass-world-ssh-method/" title="Next Post: 免密码远程登录/拷贝方法">免密码远程登录/拷贝方法 &raquo;</a>
-      
-    </p>
-  </footer>
-</article>
-
+    <a class="next" href="/posts/2">Newer &rarr;</a>
+    
+  </div>
 </div>
-
 <aside class="sidebar">
   
     <section id="recent_posts">
@@ -393,7 +255,6 @@ $mysql 出现如下登录界面表示启动成功： &hellip;">
 
   
 </aside>
-
 
     </div>
   </div>

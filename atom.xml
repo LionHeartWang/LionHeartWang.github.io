@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-11-26T19:13:19+08:00</updated>
+  <updated>2017-11-30T21:30:07+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,65 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[论文阅读: On-line Random Forest]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/11/30/on-line-random-forest-paper/"/>
+    <updated>2017-11-30T21:25:38+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/11/30/on-line-random-forest-paper</id>
+    <content type="html"><![CDATA[<p>2009年的一篇论文, 提出了一种在线随机森林算法（ORF）。</p>
+
+<p>原文链接：<a href="http://ieeexplore.ieee.org/abstract/document/5457447/?reload=true">http://ieeexplore.ieee.org/abstract/document/5457447/?reload=true</a></p>
+
+<!-- More -->
+
+
+<h2>本文解决的问题</h2>
+
+<p>经典的随机森林算法是离线训练，每次要基于全局数据生成一系列决策树，但在线环境下难以获得全局数据，因而无法直接使用。</p>
+
+<p>本文提出的算法设计参考了online-bagging的思路，效果接近离线版本的算法。</p>
+
+<h2>核心内容</h2>
+
+<p>本文提出的在线online random forest算法中，每棵树可以在线分裂。样本采样时每棵树采样次数基于泊松分布，每个叶子分裂的条件是预测的数量要达到一定的值和每个叶子节点信息。</p>
+
+<p>每个树的生长主要通过在线接收的实时样本数据，每棵树的叶子节点分裂主要根据该节点的熵或Gini系数。</p>
+
+<p>算法流程如下图所示：</p>
+
+<p><img src="image/07-online_random_forest.png" alt="" /></p>
+
+<p>说明如下：</p>
+
+<ul>
+<li>步骤3. 用个possion分布确定从采样的次数，其原理见online boosting： <a href="http://www.cnblogs.com/liqizhou/archive/2012/05/10/2494145.html">http://www.cnblogs.com/liqizhou/archive/2012/05/10/2494145.html</a></li>
+<li>步骤6. u代表分类的类别。</li>
+<li>步骤7. j代表第t棵树上叶子节点。</li>
+<li>步骤8. 统计第j个叶子节点的数目和计算Gini。</li>
+<li>步骤9. 判断条件是否分裂的二个条件。</li>
+<li>步骤10. 在符合条件的叶子节点中，选择一个Gini最大的叶子节点作为分类节点。</li>
+</ul>
+
+
+<p>有时在线训练过程中希望丢弃较旧的信息，需要适当丢弃随机森林中的某些树。针对这种需求，原文给出了随机森林中树的选择性丢弃方案。</p>
+
+<p>算法流程如下图所示：</p>
+
+<p><img src="image/08-orf_temporal_knowledge_weighting.png" alt="" /></p>
+
+<p>附C++源码实现：</p>
+
+<ul>
+<li><a href="https://github.com/amirsaffari/online-random-forests">https://github.com/amirsaffari/online-random-forests</a></li>
+</ul>
+
+
+<h2>本文解决方案效果</h2>
+
+<p>随着样本数量增加，算法效果逼近离线随机森林算法。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用Landslide基于MarkDown制作在线Slide]]></title>
@@ -3053,208 +3112,6 @@ Facade模式定义了一个高层接口，这个接口使这一子系统更加�
 <li>Visitor：某些可作用于一个(组)对象上的操作，但不修改这些对象的类</li>
 </ul>
 
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用Octopress搭建Github博客]]></title>
-    <link href="http://lionheartwang.github.io/blog/2016/02/03/%E4%BD%BF%E7%94%A8Octopress%E6%90%AD%E5%BB%BAGitHub%E5%8D%9A%E5%AE%A2/"/>
-    <updated>2016-02-03T11:42:56+08:00</updated>
-    <id>http://lionheartwang.github.io/blog/2016/02/03/使用Octopress搭建GitHub博客</id>
-    <content type="html"><![CDATA[<p>本文介绍如何使用Octopress搭建Github博客。</p>
-
-<!--more-->
-
-
-<h2>Octopress安装与配置</h2>
-
-<h3>安装ruby</h3>
-
-<p>查看ruby版本</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ruby</span> --version  <span class="c"># 必须显示1.9.3</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>安装方法：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$curl</span> -L https://get.rvm.io <span class="p">|</span> bash -s stable --ruby
-</span><span class='line'><span class="nv">$rvm</span> install 1.9.3
-</span><span class='line'><span class="nv">$rvm</span> use 1.9.3
-</span><span class='line'><span class="nv">$rvm</span> rubygems latest
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>若有显示命名未找到，直接下载安装即可。</p>
-
-<h3>安装octopress</h3>
-
-<p>在安装octopress之前，确保已安装git。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="nv">$git</span> clone git://github.com/imathis/octopress.git octopress
-</span><span class='line'> <span class="nv">$cd</span> octopress
-</span><span class='line'> <span class="nv">$gem</span> install bundler
-</span><span class='line'> <span class="nv">$bundle</span> install
-</span><span class='line'> <span class="nv">$rake</span> install
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>建立Github主页</h2>
-
-<p>需要注册Github账户。登录后在GitHub上创建一个仓库。仓库名称：username.github.io</p>
-
-<h3>博客生成</h3>
-
-<p>博客的源码放到source分支下，并把生成的内容提交到master分支。
-在octopress目录下使用如下命令生成博客内容。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> generate //生成
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>博客预览</h3>
-
-<p>可使用如下命令在本地预览生成效果。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> preview //预览
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>执行成功后可通过本地浏览器在 <a href="http://localhost:4000">http://localhost:4000</a> 查看到先前生成的博客内容。</p>
-
-<h3>博客发布</h3>
-
-<p>如果预览没有问题，想要发布博客到Github主页。
-首先执行如下命令：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> setup_github_pages
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>执行后要求输入仓库的url，可以在Github仓库内容页面找到项目的ssh或http URL链接。</p>
-
-<p>如：git@github.com:username/username.github.io.git</p>
-
-<p>直接复制粘贴该链接即可。</p>
-
-<p>上述操作设置了发布的目标位置为用户Github主页。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> deploy
-</span><span class='line'><span class="nv">$git</span> add .
-</span><span class='line'><span class="nv">$git</span> commit -m <span class="s2">&quot;comment&quot;</span>
-</span><span class='line'><span class="nv">$git</span> push origin <span class="nb">source</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>生成后的博客文件存放在_deploy目录下, 通过上述操作提交到Github博客项目。</p>
-
-<p>至此就能够在username.github.io上看到了博客内容了。</p>
-
-<h2>发布新文章</h2>
-
-<p>发布新文章时可使用如下命令：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> new_post<span class="o">[</span><span class="s2">&quot;title&quot;</span><span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>生成的新文章在source/_post/目录下，文件名构成为时间和标题的拼接。</p>
-
-<p>后续发布操作依然是执行</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> generate
-</span><span class='line'><span class="nv">$rake</span> preview
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>此时可以预览文章，然后执行</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> deploy
-</span><span class='line'><span class="nv">$git</span> add .
-</span><span class='line'><span class="nv">$git</span> commit -m <span class="s2">&quot;comment&quot;</span>
-</span><span class='line'><span class="nv">$git</span> push origin <span class="nb">source</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>此时在Github博客主页就能看到新发布的文章了。</p>
-
-<h2>迁移博客</h2>
-
-<p>如果更换电脑，那么需要重新从github上下载博客的源码, 并重新下载依赖。</p>
-
-<h3>重新下载博客源码</h3>
-
-<p>首先重新从github上下载博客的源码，执行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$git</span> clone -b <span class="nb">source </span>git@github.com:username/username.github.io.git
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>下载到本地后进入项目目录，然后执行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$git</span> clone git@github.com:username/username.github.io.git _deploy
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>重新下载依赖</h3>
-
-<p>需要重新安装gem，然后执行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$gem</span> install bundler
-</span><span class='line'><span class="nv">$bundle</span> install
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>注意：</p>
-
-<ul>
-<li>由于以前已经建立好工程，因此<b><font color=red>无需运行rake install</font></b>。</li>
-<li>如果运行反而会冲掉之前设置好的theme。</li>
-</ul>
-
-
-<h3>重新生成博文</h3>
-
-<p>执行：</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$rake</span> generate
-</span><span class='line'><span class="nv">$rake</span> preview
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>在本地4000端口可以看到博客预览，同Github博客主页的应当是相同的。</p>
-
-<p>后续就可以在新电脑上更新发布博文了。</p>
 ]]></content>
   </entry>
   
