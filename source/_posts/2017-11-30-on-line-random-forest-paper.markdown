@@ -26,7 +26,7 @@ categories: [论文笔记,机器学习]
 
 算法流程如下图所示：
 
-![](image/07-online_random_forest.png)
+{% img /images/blog/07-online_random_forest.png %}
 
 说明如下：
 
@@ -41,7 +41,7 @@ categories: [论文笔记,机器学习]
 
 算法流程如下图所示：
 
-![](image/08-orf_temporal_knowledge_weighting.png)
+{% img /images/blog/08-orf_temporal_knowledge_weighting.png %}
 
 附C++源码实现：
 
