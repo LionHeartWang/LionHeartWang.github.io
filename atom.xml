@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-11-30T21:59:10+08:00</updated>
+  <updated>2017-12-10T17:01:23+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,523 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tensorflow模型保存与加载方法]]></title>
+    <link href="http://lionheartwang.github.io/blog/2017/12/10/tensorflowmo-xing-bao-cun-yu-jia-zai-fang-fa/"/>
+    <updated>2017-12-10T16:57:13+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2017/12/10/tensorflowmo-xing-bao-cun-yu-jia-zai-fang-fa</id>
+    <content type="html"><![CDATA[<p>本文档介绍如何保存和读取Tensorflow变量和模型。</p>
+
+<p>官方文档可参考：</p>
+
+<ul>
+<li><a href="https://www.tensorflow.org/programmers_guide/saved_model">https://www.tensorflow.org/programmers_guide/saved_model</a></li>
+</ul>
+
+
+<!--More-->
+
+
+<h2>保存/读取变量</h2>
+
+<p>本节介绍如何存取Tensorflow变量。注意Estimators会自动在model_dir中存取变量。</p>
+
+<p><code>tf.train.Saver</code> 提供了存取模型的接口，其构造函数会在图中增加存取模型的op。</p>
+
+<p>示例化的Saver对象提供方法来运行这些op并，设置checkpoint文件用于保存和恢复模型信息。</p>
+
+<p>Saver关于将模型中定义的所有变量保存，如果你不了解加载模型的graph结构，可以参考后面的保存恢复模型一节。</p>
+
+<p>TensorFlow将变量以二进制形式存储在文件中，保存的信息主要是变量名以及对应的Tensor的值。</p>
+
+<h3>保存变量</h3>
+
+<p>调用tf.train.Saver()来管理模型变量，示例代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># Create some variables.</span>
+</span><span class='line'><span class="n">v1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s">&quot;v1&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros_initializer</span><span class="p">)</span>
+</span><span class='line'><span class="n">v2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s">&quot;v2&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros_initializer</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">inc_v1</span> <span class="o">=</span> <span class="n">v1</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">v1</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">dec_v2</span> <span class="o">=</span> <span class="n">v2</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">v2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Add an op to initialize the variables.</span>
+</span><span class='line'><span class="n">init_op</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">global_variables_initializer</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Add ops to save and restore all the variables.</span>
+</span><span class='line'><span class="n">saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Later, launch the model, initialize the variables, do some work, and save the</span>
+</span><span class='line'><span class="c"># variables to disk.</span>
+</span><span class='line'><span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">init_op</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Do some work with the model.</span>
+</span><span class='line'>  <span class="n">inc_v1</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">dec_v2</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span><span class='line'>  <span class="c"># Save the variables to disk.</span>
+</span><span class='line'>  <span class="n">save_path</span> <span class="o">=</span> <span class="n">saver</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="s">&quot;/tmp/model.ckpt&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&quot;Model saved in file: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">save_path</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>恢复变量</h3>
+
+<p>同样使用tf.train.Saver来从checkpoint中恢复变量，示例代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Create some variables.</span>
+</span><span class='line'><span class="n">v1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s">&quot;v1&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+</span><span class='line'><span class="n">v2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s">&quot;v2&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Add ops to save and restore all the variables.</span>
+</span><span class='line'><span class="n">saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Later, launch the model, use the saver to restore variables from disk, and</span>
+</span><span class='line'><span class="c"># do some work with the model.</span>
+</span><span class='line'><span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+</span><span class='line'>  <span class="c"># Restore variables from disk.</span>
+</span><span class='line'>  <span class="n">saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="s">&quot;/tmp/model.ckpt&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&quot;Model restored.&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="c"># Check the values of the variables</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&quot;v1 : </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">v1</span><span class="o">.</span><span class="n">eval</span><span class="p">())</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&quot;v2 : </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">v2</span><span class="o">.</span><span class="n">eval</span><span class="p">())</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>存取指定的变量</h3>
+
+<p>有时可能只需要存取模型graph中的部分变量，可以list或者dict两种形式传给tf.train.Saver()来指定需要存取的变量。</p>
+
+<ul>
+<li>list形式，模型的变量列表。</li>
+<li>dict形式，name为新的保存后的变量名，value为模型中的变量名。</li>
+</ul>
+
+
+<p>示例代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">tf</span><span class="o">.</span><span class="n">reset_default_graph</span><span class="p">()</span>
+</span><span class='line'><span class="c"># Create some variables.</span>
+</span><span class='line'><span class="n">v1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s">&quot;v1&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros_initializer</span><span class="p">)</span>
+</span><span class='line'><span class="n">v2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">get_variable</span><span class="p">(</span><span class="s">&quot;v2&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros_initializer</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Add ops to save and restore only `v2` using the name &quot;v2&quot;</span>
+</span><span class='line'><span class="n">saver</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">Saver</span><span class="p">({</span><span class="s">&quot;v2&quot;</span><span class="p">:</span> <span class="n">v2</span><span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Use the saver object normally after that.</span>
+</span><span class='line'><span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+</span><span class='line'>  <span class="c"># Initialize v1 since the saver will not.</span>
+</span><span class='line'>  <span class="n">v1</span><span class="o">.</span><span class="n">initializer</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span><span class='line'>  <span class="n">saver</span><span class="o">.</span><span class="n">restore</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="s">&quot;/tmp/model.ckpt&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&quot;v1 : </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">v1</span><span class="o">.</span><span class="n">eval</span><span class="p">())</span>
+</span><span class='line'>  <span class="k">print</span><span class="p">(</span><span class="s">&quot;v2 : </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">v2</span><span class="o">.</span><span class="n">eval</span><span class="p">())</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>注意：</p>
+
+<ul>
+<li>可以创建多个模型Saver对象来保存模型变量，同样的变量可被不同的Saver保存多次，restore操作用于从checkpoint中恢复变量的值。</li>
+<li>如果checkpoint中只保存了部分变量，那么恢复后，graph中其他的变量仍需要被初始化。</li>
+<li>查看checkpoint中的变量可以使用inspect_checkpoint库，特别是print_tensors_in_checkpoint_file函数。</li>
+<li>Saver默认使用tf.Variable.name属性作为每个变量的变量名，然而你可以在Saver对象中未变量指定存储在checkpoint中的新名字。</li>
+</ul>
+
+
+<h2>保存/读取模型概述</h2>
+
+<p>当你想要保存整个模型(变量、模型graph以及graph的meta信息)时，我们推荐使用<code>SavedModel</code>。</p>
+
+<p>SavedModel是一种面向多语言的，可恢复的高度序列化封装的格式。</p>
+
+<p>SavedModel运行上层系统或工具来生产、消费或者转换Tensorflow模型。</p>
+
+<p>Tensorflow提供了多种机制来同SavedModel进行交互，包括tf.saved_model API, Estimator API 以及 CLI方式。</p>
+
+<h2>操作SavedModel API</h2>
+
+<p>本节聚焦在使用底层Tensorflow API时需要用到的保存或加载SavedModel的API。</p>
+
+<h3>构建SavedModel</h3>
+
+<p>我们提供了SavedModel builder的python实现。SavedModelBuilder提供保存MetaGraphDef结构的功能。</p>
+
+<ul>
+<li>MetaGraphDef是MetaGraph的proto buffer表达形式。</li>
+<li>MetaGraph是一个数据流图，以及相关的变量、资源和signatures。</li>
+<li>signature是一个graph的输入与输出的集合。</li>
+</ul>
+
+
+<p>每个加入到 SavedModel中的MetaGraphDef需要以用户指定的tag标注。tag提供了区分特定MetaGraphDef的方法。通常这些tag会标注MetaGraphDef的功能以及一些可选的硬件相关的信息。</p>
+
+<p>SavedModelBuilder的使用示例代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">export_dir</span> <span class="o">=</span> <span class="o">...</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="n">builder</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">saved_model_builder</span><span class="o">.</span><span class="n">SavedModelBuilder</span><span class="p">(</span><span class="n">export_dir</span><span class="p">)</span>
+</span><span class='line'><span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">graph</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">Graph</span><span class="p">())</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'>  <span class="n">builder</span><span class="o">.</span><span class="n">add_meta_graph_and_variables</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span>
+</span><span class='line'>                                       <span class="p">[</span><span class="n">tag_constants</span><span class="o">.</span><span class="n">TRAINING</span><span class="p">],</span>
+</span><span class='line'>                                       <span class="n">signature_def_map</span><span class="o">=</span><span class="n">foo_signatures</span><span class="p">,</span>
+</span><span class='line'>                                       <span class="n">assets_collection</span><span class="o">=</span><span class="n">foo_assets</span><span class="p">)</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="c"># Add a second MetaGraphDef for inference.</span>
+</span><span class='line'><span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">graph</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">Graph</span><span class="p">())</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+</span><span class='line'>  <span class="o">...</span>
+</span><span class='line'>  <span class="n">builder</span><span class="o">.</span><span class="n">add_meta_graph</span><span class="p">([</span><span class="n">tag_constants</span><span class="o">.</span><span class="n">SERVING</span><span class="p">])</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="n">builder</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>加载SaveModel</h3>
+
+<p>调用python版本的SaveModel loader需要提供一下信息：</p>
+
+<ul>
+<li>保存graph定义和变量的session。</li>
+<li>用来标识MetaGraphDef的tag。</li>
+<li>SavedModel对应的目录位置。</li>
+</ul>
+
+
+<p>示例代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">export_dir</span> <span class="o">=</span> <span class="o">...</span>
+</span><span class='line'><span class="o">...</span>
+</span><span class='line'><span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">Session</span><span class="p">(</span><span class="n">graph</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">Graph</span><span class="p">())</span> <span class="k">as</span> <span class="n">sess</span><span class="p">:</span>
+</span><span class='line'>  <span class="n">tf</span><span class="o">.</span><span class="n">saved_model</span><span class="o">.</span><span class="n">loader</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">sess</span><span class="p">,</span> <span class="p">[</span><span class="n">tag_constants</span><span class="o">.</span><span class="n">TRAINING</span><span class="p">],</span> <span class="n">export_dir</span><span class="p">)</span>
+</span><span class='line'>  <span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>C++版本的SavedModel loader也提供从指定目录恢复模型的API，并支持指定SessionOptions和RunOptions参数。</p>
+
+<p>同样需要指定taq参数，被加载的SavedModel被SavedModelBundle引用，包含了MetaGraphDef以及加载它的session信息。</p>
+
+<p>示例代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">const</span> <span class="n">string</span> <span class="n">export_dir</span> <span class="o">=</span> <span class="p">...</span>
+</span><span class='line'><span class="n">SavedModelBundle</span> <span class="n">bundle</span><span class="p">;</span>
+</span><span class='line'><span class="p">...</span>
+</span><span class='line'><span class="n">LoadSavedModel</span><span class="p">(</span><span class="n">session_options</span><span class="p">,</span> <span class="n">run_options</span><span class="p">,</span> <span class="n">export_dir</span><span class="p">,</span> <span class="p">{</span><span class="n">kSavedModelTagTrain</span><span class="p">},</span>
+</span><span class='line'>               <span class="o">&amp;</span><span class="n">bundle</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>另外Tensorflow提供了一组MetaGraphDef和SignatureDef相关的常量供用户使用。</p>
+
+<p>MetaGraphDef常量：</p>
+
+<ul>
+<li>python：<a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/saved_model/tag_constants.py">https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/saved_model/tag_constants.py</a></li>
+<li>c++：<a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/cc/saved_model/tag_constants.h">https://github.com/tensorflow/tensorflow/blob/master/tensorflow/cc/saved_model/tag_constants.h</a></li>
+</ul>
+
+
+<p>SignatureDef常量</p>
+
+<ul>
+<li>python：<a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/saved_model/signature_constants.py">https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/saved_model/signature_constants.py</a></li>
+<li>c++：<a href="https://github.com/tensorflow/tensorflow/blob/master/tensorflow/cc/saved_model/signature_constants.h">https://github.com/tensorflow/tensorflow/blob/master/tensorflow/cc/saved_model/signature_constants.h</a></li>
+</ul>
+
+
+<h2>在Estimators中使用SaveModel</h2>
+
+<p>当训练好Estimator模型后，你可能需要部署预测服务。你可以选择在本机启动一个本地服务，或在云端进行扩展。</p>
+
+<p>部署Estimator训练出的模型需要先把模型导出为SaveModel格式，本节介绍：</p>
+
+<ul>
+<li>如何制定输出节点以及相关的API</li>
+<li>使用SavedModel导出模型</li>
+<li>发请求给本地模型预测服务</li>
+</ul>
+
+
+<h3>准备Serving输入</h3>
+
+<p>训练过程中 <code>input_fn()</code>用于提供数据输入，类似地，预测阶段输入数据由 <code>serving_input_receiver_fn</code>提供。</p>
+
+<p>serving_input_receiver_fn有如下两个功能：</p>
+
+<ul>
+<li>将预测需要输入数据的placeholder添加到graph中。</li>
+<li>添加额外的用于将输入数据格式转换为feature Tensors格式的op。</li>
+</ul>
+
+
+<p>函数返回 <code>tf.estimator.export.ServingInputReceiver</code>对象，封装了placeholders以及feature Tensor。</p>
+
+<p>当编写 <code>serving_input_receiver_fn</code>时，需要提供一个 tf.parse_example的特定parser描述来说明数据解析的方式。</p>
+
+<p>Parser说明是一个dict的形式，包含：</p>
+
+<ul>
+<li>tf.FixedLenFeature</li>
+<li>tf.VarLenFeature</li>
+<li>tf.SparseFeature</li>
+</ul>
+
+
+<p>示例代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">feature_spec</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;foo&#39;</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">FixedLenFeature</span><span class="p">(</span><span class="o">...</span><span class="p">),</span>
+</span><span class='line'>                <span class="s">&#39;bar&#39;</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">VarLenFeature</span><span class="p">(</span><span class="o">...</span><span class="p">)}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">serving_input_receiver_fn</span><span class="p">():</span>
+</span><span class='line'>  <span class="sd">&quot;&quot;&quot;An input receiver that expects a serialized tf.Example.&quot;&quot;&quot;</span>
+</span><span class='line'>  <span class="n">serialized_tf_example</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">placeholder</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">string</span><span class="p">,</span>
+</span><span class='line'>                                         <span class="n">shape</span><span class="o">=</span><span class="p">[</span><span class="n">default_batch_size</span><span class="p">],</span>
+</span><span class='line'>                                         <span class="n">name</span><span class="o">=</span><span class="s">&#39;input_example_tensor&#39;</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">receiver_tensors</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;examples&#39;</span><span class="p">:</span> <span class="n">serialized_tf_example</span><span class="p">}</span>
+</span><span class='line'>  <span class="n">features</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">parse_example</span><span class="p">(</span><span class="n">serialized_tf_example</span><span class="p">,</span> <span class="n">feature_spec</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">ServingInputReceiver</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">receiver_tensors</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>tf.estimator.export.build_parsing_serving_input_receiver_fn 工具函数给出了一个通用实现。</p>
+
+<h3>导出模型</h3>
+
+<p>调用 <code>tf.estimator.Estimator.export_savedmodel</code> ，提供导出路径以及serving_input_receiver_fn进行模型导出：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">estimator</span><span class="o">.</span><span class="n">export_savedmodel</span><span class="p">(</span><span class="n">export_dir_base</span><span class="p">,</span> <span class="n">serving_input_receiver_fn</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>该方法创建一个新的graph并调用serving_input_receiver_fn来获取输入tensor，随后调用Estimator的<code>model_fn()</code> 来产生模型的graph。</p>
+
+<p>最终会创建一个带时间戳的目录(export_dir_base/<timestamp>)并将模型导出为SavedModel。</p>
+
+<h3>指定模型输出</h3>
+
+<p>通过export_outputs指定，其类型为 <code>tf.estimator.EstimatorSpec</code>，是一个形如 {name: output} 的dict，用于描述预测阶段的输出。</p>
+
+<p>预测输出的值类型必须为 <code>ExportOutput</code> 的某个实现，例如：</p>
+
+<ul>
+<li>tf.estimator.export.ClassificationOutput,</li>
+<li>tf.estimator.export.RegressionOutput</li>
+<li>tf.estimator.export.PredictOutput.</li>
+</ul>
+
+
+<h3>部署本地预测服务</h3>
+
+<p>本地部署预测服务需要使用TensorFlow Serving。</p>
+
+<p>TensorFlow Serving是一个独立的开源项目，功能是加载SavedModel模型并对外提供gRPC服务。</p>
+
+<p>首先安装Tensorflow Serving。</p>
+
+<p>部署服务命令如下，将 <code>$export_dir_base</code> 替换为SavedModel导出的目录。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>bazel build //tensorflow_serving/model_servers:tensorflow_model_server
+</span><span class='line'>bazel-bin/tensorflow_serving/model_servers/tensorflow_model_server --port<span class="o">=</span><span class="m">9000</span> --model_base_path<span class="o">=</span><span class="nv">$export_dir_base</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行后在9000端口会启动一个gRPC预测服务。</p>
+
+<h3>向本地Server发送请求</h3>
+
+<p>发送预测请求需要通过PredictionService gRPC API。相关API依赖：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  <span class="nv">deps</span> <span class="o">=</span> <span class="o">[</span>
+</span><span class='line'>    <span class="s2">&quot;//tensorflow_serving/apis:classification_proto_py_pb2&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;//tensorflow_serving/apis:regression_proto_py_pb2&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;//tensorflow_serving/apis:predict_proto_py_pb2&quot;</span>,
+</span><span class='line'>    <span class="s2">&quot;//tensorflow_serving/apis:prediction_service_proto_py_pb2&quot;</span>
+</span><span class='line'>  <span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>python代码中可以像如下示例使用：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">tensorflow_serving.apis</span> <span class="kn">import</span> <span class="n">classification_pb2</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">tensorflow_serving.apis</span> <span class="kn">import</span> <span class="n">regression_pb2</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">tensorflow_serving.apis</span> <span class="kn">import</span> <span class="n">predict_pb2</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">tensorflow_serving.apis</span> <span class="kn">import</span> <span class="n">prediction_service_pb2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>请求的数据会以proto buffer的形式发送，发送请求的示例代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">grpc.beta</span> <span class="kn">import</span> <span class="n">implementations</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">channel</span> <span class="o">=</span> <span class="n">implementations</span><span class="o">.</span><span class="n">insecure_channel</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>
+</span><span class='line'><span class="n">stub</span> <span class="o">=</span> <span class="n">prediction_service_pb2</span><span class="o">.</span><span class="n">beta_create_PredictionService_stub</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">request</span> <span class="o">=</span> <span class="n">classification_pb2</span><span class="o">.</span><span class="n">ClassificationRequest</span><span class="p">()</span>
+</span><span class='line'><span class="n">example</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">example_list</span><span class="o">.</span><span class="n">examples</span><span class="o">.</span><span class="n">add</span><span class="p">()</span>
+</span><span class='line'><span class="n">example</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">feature</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">float_list</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">image</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="n">stub</span><span class="o">.</span><span class="n">Classify</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>  <span class="c"># 10 secs timeout</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>本例中的返回值是一个 <code>ClassificationResponse</code>格式的PB数据。</p>
+
+<h2>SavedModel目录结构</h2>
+
+<p>Tensorflow为每个SavedModel组织目录结构形式如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>assets/
+</span><span class='line'>assets.extra/
+</span><span class='line'>variables/
+</span><span class='line'>    variables.data-?????-of-?????
+</span><span class='line'>    variables.index
+</span><span class='line'>saved_model.pb<span class="p">|</span>saved_model.pbtxt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>说明如下：</p>
+
+<ul>
+<li>assets：是一个子目录，包含了一些外部文件，例如词表等，这些资源文件会被特定的MetaGraphDef读取使用。</li>
+<li>assets.extra：是一个子目录，用于上层应用或者用户添加一些自己的资源文件，但不会被模型的graph加载。该目录不由SavedModel管理。</li>
+<li>variables：是一个子目录，用于存储tf.train.Saver的输出。</li>
+<li>saved_model.pb/saved_model.pbtxt SavedModel的Proto Buffer描述。包含了MetaGraphDef的proto buffer形式的定义。</li>
+</ul>
+
+
+<p>一个单独的SavedModel可以表达多个graph，SavedModel的多个graph共享一组checkpoint(变量和资源文件)。</p>
+
+<p>组织形式如下图所示：</p>
+
+<p><img src="http://lionheartwang.github.io/images/blog/10-savemodel.png"></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[论文阅读: On-line Random Forest]]></title>
@@ -2807,309 +3324,6 @@ Baidu Spark 根据不同的发布版本，使用 log4j 或者 logback 作为日�
 <li>在缓存中查找，缓存系统存储了不同查询意图对应的搜索结果。</li>
 <li>如果没有命中，调用网页排序模块功能。结合内容相似性、链接分析返回搜索结果。</li>
 <li>反作弊模块用于自动发现通过"作弊"手段提升排名的网页并对其进行处罚。</li>
-</ul>
-
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[设计模式概述]]></title>
-    <link href="http://lionheartwang.github.io/blog/2016/02/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0/"/>
-    <updated>2016-02-05T15:24:58+08:00</updated>
-    <id>http://lionheartwang.github.io/blog/2016/02/05/设计模式概述</id>
-    <content type="html"><![CDATA[<p>本文介绍设计模式的基本概念并简述23种常见的基本设计模式。</p>
-
-<!--more-->
-
-
-<h2>什么是设计模式？</h2>
-
-<p>一个模式有四个基本要素：</p>
-
-<ul>
-<li>模式名称：助记名</li>
-<li>问题：描述在何时使用设计模式</li>
-<li>解决方案：描述合计的组成成分，它们的相互关系、各自的职责和协作方式</li>
-<li>效果：设计模式应用的效果及使用模式应权衡的问题</li>
-</ul>
-
-
-<h2>常见设计模式</h2>
-
-<p>常见设计模式有如下23种：</p>
-
-<h3>Abstract Factory</h3>
-
-<p>提供一个创建一系列相关或相互依赖对象的接口，而无需指定它们具体的类</p>
-
-<h3>Adaptor</h3>
-
-<p>将一个类的接口转换成客户希望的另外一个接口。
-使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。</p>
-
-<h3>Bridge</h3>
-
-<p>将抽象部分与它的实现部分分离。
-使它们都可以独立地变化。</p>
-
-<h3>Builder</h3>
-
-<p>将一个复杂对象的构建与它的表示分离。
-使得同样的构建过程可以创建不同的表示。</p>
-
-<h3>Chain of Responsibility</h3>
-
-<p>为解除请求的发送者和接受者之间的耦合，而多个对象都有机会处理这个请求。
-将这些对象炼成一条链，并沿着这条链传递该请求，直到有一个对象处理它。</p>
-
-<h3>Command</h3>
-
-<p>将一个请求封装为一个对象，从而使你可用不同的请求对客户进行参数化。
-对请求排队或记录请求日志，以及支持可取消的操作。</p>
-
-<h3>Composite</h3>
-
-<p>将对象组合成树型结构以表示”部分-整体”的层次结构。
-使得客户对单个对象和复合对象的使用具有一致性。</p>
-
-<h3>Decorator</h3>
-
-<p>动态地给一个对象增添一些额外的职责。
-就扩展功能而言，比生成子类的方式更为灵活。</p>
-
-<h3>Facade</h3>
-
-<p>为子系统中的一组接口提供一个一致的界面。
-Facade模式定义了一个高层接口，这个接口使这一子系统更加容易使用。</p>
-
-<h3>Factory Method</h3>
-
-<p>定义一个用于创建对象的接口，让子类决定将哪一个类实例化。
-使一个类的实例化延迟到其子类。</p>
-
-<h3>Flyweight</h3>
-
-<p>运用共享技术有效地支持大量细粒度的对象。</p>
-
-<h3>Interpreter</h3>
-
-<p>给定一个语言，定义它的文法的一种表示，并定义一个解释器。
-该解释器使用该表示来解释语言中的句子。</p>
-
-<h3>Iterator</h3>
-
-<p>提供一种方法顺序访问一个聚合对象中的各个元素，而又不暴露该对象的内部表示。</p>
-
-<h3>Mediator</h3>
-
-<p>用一个中介对象来封装一系列的对象交互。
-中介者使各对象不需要显示地相互引用，从而使其耦合松散，
-而且可以独立地改变它们之间的交互。</p>
-
-<h3>Memento</h3>
-
-<p>在不破坏封装性的前提下，捕获一个对象的内部状态，并在该对象外保存这个状态。
-这样以后就可将该对象恢复到保存的状态。</p>
-
-<h3>Observer</h3>
-
-<p>定义对象间的一种一对多的依赖关系，以便当一个对象状态发生改变时，
-所有依赖于它的对象都得到通知并自动刷新。</p>
-
-<h3>Prototype</h3>
-
-<p>用原型示例指定创建对象的种类，并且通过拷贝这个原型来创建新的对象。</p>
-
-<h3>Proxy</h3>
-
-<p>为其他对象提供一个代理以控制对这个对象的访问。</p>
-
-<h3>Singleton</h3>
-
-<p>保证一个类只有一个实例，并提供一个访问它的全局访问点。</p>
-
-<h3>State</h3>
-
-<p>允许一个对象在其内部状态改变时改变它的行为。
-对象看起来似乎修改了它所属的类。</p>
-
-<h3>Strategy</h3>
-
-<p>定义一系列的算法，把它们一个个封装起来，并且使它们可以互相替换。
-使得算法的变化独立于使用它的客户。</p>
-
-<h3>Template Method</h3>
-
-<p>定义一个操作中的算法的骨架，将一些步骤延迟到子类中。
-使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤。</p>
-
-<h3>Visitor</h3>
-
-<p>表示一个作用于某对象结构中的各元素的操作。
-使你可以在不改变各元素的类的前提下定义作用于这些元素的新操作。</p>
-
-<h2>设计模式分类</h2>
-
-<p>上述设计模式可以分为创建型，结构型和行为型三大类</p>
-
-<h3>创建型</h3>
-
-<p>类：</p>
-
-<ul>
-<li>Factory Method</li>
-</ul>
-
-
-<p>对象：</p>
-
-<ul>
-<li>Abstract Factory</li>
-<li>Builder</li>
-<li>Prototype</li>
-<li>Singleton</li>
-</ul>
-
-
-<h3>结构型</h3>
-
-<p>类：</p>
-
-<ul>
-<li>Adapter(类)</li>
-</ul>
-
-
-<p>对象：</p>
-
-<ul>
-<li>Adapter(对象)</li>
-<li>Bridge</li>
-<li>Composite</li>
-<li>Facade</li>
-<li>Flyweight</li>
-<li>Proxy</li>
-</ul>
-
-
-<h3>行为型</h3>
-
-<p>类：</p>
-
-<ul>
-<li>Interpreter</li>
-<li>Template Method</li>
-</ul>
-
-
-<p>对象：</p>
-
-<ul>
-<li>Chain of Responsibility</li>
-<li>Command</li>
-<li>Iterator</li>
-<li>Mediator</li>
-<li>Memento</li>
-<li>Observer</li>
-<li>State</li>
-<li>Strategy</li>
-<li>Visitor</li>
-</ul>
-
-
-<h2>设计模式的作用</h2>
-
-<h3>面向对象设计</h3>
-
-<p>面向对象设计的准则：</p>
-
-<ul>
-<li>针对接口编程，而不是针对实现编程</li>
-<li>优先使用对象组合，而不是类继承</li>
-</ul>
-
-
-<p>面向对象系统中功能复用的两种最常用技术：</p>
-
-<ul>
-<li>类继承：允许根据其他类的实现来定义一个类的实现，白箱复用</li>
-<li>对象组合：要求被组合的对象具有良好定义的接口，黑箱复用</li>
-</ul>
-
-
-<h3>设计模式应用</h3>
-
-<p>设计模式解决的问题：</p>
-
-<ul>
-<li>通过显示地指定一个类来创建对象：Abstract Factory，Factory Method，Prototype</li>
-<li>对特殊操作的依赖：Chain of Responsibility，Command</li>
-<li>对硬件和软件平台的依赖：Abstract Factory，Bridge</li>
-<li>对对象表示或实现的依赖：Abstract Factory，Bridge，Memento，Proxy</li>
-<li>算法依赖：Builder，Iterator，Strategy，Template Method，Visitor</li>
-<li>紧耦合：Abstract Factory，Command，Facade，Mediator，Observer，Chain of Responsibility</li>
-<li>通过生成子类来扩充功能：Bridge，Chain of Responsibility，Composite，Decorator，Observer，Strategy</li>
-<li>不能方便地对类进行修改：Adapter，Decorator，Visitor</li>
-</ul>
-
-
-<p>设计模式的应用：</p>
-
-<ul>
-<li>应用程序：内部复用性，可维护性，可扩充性</li>
-<li>工具箱：一组相关的，可复用的类的集合</li>
-<li>框架：构成一类特定软件可复用设计的一组相互协作的类</li>
-</ul>
-
-
-<p>模式和框架的区别：</p>
-
-<ul>
-<li>设计模式比框架更抽象</li>
-<li>设计模式是比框架更小的体系结构元素</li>
-<li>框架比设计模式更加特例化</li>
-<li>设计模式的可变性</li>
-<li>使用设计模式的关键在于掌握设计模式中可变的部分。</li>
-</ul>
-
-
-<p>创建</p>
-
-<ul>
-<li>Abstract Factory：产品对象家族</li>
-<li>Builder：如何创建一个组合对象</li>
-<li>Prototype：被实例化的子类</li>
-<li>Singleton：一个类的唯一示例</li>
-</ul>
-
-
-<p>结构</p>
-
-<ul>
-<li>Adapter：对象的接口</li>
-<li>Bridge：对象的实现</li>
-<li>Composite：一个对象的结构和组成</li>
-<li>Decorator：对象的职责，不生成子类</li>
-<li>Facade：一个子系统的接口</li>
-<li>Flyweight：对象的存储开销</li>
-<li>Proxy：如何访问一个对象；该对象的位置</li>
-</ul>
-
-
-<p>行为</p>
-
-<ul>
-<li>Chain of Responsibility：满足一个请求的对象</li>
-<li>Command：何时、怎样满足一个对象</li>
-<li>Interpreter：一个语言的文法及解释</li>
-<li>Iterator：如何遍历、访问一个聚合的各元素</li>
-<li>Mediator：对象间怎样交互，和谁交互</li>
-<li>Memento：一个对象中哪些私有信息存放在该对象之外，以及在什么时候进行存储</li>
-<li>Observer：多个对象依赖于另外一个对象，而这些对象又如何保持一致</li>
-<li>State：对象的状态</li>
-<li>Strategy：算法</li>
-<li>Template Method：算法中的某些步骤</li>
-<li>Visitor：某些可作用于一个(组)对象上的操作，但不修改这些对象的类</li>
 </ul>
 
 ]]></content>
