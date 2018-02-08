@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://lionheartwang.github.io/blog/2018/02/08/da-jian-rayji-qun-bu-zou/</loc>
+<lastmod>2018-02-08T10:29:16+08:00</lastmod>
+</url>
+<url>
 <loc>http://lionheartwang.github.io/blog/2017/12/10/tensorflowmo-xing-bao-cun-yu-jia-zai-fang-fa/</loc>
 <lastmod>2017-12-10T16:57:13+08:00</lastmod>
 </url>
@@ -138,5 +142,8 @@
 </url>
 <url>
 <loc>http://lionheartwang.github.io/blog/categories/tensorflow/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/blog/categories/ray/</loc>
 </url>
 </urlset>

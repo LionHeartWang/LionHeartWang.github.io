@@ -4,7 +4,7 @@
   <title><![CDATA[大数据 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/大数据/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2017-12-10T17:01:23+08:00</updated>
+  <updated>2018-02-08T10:40:21+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,161 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[搭建Ray集群步骤]]></title>
+    <link href="http://lionheartwang.github.io/blog/2018/02/08/da-jian-rayji-qun-bu-zou/"/>
+    <updated>2018-02-08T10:29:16+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2018/02/08/da-jian-rayji-qun-bu-zou</id>
+    <content type="html"><![CDATA[<p>本文介绍如何搭建Ray 0.3集群环境。</p>
+
+<p>可参考官方文档：</p>
+
+<ul>
+<li><a href="https://ray.readthedocs.io/en/latest/using-ray-on-a-cluster.html">https://ray.readthedocs.io/en/latest/using-ray-on-a-cluster.html</a></li>
+</ul>
+
+
+<!-- More -->
+
+
+<h2>安装Ray</h2>
+
+<p>首先在每台机器上安装如下组件。</p>
+
+<h3>安装Anaconda</h3>
+
+<p>首先安装Anaconda，下载：</p>
+
+<ul>
+<li>Anaconda2-4.3.0-Linux-x86_64.sh</li>
+</ul>
+
+
+<p>按提示执行安装即可。</p>
+
+<h3>安装Ray依赖</h3>
+
+<p>ray依赖如下库：</p>
+
+<ul>
+<li>six (>=1.0.0)</li>
+<li>redis</li>
+<li>pytest</li>
+<li>psutil</li>
+<li>numpy</li>
+<li>funcsigs</li>
+<li>flatbuffers</li>
+<li>colorama</li>
+<li>cloudpickle (==0.5.2)</li>
+<li>click</li>
+</ul>
+
+
+<p>注意：</p>
+
+<ul>
+<li>如果机器环境通pip源则直接pip install即可。</li>
+<li>如果不通可以在 <a href="https://pypi.python.org/pypi/ray/0.3.0">https://pypi.python.org/pypi/ray/0.3.0</a> 下载.whl包后上传到机器pip本地安装。</li>
+</ul>
+
+
+<h3>安装Ray 0.3</h3>
+
+<p>如果环境通pip源</p>
+
+<pre><code class="bash">$ pip install ray
+</code></pre>
+
+<p>如果不通则在 <a href="https://pypi.python.org/pypi/ray/0.3.0">https://pypi.python.org/pypi/ray/0.3.0</a> 下载 ：</p>
+
+<ul>
+<li>ray-0.3.0-cp27-cp27mu-manylinux1_x86_64.whl</li>
+</ul>
+
+
+<p>然后执行：</p>
+
+<pre><code class="bash">$ pip install ray-0.3.0-cp27-cp27mu-manylinux1_x86_64.whl
+</code></pre>
+
+<h2>搭建集群</h2>
+
+<p>假设集群IP如下：</p>
+
+<pre><code>192.168.0.1
+192.168.0.2
+192.168.0.3
+192.168.0.4
+192.168.0.5
+192.168.0.6
+192.168.0.7
+192.168.0.8
+192.168.0.9
+192.168.0.10
+</code></pre>
+
+<p>搭建集群环境如下：</p>
+
+<h3>启动Head节点</h3>
+
+<p>选一个节点作为head节点，例如IP为：</p>
+
+<pre><code>192.168.0.1
+</code></pre>
+
+<p>在head节点执行：</p>
+
+<pre><code class="bash">ray start --head --node-ip-address 192.168.0.1 --redis-port=6379
+</code></pre>
+
+<p>执行后会启动主节点相关的服务。</p>
+
+<h3>启动Worker节点</h3>
+
+<p>Worker节点IP为：</p>
+
+<pre><code class="bash">192.168.0.2
+192.168.0.3
+192.168.0.4
+192.168.0.5
+192.168.0.6
+192.168.0.7
+192.168.0.8
+192.168.0.9
+192.168.0.10
+</code></pre>
+
+<p>在每台Worker节点上执行：</p>
+
+<pre><code class="bash">ray start --redis-address :6379 192.168.0.x --num-cpus 10
+</code></pre>
+
+<p>执行后会启动Worker节点相关服务，其中：</p>
+
+<ul>
+<li>192.168.0.x 为对应节点IP</li>
+<li>num-cpu选项可以用于设置每台节点可用的cpu数，默认为机器总的cpu数。</li>
+</ul>
+
+
+<h3>停止集群</h3>
+
+<p>Head节点与Worker节点服务的停止命令相同，执行：</p>
+
+<pre><code>ray stop
+</code></pre>
+
+<h2>连接集群</h2>
+
+<p>使用如下方法建立连接：</p>
+
+<pre><code class="python">import ray
+
+ray.init(redis_address="11.184.187.19:6379")
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用Fuse挂载HDFS到本地目录方法]]></title>
@@ -808,170 +963,6 @@ log4j.logger.org.apache.hadoop.hive.ql.io.*=DEBUG
 </code></pre>
 
 <p>则作业运行时的日志级别将由executor-logback.xml文件控制。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Spark HistoryServer 配置和使用方法]]></title>
-    <link href="http://lionheartwang.github.io/blog/2016/08/24/spark-historyserver-configuration/"/>
-    <updated>2016-08-24T17:17:58+08:00</updated>
-    <id>http://lionheartwang.github.io/blog/2016/08/24/spark-historyserver-configuration</id>
-    <content type="html"><![CDATA[<p>本文介绍Spark History Server的配置和使用方法。</p>
-
-<!--More-->
-
-
-<h2>History Server 配置</h2>
-
-<p>Spark提供了History Server服务可以保存历史Application的运行记录。</p>
-
-<h3>客户端配置</h3>
-
-<p>对于提交应用程序的客户端需要在conf/spark-defaults.conf中配置以下参数：</p>
-
-<table>
-<thead>
-<tr>
-<th> 参数        </th>
-<th style="text-align:left;"> 功能           </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td> spark.eventLog.enabled      </td>
-<td style="text-align:left;"> 是否记录Spark事件，用于应用程序在完成后重构webUI。 </td>
-</tr>
-<tr>
-<td> spark.eventLog.dir      </td>
-<td style="text-align:left;"> spark.eventLog.enabled为 true，该属性为记录spark事件的根目录。在此根目录中，Spark为每个应用程序创建分目录，并将应用程序的事件记录到此目录中。<br>可以将此属性设置为HDFS目录，以便history server读取历史记录文件。</br>      </td>
-</tr>
-<tr>
-<td> spark.yarn.historyServer.address </td>
-<td style="text-align:left;"> Spark history server的地址。 这个地址会在Spark应用程序完成后提交给YARN RM，然后RM将信息从RM UI写到history server UI上。<br><strong><font color=red>注意：hostname:port，前面不加http：//，末尾也不要加反斜杠。</font></strong> </br>     </td>
-</tr>
-</tbody>
-</table>
-
-
-<h3>服务端配置</h3>
-
-<p>服务端主要需要在conf/spark-defaults.conf中配置如下属性：</p>
-
-<table>
-<thead>
-<tr>
-<th> 参数        </th>
-<th style="text-align:left;"> 功能           </th>
-<th style="text-align:left;"> 默认值</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td> spark.history.ui.port     </td>
-<td style="text-align:left;"> History Server的默认访问端口。<strong><font color=red>建议配置在8000~9000之间，以确保再内网浏览器能够正常显示。</strong><font color=red> </td>
-<td style="text-align:left;"> 18080 </td>
-</tr>
-<tr>
-<td> spark.history.fs.logDirectory    </td>
-<td style="text-align:left;">   用于指定HistoryServer读取的eventlog存放的hdfs路径。  </td>
-<td style="text-align:left;">无</td>
-</tr>
-<tr>
-<td> spark.history.updateInterval </td>
-<td style="text-align:left;">  History Server显示信息的刷新时间间隔，以秒为单位。每次更新都会检查持久层事件日志的任何变化。  </td>
-<td style="text-align:left;"> 10 </td>
-</tr>
-<tr>
-<td>spark.history.retainedApplications</td>
-<td style="text-align:left;">在History Server上显示的最大应用程序数量，如果超过这个值，旧的应用程序信息将被删除。</td>
-<td style="text-align:left;">250</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>如果使用Kerberos认证可以配置如下参数：</p>
-
-<table>
-<thead>
-<tr>
-<th> 参数        </th>
-<th style="text-align:left;"> 功能           </th>
-<th style="text-align:left;"> 默认值</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td> spark.history.kerberos.enabled    </td>
-<td style="text-align:left;"> 是否使用kerberos方式登录访问history server。</td>
-<td style="text-align:left;">false</td>
-</tr>
-<tr>
-<td>spark.history.kerberos.principal</td>
-<td style="text-align:left;">spark.history.kerberos.enabled为true时使用，用于指定History Server的kerberos主体名称</td>
-<td style="text-align:left;">空</td>
-</tr>
-<tr>
-<td>spark.history.kerberos.keytab</td>
-<td style="text-align:left;">spark.history.kerberos.enabled为true时使用，用于指定History Server的kerberos keytab文件位置</td>
-<td style="text-align:left;">空</td>
-</tr>
-<tr>
-<td>spark.history.ui.acls.enable</td>
-<td style="text-align:left;">授权用户查看应用程序信息的时候是否检查acl。如果启用，无论应用程序的spark.ui.acls.enable怎么设置，都要进行授权检查。<br>只有应用程序所有者和spark.ui.view.acls指定的用户可以查看应用程序信息; 如果禁用，不做任何检查。</br></td>
-<td style="text-align:left;">false</td>
-</tr>
-</tbody>
-</table>
-
-
-<p>另外，服务端可以配置以下环境变量：</p>
-
-<table>
-<thead>
-<tr>
-<th> 参数        </th>
-<th style="text-align:left;"> 功能           </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>SPARK_DAEMON_JAVA_OPTS</td>
-<td style="text-align:left;">History Server的JVM参数，默认为空</td>
-</tr>
-<tr>
-<td>SPARK_DAEMON_MEMORY</td>
-<td style="text-align:left;">分配给History Server的内存大小，默认512M</td>
-</tr>
-<tr>
-<td>SPARK_HISTORY_OPTS</td>
-<td style="text-align:left;">History Server的属性设置，默认为空。</td>
-</tr>
-<tr>
-<td>SPARK_PUBLIC_DNS</td>
-<td style="text-align:left;">History Server的公网地址，如果不设置，可以用内网地址来访问，默认为空。</td>
-</tr>
-</tbody>
-</table>
-
-
-<h2>History Server 使用</h2>
-
-<h3>启动</h3>
-
-<p>一般将客户端运行生成的eventlog统一存放在一个HDFS路径下便于查询历史记录，然后History Server端 spark.history.fs.logDirectory的值设为该路径即可。</p>
-
-<p>启动History Server命令：</p>
-
-<pre><code>$sh sbin/start-history-server.sh
-</code></pre>
-
-<h3>停止</h3>
-
-<p>停止History Server命令：</p>
-
-<pre><code>$sh sbin/stop-history-server.sh
-</code></pre>
 ]]></content>
   </entry>
   

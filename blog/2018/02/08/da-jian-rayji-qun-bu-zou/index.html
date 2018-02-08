@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>论文笔记 - Workspace of LionHeart</title>
+  <title>搭建Ray集群步骤 - Workspace of LionHeart</title>
   <meta name="author" content="Wang Yiguang">
 
   
-  <meta name="description" content="Category: 论文笔记">
+  <meta name="description" content="搭建Ray集群步骤 Feb 8th, 2018 10:29 am 导航[-] 本文介绍如何搭建Ray 0.3集群环境。 可参考官方文档： https://ray.readthedocs.io/en/latest/using-ray-on-a-cluster.html 安装Ray &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://lionheartwang.github.io/blog/categories/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">
+  <link rel="canonical" href="http://lionheartwang.github.io/blog/2018/02/08/da-jian-rayji-qun-bu-zou/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Workspace of LionHeart" type="application/atom+xml">
@@ -70,35 +70,260 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">论文笔记</h1>
+    
+      <h1 class="entry-title">搭建Ray集群步骤</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-02-08T10:29:16+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>10:29 am</span></time>
+        
+      </p>
     
   </header>
-  
-  <div id="blog-archives" class="category">
 
 
-
-  
-  <h2>2017</h2>
-
-<article>
-  
-<h1><a href="/blog/2017/11/30/on-line-random-forest-paper/">论文阅读: On-line Random Forest</a></h1>
-<time datetime="2017-11-30T21:25:38+08:00" pubdate><span class='month'>Nov</span> <span class='day'>30</span> <span class='year'>2017</span></time>
-
-<footer>
-  <span class="categories">posted in <a class='category' href='/blog/categories/机器学习/'>机器学习</a>, <a class='category' href='/blog/categories/论文笔记/'>论文笔记</a></span>
-</footer>
-
-
-</article>
-
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<div class="blogAnchor">
+  <p id="anchorContentToggle" title="收起">导航[-]</p>
+  <div class="anchorContent" id="anchorContent"> </div>
 </div>
 
+  <div class="entry-content"><p>本文介绍如何搭建Ray 0.3集群环境。</p>
+
+<p>可参考官方文档：</p>
+
+<ul>
+<li><a href="https://ray.readthedocs.io/en/latest/using-ray-on-a-cluster.html">https://ray.readthedocs.io/en/latest/using-ray-on-a-cluster.html</a></li>
+</ul>
+
+
+<!-- More -->
+
+
+<h2>安装Ray</h2>
+
+<p>首先在每台机器上安装如下组件。</p>
+
+<h3>安装Anaconda</h3>
+
+<p>首先安装Anaconda，下载：</p>
+
+<ul>
+<li>Anaconda2-4.3.0-Linux-x86_64.sh</li>
+</ul>
+
+
+<p>按提示执行安装即可。</p>
+
+<h3>安装Ray依赖</h3>
+
+<p>ray依赖如下库：</p>
+
+<ul>
+<li>six (>=1.0.0)</li>
+<li>redis</li>
+<li>pytest</li>
+<li>psutil</li>
+<li>numpy</li>
+<li>funcsigs</li>
+<li>flatbuffers</li>
+<li>colorama</li>
+<li>cloudpickle (==0.5.2)</li>
+<li>click</li>
+</ul>
+
+
+<p>注意：</p>
+
+<ul>
+<li>如果机器环境通pip源则直接pip install即可。</li>
+<li>如果不通可以在 <a href="https://pypi.python.org/pypi/ray/0.3.0">https://pypi.python.org/pypi/ray/0.3.0</a> 下载.whl包后上传到机器pip本地安装。</li>
+</ul>
+
+
+<h3>安装Ray 0.3</h3>
+
+<p>如果环境通pip源</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pip install ray
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果不通则在 <a href="https://pypi.python.org/pypi/ray/0.3.0">https://pypi.python.org/pypi/ray/0.3.0</a> 下载 ：</p>
+
+<ul>
+<li>ray-0.3.0-cp27-cp27mu-manylinux1_x86_64.whl</li>
+</ul>
+
+
+<p>然后执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nv">$ </span>pip install ray-0.3.0-cp27-cp27mu-manylinux1_x86_64.whl
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>搭建集群</h2>
+
+<p>假设集群IP如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>192.168.0.1
+</span><span class='line'>192.168.0.2
+</span><span class='line'>192.168.0.3
+</span><span class='line'>192.168.0.4
+</span><span class='line'>192.168.0.5
+</span><span class='line'>192.168.0.6
+</span><span class='line'>192.168.0.7
+</span><span class='line'>192.168.0.8
+</span><span class='line'>192.168.0.9
+</span><span class='line'>192.168.0.10
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>搭建集群环境如下：</p>
+
+<h3>启动Head节点</h3>
+
+<p>选一个节点作为head节点，例如IP为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>192.168.0.1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在head节点执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ray start --head --node-ip-address 192.168.0.1 --redis-port<span class="o">=</span>6379
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行后会启动主节点相关的服务。</p>
+
+<h3>启动Worker节点</h3>
+
+<p>Worker节点IP为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>192.168.0.2
+</span><span class='line'>192.168.0.3
+</span><span class='line'>192.168.0.4
+</span><span class='line'>192.168.0.5
+</span><span class='line'>192.168.0.6
+</span><span class='line'>192.168.0.7
+</span><span class='line'>192.168.0.8
+</span><span class='line'>192.168.0.9
+</span><span class='line'>192.168.0.10
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在每台Worker节点上执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ray start --redis-address :6379 192.168.0.x --num-cpus 10
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>执行后会启动Worker节点相关服务，其中：</p>
+
+<ul>
+<li>192.168.0.x 为对应节点IP</li>
+<li>num-cpu选项可以用于设置每台节点可用的cpu数，默认为机器总的cpu数。</li>
+</ul>
+
+
+<h3>停止集群</h3>
+
+<p>Head节点与Worker节点服务的停止命令相同，执行：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ray stop
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>连接集群</h2>
+
+<p>使用如下方法建立连接：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">ray</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">redis_address</span><span class="o">=</span><span class="s">&quot;11.184.187.19:6379&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  <script src="/javascripts/blogDirectory.js" type="text/javascript"></script>
+
+
+  <footer>
+    <p class="meta">
+      
   
+
+<span class="byline author vcard">Posted by <span class="fn">Wang Yiguang</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-02-08T10:29:16+08:00'><span class='date'><span class='date-month'>Feb</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>10:29 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ray/'>ray</a>, <a class='category' href='/blog/categories/大数据/'>大数据</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2018/02/08/da-jian-rayji-qun-bu-zou/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2018/02/08/da-jian-rayji-qun-bu-zou/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/12/10/tensorflowmo-xing-bao-cun-yu-jia-zai-fang-fa/" title="Previous Post: Tensorflow模型保存与加载方法">&laquo; Tensorflow模型保存与加载方法</a>
+      
+      
+    </p>
+  </footer>
 </article>
 
 </div>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Ray | Workspace of LionHeart]]></title>
+  <link href="http://lionheartwang.github.io/blog/categories/ray/atom.xml" rel="self"/>
+  <link href="http://lionheartwang.github.io/"/>
+  <updated>2018-02-08T10:40:21+08:00</updated>
+  <id>http://lionheartwang.github.io/</id>
+  <author>
+    <name><![CDATA[Wang Yiguang]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[搭建Ray集群步骤]]></title>
+    <link href="http://lionheartwang.github.io/blog/2018/02/08/da-jian-rayji-qun-bu-zou/"/>
+    <updated>2018-02-08T10:29:16+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2018/02/08/da-jian-rayji-qun-bu-zou</id>
+    <content type="html"><![CDATA[<p>本文介绍如何搭建Ray 0.3集群环境。</p>
+
+<p>可参考官方文档：</p>
+
+<ul>
+<li><a href="https://ray.readthedocs.io/en/latest/using-ray-on-a-cluster.html">https://ray.readthedocs.io/en/latest/using-ray-on-a-cluster.html</a></li>
+</ul>
+
+
+<!-- More -->
+
+
+<h2>安装Ray</h2>
+
+<p>首先在每台机器上安装如下组件。</p>
+
+<h3>安装Anaconda</h3>
+
+<p>首先安装Anaconda，下载：</p>
+
+<ul>
+<li>Anaconda2-4.3.0-Linux-x86_64.sh</li>
+</ul>
+
+
+<p>按提示执行安装即可。</p>
+
+<h3>安装Ray依赖</h3>
+
+<p>ray依赖如下库：</p>
+
+<ul>
+<li>six (>=1.0.0)</li>
+<li>redis</li>
+<li>pytest</li>
+<li>psutil</li>
+<li>numpy</li>
+<li>funcsigs</li>
+<li>flatbuffers</li>
+<li>colorama</li>
+<li>cloudpickle (==0.5.2)</li>
+<li>click</li>
+</ul>
+
+
+<p>注意：</p>
+
+<ul>
+<li>如果机器环境通pip源则直接pip install即可。</li>
+<li>如果不通可以在 <a href="https://pypi.python.org/pypi/ray/0.3.0">https://pypi.python.org/pypi/ray/0.3.0</a> 下载.whl包后上传到机器pip本地安装。</li>
+</ul>
+
+
+<h3>安装Ray 0.3</h3>
+
+<p>如果环境通pip源</p>
+
+<pre><code class="bash">$ pip install ray
+</code></pre>
+
+<p>如果不通则在 <a href="https://pypi.python.org/pypi/ray/0.3.0">https://pypi.python.org/pypi/ray/0.3.0</a> 下载 ：</p>
+
+<ul>
+<li>ray-0.3.0-cp27-cp27mu-manylinux1_x86_64.whl</li>
+</ul>
+
+
+<p>然后执行：</p>
+
+<pre><code class="bash">$ pip install ray-0.3.0-cp27-cp27mu-manylinux1_x86_64.whl
+</code></pre>
+
+<h2>搭建集群</h2>
+
+<p>假设集群IP如下：</p>
+
+<pre><code>192.168.0.1
+192.168.0.2
+192.168.0.3
+192.168.0.4
+192.168.0.5
+192.168.0.6
+192.168.0.7
+192.168.0.8
+192.168.0.9
+192.168.0.10
+</code></pre>
+
+<p>搭建集群环境如下：</p>
+
+<h3>启动Head节点</h3>
+
+<p>选一个节点作为head节点，例如IP为：</p>
+
+<pre><code>192.168.0.1
+</code></pre>
+
+<p>在head节点执行：</p>
+
+<pre><code class="bash">ray start --head --node-ip-address 192.168.0.1 --redis-port=6379
+</code></pre>
+
+<p>执行后会启动主节点相关的服务。</p>
+
+<h3>启动Worker节点</h3>
+
+<p>Worker节点IP为：</p>
+
+<pre><code class="bash">192.168.0.2
+192.168.0.3
+192.168.0.4
+192.168.0.5
+192.168.0.6
+192.168.0.7
+192.168.0.8
+192.168.0.9
+192.168.0.10
+</code></pre>
+
+<p>在每台Worker节点上执行：</p>
+
+<pre><code class="bash">ray start --redis-address :6379 192.168.0.x --num-cpus 10
+</code></pre>
+
+<p>执行后会启动Worker节点相关服务，其中：</p>
+
+<ul>
+<li>192.168.0.x 为对应节点IP</li>
+<li>num-cpu选项可以用于设置每台节点可用的cpu数，默认为机器总的cpu数。</li>
+</ul>
+
+
+<h3>停止集群</h3>
+
+<p>Head节点与Worker节点服务的停止命令相同，执行：</p>
+
+<pre><code>ray stop
+</code></pre>
+
+<h2>连接集群</h2>
+
+<p>使用如下方法建立连接：</p>
+
+<pre><code class="python">import ray
+
+ray.init(redis_address="11.184.187.19:6379")
+</code></pre>
+]]></content>
+  </entry>
+  
+</feed>
