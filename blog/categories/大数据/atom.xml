@@ -4,7 +4,7 @@
   <title><![CDATA[大数据 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/大数据/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2018-02-08T10:40:21+08:00</updated>
+  <updated>2018-02-08T10:45:28+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -110,7 +110,7 @@
 
 <h3>启动Head节点</h3>
 
-<p>选一个节点作为head节点，例如IP为：</p>
+<p>选一个节点作为Head节点，例如IP为：</p>
 
 <pre><code>192.168.0.1
 </code></pre>
@@ -120,7 +120,7 @@
 <pre><code class="bash">ray start --head --node-ip-address 192.168.0.1 --redis-port=6379
 </code></pre>
 
-<p>执行后会启动主节点相关的服务。</p>
+<p>执行后会启动Head节点相关的服务。</p>
 
 <h3>启动Worker节点</h3>
 
