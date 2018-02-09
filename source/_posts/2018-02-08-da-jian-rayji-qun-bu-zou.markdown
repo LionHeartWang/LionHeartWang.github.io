@@ -140,5 +140,5 @@ ray stop
 ```python
 import ray
 
-ray.init(redis_address="11.184.187.19:6379")
+ray.init(redis_address="192.168.0.1:6379")
 ```
