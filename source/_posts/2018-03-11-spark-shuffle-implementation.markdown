@@ -57,7 +57,7 @@ shuffle write 的任务很简单，那么实现也很简单：
 
 图示如下：
 
-{% img /images/blog/29-shuffle-write-no-consolidation .png %}
+{% img /images/blog/29-shuffle-write-no-consolidation.png %}
 
 上图有 4 个 ShuffleMapTask 要在同一个 worker node 上运行，CPU core 数为 2，可以同时运行两个 task。
 
@@ -336,7 +336,7 @@ Spill 过程
 
 ## 参考资料
 
-通过本章的介绍可以发现，相比 MapReduce 固定的 shuffle-combine-merge-reduce 策略，Spark 更加灵活，会根据不同的 transformation() 的语义去设计不同的 shuffle-aggregate 策略，再加上不同的内存数据结构来混搭出合理的执行流程。
+通过本文的介绍可以发现，相比 MapReduce 固定的 shuffle-combine-merge-reduce 策略，Spark 更加灵活，会根据不同的 transformation() 的语义去设计不同的 shuffle-aggregate 策略，再加上不同的内存数据结构来混搭出合理的执行流程。
 
 参考资料：
 
