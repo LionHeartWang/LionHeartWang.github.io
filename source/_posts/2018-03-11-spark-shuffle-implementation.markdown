@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Spark Shuffle Implementation"
+title: "Spark Shuffle工作原理详解"
 date: 2018-03-11 00:34:09 +0800
 comments: true
 categories: [大数据,Spark]
