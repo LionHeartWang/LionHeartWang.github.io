@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2018-03-11T00:43:57+08:00</updated>
+  <updated>2018-03-11T00:50:43+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -76,7 +76,7 @@
 
 <p>图示如下：</p>
 
-<p><img src="http://lionheartwang.github.io/images/blog/29-shuffle-write-no-consolidation" title=".png" ></p>
+<p><img src="http://lionheartwang.github.io/images/blog/29-shuffle-write-no-consolidation.png"></p>
 
 <p>上图有 4 个 ShuffleMapTask 要在同一个 worker node 上运行，CPU core 数为 2，可以同时运行两个 task。</p>
 
@@ -377,7 +377,7 @@ reduce 端区别：MapReduce 需要一部分内存空间来存储 shuffle 过来
 
 <h2>参考资料</h2>
 
-<p>通过本章的介绍可以发现，相比 MapReduce 固定的 shuffle-combine-merge-reduce 策略，Spark 更加灵活，会根据不同的 transformation() 的语义去设计不同的 shuffle-aggregate 策略，再加上不同的内存数据结构来混搭出合理的执行流程。</p>
+<p>通过本文的介绍可以发现，相比 MapReduce 固定的 shuffle-combine-merge-reduce 策略，Spark 更加灵活，会根据不同的 transformation() 的语义去设计不同的 shuffle-aggregate 策略，再加上不同的内存数据结构来混搭出合理的执行流程。</p>
 
 <p>参考资料：</p>
 
