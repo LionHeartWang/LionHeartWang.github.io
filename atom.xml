@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2018-03-11T00:38:56+08:00</updated>
+  <updated>2018-03-11T00:43:57+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Spark Shuffle Implementation]]></title>
+    <title type="html"><![CDATA[Spark Shuffle工作原理详解]]></title>
     <link href="http://lionheartwang.github.io/blog/2018/03/11/spark-shuffle-implementation/"/>
     <updated>2018-03-11T00:34:09+08:00</updated>
     <id>http://lionheartwang.github.io/blog/2018/03/11/spark-shuffle-implementation</id>
