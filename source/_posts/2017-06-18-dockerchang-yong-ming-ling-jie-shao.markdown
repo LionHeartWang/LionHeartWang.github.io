@@ -3,7 +3,7 @@ layout: post
 title: "Docker常用命令介绍"
 date: 2017-06-18 22:52:05 +0800
 comments: true
-categories: [技术资源] 
+categories: [技术资源,docker] 
 ---
 
 本文介绍常用的docker命令。
