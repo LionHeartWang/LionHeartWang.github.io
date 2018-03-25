@@ -4,7 +4,7 @@
   <title><![CDATA[Tensorflow | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/tensorflow/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2018-03-18T00:22:09+08:00</updated>
+  <updated>2018-03-25T17:51:29+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,225 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tensorflow架构介绍]]></title>
+    <link href="http://lionheartwang.github.io/blog/2018/03/25/tensorflowjia-gou-jie-shao/"/>
+    <updated>2018-03-25T17:43:48+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2018/03/25/tensorflowjia-gou-jie-shao</id>
+    <content type="html"><![CDATA[<p>Tensorflow的架构为大规模分布式训练和预测设计，单页为实验新的机器学习模型和进行系统层面上的优化提供了足够多的灵活性。</p>
+
+<p>本文介绍Tensorflow的系统架构设计，展示Tensorflow如何将灵活性与扩展性结合。</p>
+
+<p>本文内容主要从Tensorflow官方文档中翻译整理而得。</p>
+
+<ul>
+<li><a href="https://www.tensorflow.org/extend/architecture">https://www.tensorflow.org/extend/architecture</a></li>
+</ul>
+
+
+<p>阅读本文之前需要了解Tenflow变成中像计算流图、算子和session的概念。如果不了解可以参考如下文档：</p>
+
+<ul>
+<li><a href="https://www.tensorflow.org/programmers_guide/low_level_intro">https://www.tensorflow.org/programmers_guide/low_level_intro</a></li>
+</ul>
+
+
+<!-- More -->
+
+
+<h2>概述</h2>
+
+<p>Tensorflow的运行时是一个跨平台的库，下图展示了整体结构。用户级别的代码与核心的运行时的代码通过一套C API分隔开。</p>
+
+<p><img src="/images/blog/43-tensorflow-layers.png"></p>
+
+<p>本文主要介绍如下几层：</p>
+
+<ul>
+<li>Client:
+
+<ul>
+<li>将计算定义为数据流图的形式。</li>
+<li>通过一个session初始化图的执行。</li>
+</ul>
+</li>
+<li>Distributed Master
+
+<ul>
+<li>根据Session.run()传递的参数将图裁剪为子图。</li>
+<li>将子图拆解为多个部分用于分发到不通的进程和设备上。</li>
+<li>分发子图分片到Worker Services</li>
+<li>初始化Woker Service待执行的子图分片计算。</li>
+</ul>
+</li>
+<li>Worker Services (每个task一个)
+
+<ul>
+<li>调度子图算子的执行，这些算子会调用对应于可用硬件（CPU\GPU等）的kernal实现。</li>
+<li>发送算子计算结果以及接收来自其他Worker Service的计算结果。</li>
+</ul>
+</li>
+<li>Kernel Implementations
+
+<ul>
+<li>负责实现每个图算子的执行。</li>
+</ul>
+</li>
+</ul>
+
+
+<p>下图说明了这些组件是如何交互的。</p>
+
+<p><img src="/images/blog/44-tensorflow-components-interact.svg"></p>
+
+<p>解释如下：</p>
+
+<ul>
+<li>&ldquo;/job:worker/task:0&rdquo; 和 &ldquo;/job:ps/task:0&rdquo; 都是worker services上的task。</li>
+<li>“PS”代表parameter server，是负责存储和更新模型参数的task。其他的task会将训练过程中优化的参数更新发送给parameter server。</li>
+<li>这样的职能划分并非必须的，但在分布式训练场景中很常见。</li>
+</ul>
+
+
+<p>注意</p>
+
+<ul>
+<li>Distributed Master和Worker Service只在支持分布式版本的tensorflow中存在。</li>
+<li>单进程版本的Tensorflow包含一个特殊的Session实现完成Distributed Master做的全部事情但只在本地进程中进行设备间的通信。</li>
+</ul>
+
+
+<h2>组件介绍</h2>
+
+<p>下面以一个示例图的处理过程介绍TensorFlow核心层的更多实现细节。</p>
+
+<h3>Client</h3>
+
+<p>用户编写客户端tensorflow程序来构建计算流图。</p>
+
+<p>客户端程序既可以直接调用各种算子操作组合而成，也可以调用更方便的API库如Estimator等直接构建神经网络和其他高层抽象实现。</p>
+
+<p>Tensorflow支持多种客户端语言，主流的是Python和C++，因为Google的内部使用者对这两种语言更熟悉一些。</p>
+
+<p>大多数训练库仍为Python实现，但C++更高效。</p>
+
+<p>Client会创建一个session，将图的定义以<code>tf.GraphDef</code>这种protobuffer的形式发送给Distributed Master节点。</p>
+
+<p>当client对流图中的一个或多个节点进行求值时，会触发调用让Distributed Master进行计算的初始化操作。</p>
+
+<p>在下图中，Client构建了一个图将权值w附加到一个特征向量x并增加了偏移b，然后在变量中存储计算结果。</p>
+
+<p><img src="/images/blog/45-tensorflow-graph_client.svg"></p>
+
+<p> tf.Session相关代码：</p>
+
+<ul>
+<li><a href="https://www.tensorflow.org/api_docs/python/tf/Session">https://www.tensorflow.org/api_docs/python/tf/Session</a></li>
+</ul>
+
+
+<h3>Distributed Master</h3>
+
+<p>Distributed Master负责以下工作：</p>
+
+<ul>
+<li>对图进行裁剪来获取满足Client对节点求值必须计算的子图。</li>
+<li>将图进行拆分得到每个参与计算的设备负责的图分片。</li>
+<li>缓存这些拆分的图分片，以备后续步骤中被重新使用。</li>
+</ul>
+
+
+<p>master节点能够看到每步计算的整体情况，因此可以对计算流程进行一些标准的优化，例如公共子表达式求值、常量折叠等。</p>
+
+<p>随后master会负责协调一系列的task执行来计算优化后的子图。</p>
+
+<p><img src="/images/blog/46-tensorflow-graph_master_cln.svg"></p>
+
+<p>下图展示了示例graph的一种可能的分发方案。Distributed Master将模型参数进行分组从而在Parameter Server中将他们存储在一起。</p>
+
+<p><img src="/images/blog/47-tensorflow-graph_split1.svg"></p>
+
+<p>在图的边被切分的分片中，Distributed Master会插入send和receive节点来在不同的task间传递信息。</p>
+
+<p><img src="/images/blog/48-tensorflow-graph_split2.svg"></p>
+
+<p> 随后Distributed Master将图的分片分发给不同节点上的task。</p>
+
+<p> <img src="/images/blog/50-tensorflow-graph_send_recv.svg"></p>
+
+<p>相关代码：</p>
+
+<ul>
+<li>MasterService API 定义：<a href="https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/protobuf/master_service.proto">https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/protobuf/master_service.proto</a></li>
+<li>Master接口：<a href="https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/distributed_runtime/master_interface.h">https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/distributed_runtime/master_interface.h</a></li>
+</ul>
+
+
+<h3>Worker Service</h3>
+
+<p>每个task的Worker Service负责如下工作：</p>
+
+<ul>
+<li>处理Distributed Master发来的请求。</li>
+<li>调度执行构成本地局部子图的算子的kernels实现。</li>
+<li>协调task之间的直接通信。</li>
+</ul>
+
+
+<p>我们优化了Worker Service，支持以较低的开销运行大规模的流图。</p>
+
+<p>我们目前的实现能够支持每秒数以万计的子图执行，这通常能够支持大量副本细粒度地进行训练。</p>
+
+<p>Worker Service将算子的kernel实现分发给设备并尽可能并行化，例如使用多CPU核或者GPU。</p>
+
+<p>我们针对每对源设备和目的设备的组合情况，定制了相应的Send和Recv算子。包括：</p>
+
+<ul>
+<li>本地CPU和GPU设备的数据交换使用cudaMemcpyAsync() API来配合计算和数据转移工作。</li>
+<li>两个本地GPU使用端到端的DMA技术来避免通过本机CPU进行代价昂贵的数据拷贝操作。</li>
+</ul>
+
+
+<p>对于task之间的数据交换，tensorflow支持多种协议，包括：</p>
+
+<ul>
+<li>基于TCP协议的gRPC。</li>
+<li>基于融合以太网的RDMA。</li>
+</ul>
+
+
+<p>另外我们也初步支持了NVIDIA为多GPU通信提供的NCCL库。</p>
+
+<p>相关代码：</p>
+
+<ul>
+<li>WorkerService API 定义：<a href="https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/protobuf/worker_service.proto">https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/protobuf/worker_service.proto</a></li>
+<li>Worker接口：<a href="https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/distributed_runtime/worker_interface.h">https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/distributed_runtime/worker_interface.h</a></li>
+<li>远程通信相关(Send和Recv算子实现)：<a href="https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/distributed_runtime/rpc/rpc_rendezvous_mgr.h">https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/distributed_runtime/rpc/rpc_rendezvous_mgr.h</a></li>
+</ul>
+
+
+<h3>Kernel</h3>
+
+<p>Tensorflow运行时包含了超过200种标准的算子实现，包括数学相关、数组相关、控制流相关以及状态管理相关的算子。</p>
+
+<p>每一种算子在实现上都针对不同的设备种类进行了优化。</p>
+
+<p>其中，许多算子是使用<code>Eigen::Tensor</code>实现的，它基于C++模板生成了高效的能在多核CPU以及GPU上执行的代码。</p>
+
+<p>另一方面，我们也使用想cuDNN等第三方库尽可能地让kernel的实现更加高效。</p>
+
+<p>如果现有算子无法满足需求，用户可以注册自定义的算子实现到kernel中。</p>
+
+<p>相关代码：</p>
+
+<ul>
+<li><a href="https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/framework/op_kernel.h">https://github.com/tensorflow/tensorflow/blob/r1.6/tensorflow/core/framework/op_kernel.h</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Tensorflow模型保存与加载方法]]></title>
