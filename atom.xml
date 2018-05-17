@@ -4,7 +4,7 @@
   <title><![CDATA[Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2018-03-25T17:51:29+08:00</updated>
+  <updated>2018-05-17T16:26:18+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,132 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tensorflow基础环境安装]]></title>
+    <link href="http://lionheartwang.github.io/blog/2018/05/17/tensorflowji-chu-huan-jing-an-zhuang/"/>
+    <updated>2018-05-17T16:24:53+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2018/05/17/tensorflowji-chu-huan-jing-an-zhuang</id>
+    <content type="html"><![CDATA[<p>本文介绍如何搭建tensorflow的基础运行环境，包括Cuda、Cudnn与tensorflow gpu版本的安装。</p>
+
+<!-- More -->
+
+
+<h2>安装Cuda</h2>
+
+<p>在nvida官网寻找Cuda rpm安装包：</p>
+
+<ul>
+<li> <a href="https://developer.nvidia.com/cuda-downloads">https://developer.nvidia.com/cuda-downloads</a></li>
+</ul>
+
+
+<p>选择对应版本和系统后下载。</p>
+
+<p>以Cuda 9.0为例，下载后的安装包为：</p>
+
+<ul>
+<li>cuda-repo-rhel7-9-0-local-9.0.176-1.x86_64.rpm</li>
+</ul>
+
+
+<p>执行如下命令安装：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo rpm -i cuda-repo-rhel7-9-0-local-9.0.176-1.x86_64.rpm
+</span><span class='line'>sudo yum clean all
+</span><span class='line'>sudo yum install cuda<span class="sb">`</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>安装nvida-driver：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo yum install -y nvidia-kmod cuda-drivers
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>重新加载nvidia相关模块：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo rmmod nvidia-uvm
+</span><span class='line'>sudo rmmod nvidia
+</span><span class='line'>sudo nvidia-modprobe -u -c<span class="o">=</span>0
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>检验新的驱动是否生效，运行</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>nvidia-smi
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>应当输出本机GPU信息。</p>
+
+<h2>安装Cudnn</h2>
+
+<p>在nvidia官网寻找Cudnn安装包：</p>
+
+<ul>
+<li><a href="https://developer.nvidia.com/rdp/cudnn-download">https://developer.nvidia.com/rdp/cudnn-download</a></li>
+</ul>
+
+
+<p>根据Cuda版本与系统选择对应版本下载。</p>
+
+<p>以Cudnn 7.0为例，下载后的安装包为：</p>
+
+<ul>
+<li>cudnn-9.0-linux-x64-v7.tgz</li>
+</ul>
+
+
+<p>解压安装操作如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>tar zxvf cudnn-9.0-linux-x64-v7.tgz
+</span><span class='line'>sudo cp cuda/include/cudnn.h /usr/local/cuda/include
+</span><span class='line'>sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64
+</span><span class='line'>sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>设置环境变量：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/local/cuda/lib64:<span class="nv">$LD_LIBRARY_PATH</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>安装Tensorflow</h2>
+
+<p>通过pip安装GPU版本的tensorflow。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pip install tensorflow-gpu
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在python中测试tensorflow是否能够正常加载。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="kn">as</span> <span class="nn">tf</span>
+</span><span class='line'><span class="k">print</span> <span class="n">tf</span><span class="o">.</span><span class="n">__version__</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>目前最新版本为1.8.0</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Tensorflow架构介绍]]></title>
@@ -4377,118 +4503,6 @@ Baidu Spark 根据不同的发布版本，使用 log4j 或者 logback 作为日�
 
 
 <p>这样，本地机器A和远程机器B用户名不一致也可 ssh hostname 免密码直接登陆。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Mysql常用操作方法]]></title>
-    <link href="http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/"/>
-    <updated>2016-07-06T19:24:22+08:00</updated>
-    <id>http://lionheartwang.github.io/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa</id>
-    <content type="html"><![CDATA[<p>本文介绍一些mysql实用操作方法。</p>
-
-<!--more-->
-
-
-<h2>启动/登录</h2>
-
-<p>安装完毕后，使用如下命令：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$bin/mysqld_safe --user=mysql &</span></code></pre></td></tr></table></div></figure>
-
-
-<p>启动后即可登录</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysql</span></code></pre></td></tr></table></div></figure>
-
-
-<p>出现如下登录界面表示启动成功：</p>
-
-<p><img src="http://lionheartwang.github.io/images/blog/02-mysql_login.png"></p>
-
-<p>更一般地，可以登录远程mysql数据库。命令如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysql -h&lt;目标ip/hostname&gt; -u&lt;用户名&gt; -p&lt;密码&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>用户权限管理</h2>
-
-<p>一般mysql安装完在本地可以root账户免密码登录。可以为root账户设置密码。</p>
-
-<h3>设置root账户密码</h3>
-
-<p>使用mysqladmin命令设置，形式如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqladmin -u root password "&lt;新的root密码&gt;"</span></code></pre></td></tr></table></div></figure>
-
-
-<p>设置完毕后root帐号登录j就需要输入密码：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysql -uroot -p&lt;新的root密码&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>添加用户</h3>
-
-<p>添加新用户并授予权限使用如下语句：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; GRANT &lt;权限1, 权限2...&gt; PRIVILEGES ON &lt;授权数据库名&gt;.&lt;授权表名&gt; TO '&lt;用户名&gt;'@'&lt;授权访问的IP&gt;' IDENTIFIED BY '&lt;密码&gt;' WITH GRANT OPTION;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>其中WITH GRANT OPTION可选，表明该用户是否有权限授予权限。</p>
-
-<p>另外可以使用通配符'*&lsquo;，&rsquo;%&lsquo;，例如如下语句：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; GRANT ALL PRIVILEGES ON *.* TO 'wyg'@'%' IDENTIFIED BY '123456' WITH GRANT OPTION;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>该语句为用户wyg授权，以123456为密码，具有从任意IP访问所有数据库中所有表的所有权限，并具有授权权限。</p>
-
-<h2>备份/还原数据库</h2>
-
-<p>生产环境中经常需要对数据库进行迁移，这就需要备份/还原数据库。</p>
-
-<h3>备份数据</h3>
-
-<p>使用mysqldump命令，语法如下：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqldump -u&lt;用户名&gt; -p&lt;密码&gt; --databases &lt;数据库1，数据库2...&gt; &gt; &lt;输出文件&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>该语句将指定的database的数据信息备份到输出文件中，输出文件是一个sql文件。</p>
-
-<p>可以用&ndash;all-databases 将整个数据库的所有database的数据备份。</p>
-
-<h3>还原数据</h3>
-
-<p>在输出文件的当前目录登录mysql，然后执行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; source &lt;输入文件&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>执行完成后当前输入文件中的数据信息就录入当前mysql中。</p>
-
-<p>例如，在一台老的数据库机器上执行：</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$mysqldump -uwyg -p123456 --all-databases &gt; all.sql</span></code></pre></td></tr></table></div></figure>
-
-
-<p>然后拷贝all.sql到新机器，登录mysql执行:</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>mysql&gt; source all.sql</span></code></pre></td></tr></table></div></figure>
-
-
-<p>这样就完成了mysql数据从老机器到新机器的迁移。</p>
 ]]></content>
   </entry>
   

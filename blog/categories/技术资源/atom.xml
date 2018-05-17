@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/技术资源/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2018-03-25T17:51:29+08:00</updated>
+  <updated>2018-05-17T16:26:18+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,108 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tensorflow基础环境安装]]></title>
+    <link href="http://lionheartwang.github.io/blog/2018/05/17/tensorflowji-chu-huan-jing-an-zhuang/"/>
+    <updated>2018-05-17T16:24:53+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2018/05/17/tensorflowji-chu-huan-jing-an-zhuang</id>
+    <content type="html"><![CDATA[<p>本文介绍如何搭建tensorflow的基础运行环境，包括Cuda、Cudnn与tensorflow gpu版本的安装。</p>
+
+<!-- More -->
+
+
+<h2>安装Cuda</h2>
+
+<p>在nvida官网寻找Cuda rpm安装包：</p>
+
+<ul>
+<li> <a href="https://developer.nvidia.com/cuda-downloads">https://developer.nvidia.com/cuda-downloads</a></li>
+</ul>
+
+
+<p>选择对应版本和系统后下载。</p>
+
+<p>以Cuda 9.0为例，下载后的安装包为：</p>
+
+<ul>
+<li>cuda-repo-rhel7-9-0-local-9.0.176-1.x86_64.rpm</li>
+</ul>
+
+
+<p>执行如下命令安装：</p>
+
+<pre><code class="bash">sudo rpm -i cuda-repo-rhel7-9-0-local-9.0.176-1.x86_64.rpm
+sudo yum clean all
+sudo yum install cuda`
+</code></pre>
+
+<p>安装nvida-driver：</p>
+
+<pre><code class="bash">sudo yum install -y nvidia-kmod cuda-drivers
+</code></pre>
+
+<p>重新加载nvidia相关模块：</p>
+
+<pre><code class="bash">sudo rmmod nvidia-uvm
+sudo rmmod nvidia
+sudo nvidia-modprobe -u -c=0
+</code></pre>
+
+<p>检验新的驱动是否生效，运行</p>
+
+<pre><code class="bash">nvidia-smi
+</code></pre>
+
+<p>应当输出本机GPU信息。</p>
+
+<h2>安装Cudnn</h2>
+
+<p>在nvidia官网寻找Cudnn安装包：</p>
+
+<ul>
+<li><a href="https://developer.nvidia.com/rdp/cudnn-download">https://developer.nvidia.com/rdp/cudnn-download</a></li>
+</ul>
+
+
+<p>根据Cuda版本与系统选择对应版本下载。</p>
+
+<p>以Cudnn 7.0为例，下载后的安装包为：</p>
+
+<ul>
+<li>cudnn-9.0-linux-x64-v7.tgz</li>
+</ul>
+
+
+<p>解压安装操作如下：</p>
+
+<pre><code class="bash">tar zxvf cudnn-9.0-linux-x64-v7.tgz
+sudo cp cuda/include/cudnn.h /usr/local/cuda/include
+sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64
+sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
+</code></pre>
+
+<p>设置环境变量：</p>
+
+<pre><code>export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+</code></pre>
+
+<h2>安装Tensorflow</h2>
+
+<p>通过pip安装GPU版本的tensorflow。</p>
+
+<pre><code>pip install tensorflow-gpu
+</code></pre>
+
+<p>在python中测试tensorflow是否能够正常加载。</p>
+
+<pre><code class="python">import tensorflow as tf
+print tf.__version__
+</code></pre>
+
+<p>目前最新版本为1.8.0</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[使用Landslide基于MarkDown制作在线Slide]]></title>
@@ -415,52 +517,6 @@ sudo mount -t nfs 192.168.0.1:/path/to/mount /target/to/mount
 
 <pre><code class="bash">sudo docker commit &lt;容器id&gt; &lt;镜像名&gt;
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[使用InteliJ远程调试程序]]></title>
-    <link href="http://lionheartwang.github.io/blog/2017/04/17/remote-debug-via-intelij/"/>
-    <updated>2017-04-17T18:50:33+08:00</updated>
-    <id>http://lionheartwang.github.io/blog/2017/04/17/remote-debug-via-intelij</id>
-    <content type="html"><![CDATA[<p>本文介绍如何使用InteliJ远程调试Java/Scala程序。</p>
-
-<!--more-->
-
-
-<h2>以调试模式启动程序</h2>
-
-<p>JVM添加如下启动参数：</p>
-
-<pre><code class="bash">JAVA_DEBUG_OPTS="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=&lt;debugPort&gt;"
-java $JAVA_DEBUG_OPTS &lt;className&gt;
-</code></pre>
-
-<p>其中：</p>
-
-<ul>
-<li>debugPort为调试服务端口，供InteliJ调试器连接，后面会用到。</li>
-<li>className为待执行的程序类。</li>
-</ul>
-
-
-<p>启动后会提示如下信息：</p>
-
-<blockquote><p>Listening for transport dt_socket at address: xxxx</p></blockquote>
-
-<h2>调试器远程连接</h2>
-
-<p>在InteliJ菜单选择<code>Run</code> -> <code>Edit Configuration</code>，进入运行配置界面。</p>
-
-<p>选择<code>+</code>添加一项新的配置，内容如下图所示：</p>
-
-<p><img src="/images/blog/04-remoteDebug01.png"></p>
-
-<p>填好配置名称，IP、端口即可。IP、端口要和之前远程启动的程序一致。</p>
-
-<p>然后就可以在源码中设置断点，在InteliJ中进行调试了。</p>
-
-<p><img src="/images/blog/05-remoteDebug02.png"></p>
 ]]></content>
   </entry>
   

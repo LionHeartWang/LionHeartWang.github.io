@@ -4,7 +4,7 @@
   <title><![CDATA[Tensorflow | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/tensorflow/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2018-03-25T17:51:29+08:00</updated>
+  <updated>2018-05-17T16:26:18+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -12,6 +12,108 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Tensorflow基础环境安装]]></title>
+    <link href="http://lionheartwang.github.io/blog/2018/05/17/tensorflowji-chu-huan-jing-an-zhuang/"/>
+    <updated>2018-05-17T16:24:53+08:00</updated>
+    <id>http://lionheartwang.github.io/blog/2018/05/17/tensorflowji-chu-huan-jing-an-zhuang</id>
+    <content type="html"><![CDATA[<p>本文介绍如何搭建tensorflow的基础运行环境，包括Cuda、Cudnn与tensorflow gpu版本的安装。</p>
+
+<!-- More -->
+
+
+<h2>安装Cuda</h2>
+
+<p>在nvida官网寻找Cuda rpm安装包：</p>
+
+<ul>
+<li> <a href="https://developer.nvidia.com/cuda-downloads">https://developer.nvidia.com/cuda-downloads</a></li>
+</ul>
+
+
+<p>选择对应版本和系统后下载。</p>
+
+<p>以Cuda 9.0为例，下载后的安装包为：</p>
+
+<ul>
+<li>cuda-repo-rhel7-9-0-local-9.0.176-1.x86_64.rpm</li>
+</ul>
+
+
+<p>执行如下命令安装：</p>
+
+<pre><code class="bash">sudo rpm -i cuda-repo-rhel7-9-0-local-9.0.176-1.x86_64.rpm
+sudo yum clean all
+sudo yum install cuda`
+</code></pre>
+
+<p>安装nvida-driver：</p>
+
+<pre><code class="bash">sudo yum install -y nvidia-kmod cuda-drivers
+</code></pre>
+
+<p>重新加载nvidia相关模块：</p>
+
+<pre><code class="bash">sudo rmmod nvidia-uvm
+sudo rmmod nvidia
+sudo nvidia-modprobe -u -c=0
+</code></pre>
+
+<p>检验新的驱动是否生效，运行</p>
+
+<pre><code class="bash">nvidia-smi
+</code></pre>
+
+<p>应当输出本机GPU信息。</p>
+
+<h2>安装Cudnn</h2>
+
+<p>在nvidia官网寻找Cudnn安装包：</p>
+
+<ul>
+<li><a href="https://developer.nvidia.com/rdp/cudnn-download">https://developer.nvidia.com/rdp/cudnn-download</a></li>
+</ul>
+
+
+<p>根据Cuda版本与系统选择对应版本下载。</p>
+
+<p>以Cudnn 7.0为例，下载后的安装包为：</p>
+
+<ul>
+<li>cudnn-9.0-linux-x64-v7.tgz</li>
+</ul>
+
+
+<p>解压安装操作如下：</p>
+
+<pre><code class="bash">tar zxvf cudnn-9.0-linux-x64-v7.tgz
+sudo cp cuda/include/cudnn.h /usr/local/cuda/include
+sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64
+sudo chmod a+r /usr/local/cuda/include/cudnn.h /usr/local/cuda/lib64/libcudnn*
+</code></pre>
+
+<p>设置环境变量：</p>
+
+<pre><code>export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+</code></pre>
+
+<h2>安装Tensorflow</h2>
+
+<p>通过pip安装GPU版本的tensorflow。</p>
+
+<pre><code>pip install tensorflow-gpu
+</code></pre>
+
+<p>在python中测试tensorflow是否能够正常加载。</p>
+
+<pre><code class="python">import tensorflow as tf
+print tf.__version__
+</code></pre>
+
+<p>目前最新版本为1.8.0</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Tensorflow架构介绍]]></title>
