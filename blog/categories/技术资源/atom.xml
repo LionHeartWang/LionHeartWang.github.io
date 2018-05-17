@@ -4,7 +4,7 @@
   <title><![CDATA[技术资源 | Workspace of LionHeart]]></title>
   <link href="http://lionheartwang.github.io/blog/categories/技术资源/atom.xml" rel="self"/>
   <link href="http://lionheartwang.github.io/"/>
-  <updated>2018-05-17T16:26:18+08:00</updated>
+  <updated>2018-05-17T16:32:32+08:00</updated>
   <id>http://lionheartwang.github.io/</id>
   <author>
     <name><![CDATA[Wang Yiguang]]></name>
@@ -45,7 +45,7 @@
 
 <pre><code class="bash">sudo rpm -i cuda-repo-rhel7-9-0-local-9.0.176-1.x86_64.rpm
 sudo yum clean all
-sudo yum install cuda`
+sudo yum install cuda
 </code></pre>
 
 <p>安装nvida-driver：</p>
