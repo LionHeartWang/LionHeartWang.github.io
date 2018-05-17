@@ -27,7 +27,7 @@ categories: [Tensorflow, 技术资源]
 ```bash
 sudo rpm -i cuda-repo-rhel7-9-0-local-9.0.176-1.x86_64.rpm
 sudo yum clean all
-sudo yum install cuda`
+sudo yum install cuda
 ```
 
 安装nvida-driver：
