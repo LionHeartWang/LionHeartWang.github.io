@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Linux进程状态说明 - Workspace of LionHeart</title>
+  <meta name="author" content="Wang Yiguang">
+
+  
+  <meta name="description" content="Linux进程状态说明 Jun 5th, 2018 12:13 pm 导航[-] Linux是一个多用户，多任务的系统，可以同时运行多个用户的多个进程，每个进程会有不同的状态。 本文对进程的R、S、D、T、Z、X 六种状态进行解释说明。 参考博客：https://blog.csdn.net/ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://lionheartwang.github.io/blog/2018/06/05/linuxjin-cheng-zhuang-tai-shuo-ming/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Workspace of LionHeart" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+<link href='https://fonts.googleapis.com/css?family=Tillana:400,500,600,700,800|Trade+Winds|Henny+Penny|Mountains+of+Christmas:400,700|Nothing+You+Could+Do' rel='stylesheet' type='text/css'>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Workspace of LionHeart</a></h1>
+  
+    <h2>Focus on Spark/TensorFlow and other BigData and ML platforms</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="lionheartwang.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/bigdata">大数据</a></li>
+  <li><a href="/machinelearning">机器学习</a></li>
+  <li><a href="/algorithm">算法</a></li>
+  <!--li><a href="/">Blog</a></li-->
+  <!--li><a href="/blog/archives">Archives</a></li-->
+  <!--li><a href="/team">Team</a></li-->
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Linux进程状态说明</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-06-05T12:13:12+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>12:13 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<div class="blogAnchor">
+  <p id="anchorContentToggle" title="收起">导航[-]</p>
+  <div class="anchorContent" id="anchorContent"> </div>
+</div>
+
+  <div class="entry-content"><p>Linux是一个多用户，多任务的系统，可以同时运行多个用户的多个进程，每个进程会有不同的状态。  本文对进程的R、S、D、T、Z、X 六种状态进行解释说明。</p>
+
+<p>参考博客：<a href="https://blog.csdn.net/tianlesoftware/article/details/6457487">https://blog.csdn.net/tianlesoftware/article/details/6457487</a></p>
+
+<p> <!-- More --></p>
+
+<h2>进程状态定义</h2>
+
+<p>PROCESS STATE CODE英文说明如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>   D    Uninterruptible sleep (usually IO)
+</span><span class='line'>   R    Running or runnable (on run queue)
+</span><span class='line'>   S    Interruptible sleep (waiting for an event to complete)
+</span><span class='line'>   T    Stopped, either by a job control signal or because it is being traced.
+</span><span class='line'>   W    paging (not valid since the 2.6.xx kernel)
+</span><span class='line'>   X    dead (should never be seen)
+</span><span class='line'>   Z    Defunct ("zombie") process, terminated but not
+</span><span class='line'>        reaped by its parent.</span></code></pre></td></tr></table></div></figure>
+
+
+<p>一些额外标记含义如下：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>   &lt;    high-priority (not nice to other users)
+</span><span class='line'>   N    low-priority (nice to other users)
+</span><span class='line'>   L    has pages locked into memory (for real-time and custom IO)
+</span><span class='line'>   s    is a session leader
+</span><span class='line'>   l    is multi-threaded (using CLONE_THREAD, like NPTL pthreads do)
+</span><span class='line'>   +    is in the foreground process group</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p> 中文说明如下：</p>
+
+<ul>
+<li>O:  进程正在处理器运行,这个状态从来木见过.</li>
+<li>S：休眠状态（sleeping）</li>
+<li>R：等待运行（runable）R Running or runnable (on run queue) 进程处于运行或就绪状态</li>
+<li>I：空闲状态（idle）</li>
+<li>Z：僵尸状态（zombie）　　　</li>
+<li>T：跟踪状态（Traced）</li>
+<li>B：进程正在等待更多的内存页</li>
+<li>D:  不可中断的深度睡眠，一般由IO引起，同步IO在做读或写操作时，cpu不能做其它事情，只能等待，这时进程处于这种状态，如果程序采用异步IO，这种状态应该就很少见到了</li>
+</ul>
+
+
+<h2>进程状态说明</h2>
+
+<p>上面罗列的状态分别进行说明。</p>
+
+<h3>R (task_running) : 可执行状态</h3>
+
+<p>只有在该状态的进程才可能在CPU上运行，而同一时刻可能有多个进程处于可执行状态，这些进程的task_struct结构（进程控制块）被放入对应CPU的可执行队列中（一个进程最多只能出现在一个CPU的可执行队列中）。</p>
+
+<p>进程调度器的任务就是从各个CPU的可执行队列中分别选择一个进程在该CPU上运行。</p>
+
+<p>很多操作系统教科书将正在CPU上执行的进程定义为RUNNING状态、而将可执行但是尚未被调度执行的进程定义为READY状态，这两种状态在linux下统一为 TASK_RUNNING状态。</p>
+
+<h3>S (task_interruptible): 可中断的睡眠状态</h3>
+
+<p>处于这个状态的进程因为等待某某事件的发生（比如等待socket连接、等待信号量），而被挂起。</p>
+
+<p>这些进程的task_struct结构被放入对应事件的等待队列中。当这些事件发生时（由外部中断触发、或由其他进程触发），对应的等待队列中的一个或多个进程将被唤醒。</p>
+
+<p>通过ps命令我们会看到，一般情况下，进程列表中的绝大多数进程都处于task_interruptible状态（除非机器的负载很高）。</p>
+
+<p>毕竟CPU就这么一两个，进程动辄几十上百个，如果不是绝大多数进程都在睡眠，CPU又怎么响应得过来。</p>
+
+<h3>D (task_uninterruptible): 不可中断的睡眠状态</h3>
+
+<p>与task_interruptible状态类似，进程处于睡眠状态，但是此刻进程是不可中断的。</p>
+
+<p>不可中断，指的并不是CPU不响应外部硬件的中断，而是指进程不响应异步信号。</p>
+
+<p>绝大多数情况下，进程处在睡眠状态时，总是应该能够响应异步信号的。</p>
+
+<p>但是uninterruptible sleep 状态的进程不接受外来的任何信号，因此无法用kill杀掉这些处于D状态的进程，无论是”kill”, “kill -9″还是”kill -15″。</p>
+
+<p>这种情况下，一个可选的方法是reboot。</p>
+
+<p>处于uninterruptible sleep状态的进程通常是在等待IO，比如磁盘IO，网络IO，其他外设IO等。</p>
+
+<p>如果进程正在等待的IO在较长的时间内都没有响应，那么就被ps看到了，同时也就意味着很有可能有IO出了问题，可能是外设本身出了故障，也可能是比如挂载的远程文件系统已经不可访问了。</p>
+
+<p>而task_uninterruptible状态存在的意义就在于，内核的某些处理流程是不能被打断的。</p>
+
+<p>如果响应异步信号，程序的执行流程中就会被插入一段用于处理异步信号的流程（这个插入的流程可能只存在于内核态，也可能延伸到用户态），于是原有的流程就被中断了。</p>
+
+<p>在进程对某些硬件进行操作时（比如进程调用read系统调用对某个设备文件进行读操作，而read系统调用最终执行到对应设备驱动的代码，并与对应的物理设备进行交互）。</p>
+
+<p>可能需要使用task_uninterruptible状态对进程进行保护，以避免进程与设备交互的过程被打断，造成设备陷入不可控的状态。</p>
+
+<p>这种情况下的task_uninterruptible状态总是非常短暂的，通过ps命令基本上不可能捕捉到。</p>
+
+<h3>T(task_stopped or task_traced)：暂停状态或跟踪状态</h3>
+
+<p>向进程发送一个sigstop信号，它就会因响应该信号而进入task_stopped状态（除非该进程本身处于task_uninterruptible状态而不响应信号）。（sigstop与sigkill信号一样，是非常强制的。不允许用户进程通过signal系列的系统调用重新设置对应的信号处理函数。）</p>
+
+<p>向进程发送一个sigcont信号，可以让其从task_stopped状态恢复到task_running状态。</p>
+
+<p>当进程正在被跟踪时，它处于task_traced这个特殊的状态。</p>
+
+<p>“正在被跟踪”指的是进程暂停下来，等待跟踪它的进程对它进行操作。比如在gdb中对被跟踪的进程下一个断点，进程在断点处停下来的时候就处于task_traced状态。</p>
+
+<p>而在其他时候，被跟踪的进程还是处于前面提到的那些状态。</p>
+
+<p>对于进程本身来说，task_stopped和task_traced状态很类似，都是表示进程暂停下来。</p>
+
+<p>而task_traced状态相当于在task_stopped之上多了一层保护，处于task_traced状态的进程不能响应sigcont信号而被唤醒。</p>
+
+<p>只能等到调试进程通过ptrace系统调用执行ptrace_cont、ptrace_detach等操作（通过ptrace系统调用的参数指定操作），或调试进程退出，被调试的进程才能恢复task_running状态。</p>
+
+<h3>Z (task_dead - exit_zombie)：退出状态，进程成为僵尸进程</h3>
+
+<p>在Linux进程的状态中，僵尸进程是非常特殊的一种，它是已经结束了的进程，但是没有从进程表中删除。太多了会导致进程表里面条目满了，进而导致系统崩溃，倒是不占用其他系统资源。</p>
+
+<p>它已经放弃了几乎所有内存空间，没有任何可执行代码，也不能被调度，仅仅在进程列表中保留一个位置，记载该进程的退出状态等信息供其他进程收集，除此之外，僵尸进程不再占有任何内存空间。</p>
+
+<p>进程在退出的过程中，处于TASK_DEAD状态。在这个退出过程中，进程占有的所有资源将被回收，除了task_struct结构（以及少数资源）以外。于是进程就只剩下task_struct这么个空壳，故称为僵尸。</p>
+
+<p>之所以保留task_struct，是因为task_struct里面保存了进程的退出码、以及一些统计信息。而其父进程很可能会关心这些信息。</p>
+
+<p>比如在shell中，#?变量就保存了最后一个退出的前台进程的退出码，而这个退出码往往被作为if语句的判断条件。</p>
+
+<p>当然，内核也可以将这些信息保存在别的地方，而将task_struct结构释放掉，以节省一些空间。但是使用task_struct结构更为方便，因为在内核中已经建立了从pid到task_struct查找关系，还有进程间的父子关系。释放掉task_struct，则需要建立一些新的数据结构，以便让父进程找到它的子进程的退出信息。</p>
+
+<p>子进程在退出的过程中，内核会给其父进程发送一个信号，通知父进程来“收尸”。 父进程可以通过wait系列的系统调用（如wait4、waitid）来等待某个或某些子进程的退出，并获取它的退出信息。然后wait系列的系统调用会顺便将子进程的尸体（task_struct）也释放掉。</p>
+
+<p>这个信号默认是SIGCHLD，但是在通过clone系统调用创建子进程时，可以设置这个信号。</p>
+
+<p>如果他的父进程没安装SIGCHLD信号处理函数调用wait或waitpid()等待子进程结束，又没有显式忽略该信号，那么它就一直保持僵尸状态，子进程的尸体（task_struct）也就无法释放掉。</p>
+
+<p>如果这时父进程结束了，那么init进程自动会接手这个子进程，为它收尸，它还是能被清除的。但是如果如果父进程是一个循环，不会结束，那么子进程就会一直保持僵尸状态，这就是为什么系统中有时会有很多的僵尸进程。</p>
+
+<p>当进程退出的时候，会将它的所有子进程都托管给别的进程（使之成为别的进程的子进程）。托管的进程可能是退出进程所在进程组的下一个进程（如果存在的话），或者是1号进程。</p>
+
+<p>所以每个进程、每时每刻都有父进程存在。除非它是1号进程。1号进程，pid为1的进程，又称init进程。</p>
+
+<p>linux系统启动后，第一个被创建的用户态进程就是init进程。它有两项使命：</p>
+
+<ul>
+<li>1、执行系统初始化脚本，创建一系列的进程（它们都是init进程的子孙）；</li>
+<li>2、在一个死循环中等待其子进程的退出事件，并调用waitid系统调用来完成“收尸”工作；</li>
+</ul>
+
+
+<p>init进程不会被暂停、也不会被杀死（这是由内核来保证的）。</p>
+
+<p>它在等待子进程退出的过程中处于task_interruptible状态，“收尸”过程中则处于task_running状态。</p>
+
+<p>Unix/Linux 处理僵尸进程的方法：</p>
+
+<ul>
+<li>找出父进程号，然后kill 父进程，之后子进程（僵尸进程）会被托管到其他进程，如init进程，然后由init进程将子进程的尸体（task_struct）释放掉。</li>
+</ul>
+
+
+<p>僵尸进程解决办法：</p>
+
+<ul>
+<li><p>改写父进程，在子进程死后要为它收尸。</p>
+
+<ul>
+<li>具体做法是接管SIGCHLD信号。子进程死后，会发送SIGCHLD信号给父进程，父进程收到此信号后，执行 waitpid()函数为子进程收尸。</li>
+<li>这是基于这样的原理：就算父进程没有调用wait，内核也会向它发送SIGCHLD消息，尽管对的默认处理是忽略，如果想响应这个消息，可以设置一个处理函数。</li>
+</ul>
+</li>
+<li><p>把父进程杀掉。</p>
+
+<ul>
+<li>父进程死后，僵尸进程成为"孤儿进程"，过继给1号进程init，init始终会负责清理僵尸进程．它产生的所有僵尸进程也跟着消失。如：kill -9 <code>ps -ef | grep "Process Name" | awk '{ print $3 }'</code></li>
+<li>其中，“Process Name”为处于zombie状态的进程名。</li>
+</ul>
+</li>
+<li>杀父进程不行的话，就尝试用skill -t TTY关闭相应终端，TTY是进程相应的tty号(终端号)。但是，ps可能会查不到特定进程的tty号，这时就需要自己判断了。</li>
+<li>重启系统，这也是最常用到方法之一。</li>
+</ul>
+
+
+<h3>X (task_dead - exit_dead)：退出状态，进程即将被销毁</h3>
+
+<p>进程在退出过程中也可能不会保留它的task_struct。比如这个进程是多线程程序中被detach过的进程。</p>
+
+<p>或者父进程通过设置sigchld信号的handler为sig_ign，显式的忽略了sigchld信号。（这是posix的规定，尽管子进程的退出信号可以被设置为sigchld以外的其他信号。）</p>
+
+<p>此时，进程将被置于exit_dead退出状态，这意味着接下来的代码立即就会将该进程彻底释放。所以exit_dead状态是非常短暂的，几乎不可能通过ps命令捕捉到。</p>
+
+<h2>进程状态变化说明</h2>
+
+<h3>进程的初始状态</h3>
+
+<p>进程是通过fork系列的系统调用（fork、clone、vfork）来创建的，内核（或内核模块）也可以通过kernel_thread函数创建内核进程。</p>
+
+<p>这些创建子进程的函数本质上都完成了相同的功能——将调用进程复制一份，得到子进程。（可以通过选项参数来决定各种资源是共享、还是私有。）</p>
+
+<p>那么既然调用进程处于task_running状态（否则，它若不是正在运行，又怎么进行调用？），则子进程默认也处于task_running状态。</p>
+
+<p>另外，在系统调用调用clone和内核函数kernel_thread也接受clone_stopped选项，从而将子进程的初始状态置为 task_stopped。</p>
+
+<h3>进程状态变迁</h3>
+
+<p>进程自创建以后，状态可能发生一系列的变化，直到进程退出。</p>
+
+<p>而尽管进程状态有好几种，但是进程状态的变迁却只有两个方向:</p>
+
+<ul>
+<li>从task_running状态变为非task_running状态</li>
+<li>或者从非task_running状态变为task_running状态。</li>
+</ul>
+
+
+<p>也就是说，如果给一个task_interruptible状态的进程发送sigkill信号，这个进程将先被唤醒（进入task_running状态），然后再响应sigkill信号而退出（变为task_dead状态）。并不会从task_interruptible状态直接退出。</p>
+
+<p>进程从非task_running状态变为task_running状态，是由别的进程（也可能是中断处理程序）执行唤醒操作来实现的。执行唤醒的进程设置被唤醒进程的状态为task_running，然后将其task_struct结构加入到某个cpu的可执行队列中。于是被唤醒的进程将有机会被调度执行。</p>
+
+<p>而进程从task_running状态变为非task_running状态，则有两种途径：</p>
+
+<ul>
+<li>1、响应信号而进入task_stoped状态、或task_dead状态；</li>
+<li>2、执行系统调用主动进入task_interruptible状态（如nanosleep系统调用）、或task_dead状态（如exit系统调用）；或由于执行系统调用需要的资源得不到满足，而进入task_interruptible状态或task_uninterruptible状态（如select系统调用）。</li>
+</ul>
+
+
+<p>显然，这两种情况都只能发生在进程正在cpu上执行的情况下。</p>
+</div>
+  <script src="/javascripts/blogDirectory.js" type="text/javascript"></script>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Wang Yiguang</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-06-05T12:13:12+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>5</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>12:13 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/技术资源/'>技术资源</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://lionheartwang.github.io/blog/2018/06/05/linuxjin-cheng-zhuang-tai-shuo-ming/" data-via="" data-counturl="http://lionheartwang.github.io/blog/2018/06/05/linuxjin-cheng-zhuang-tai-shuo-ming/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/05/17/tensorflowji-chu-huan-jing-an-zhuang/" title="Previous Post: Tensorflow基础环境安装">&laquo; Tensorflow基础环境安装</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section id="recent_posts">
+  <h1>Recent Posts</h1>
+  
+	  <p><a href="/blog/2018/06/05/linuxjin-cheng-zhuang-tai-shuo-ming/">Linux进程状态说明</a></p>
+  
+	  <p><a href="/blog/2018/05/17/tensorflowji-chu-huan-jing-an-zhuang/">Tensorflow基础环境安装</a></p>
+  
+	  <p><a href="/blog/2018/03/25/tensorflowjia-gou-jie-shao/">Tensorflow架构介绍</a></p>
+  
+	  <p><a href="/blog/2018/03/18/dockerzi-yuan-ge-chi-he-xian-zhi-shi-xian-yuan-li/">Docker资源隔离和限制实现原理</a></p>
+  
+	  <p><a href="/blog/2018/03/11/spark-shuffle-implementation/">Spark Shuffle工作原理详解</a></p>
+  
+</section>
+
+<section id="categories_aside">
+  <h1>Categories</h1>
+  
+	<p><a href='/blog/categories/技术资源'>技术资源 <span>(14)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2018/06/05/linuxjin-cheng-zhuang-tai-shuo-ming/">Linux进程状态说明</a> 05/06/2018</li>
+    
+		<li><a href="/blog/2018/05/17/tensorflowji-chu-huan-jing-an-zhuang/">Tensorflow基础环境安装</a> 17/05/2018</li>
+    
+		<li><a href="/blog/2017/11/26/shi-yong-landslideji-yu-markdownzhi-zuo-zai-xian-slide/">使用Landslide基于MarkDown制作在线Slide</a> 26/11/2017</li>
+    
+		<li><a href="/blog/2017/11/14/gua-zai-hdfsdao-ben-di-mu-lu-fang-fa/">使用Fuse挂载HDFS到本地目录方法</a> 14/11/2017</li>
+    
+		<li><a href="/blog/2017/10/24/linux-nfs-configuration/">Linux NFS配置及使用方法</a> 24/10/2017</li>
+    
+		<li><a href="/blog/2017/06/18/dockerchang-yong-ming-ling-jie-shao/">Docker常用命令介绍</a> 18/06/2017</li>
+    
+		<li><a href="/blog/2017/04/17/remote-debug-via-intelij/">使用InteliJ远程调试程序</a> 17/04/2017</li>
+    
+		<li><a href="/blog/2017/03/14/intall-thrift-on-mac/">Mac安装Thrift方法</a> 14/03/2017</li>
+    
+		<li><a href="/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan/">ZooKeeper安装使用指南</a> 20/01/2017</li>
+    
+		<li><a href="/blog/2016/08/18/no-pass-world-ssh-method/">免密码远程登录/拷贝方法</a> 18/08/2016</li>
+    
+		<li><a href="/blog/2016/07/06/mysqlchang-yong-cao-zuo-fang-fa/">mysql常用操作方法</a> 06/07/2016</li>
+    
+		<li><a href="/blog/2016/05/27/linux-shellpei-se-zhi-nan/">Linux Shell配色指南</a> 27/05/2016</li>
+    
+		<li><a href="/blog/2016/04/07/fei-rootzhang-hu-kuai-su-an-zhuang-mysql/">非Root账户快速安装mySQL</a> 07/04/2016</li>
+    
+		<li><a href="/blog/2016/02/03/%E4%BD%BF%E7%94%A8Octopress%E6%90%AD%E5%BB%BAGitHub%E5%8D%9A%E5%AE%A2/">使用Octopress搭建Github博客</a> 03/02/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/设计模式'>设计模式 <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/02/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0/">设计模式概述</a> 05/02/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/读书笔记'>读书笔记 <span>(4)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/03/12/jian-suo-mo-xing-yu-sou-suo-pai-xu/">检索模型与搜索排序</a> 12/03/2016</li>
+    
+		<li><a href="/blog/2016/02/20/sou-suo-yin-qing-suo-yin/">搜索引擎索引</a> 20/02/2016</li>
+    
+		<li><a href="/blog/2016/02/08/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E5%8F%8A%E5%85%B6%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84/">搜索引擎及其技术架构</a> 08/02/2016</li>
+    
+		<li><a href="/blog/2016/02/05/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0/">设计模式概述</a> 05/02/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/搜索引擎'>搜索引擎 <span>(3)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/03/12/jian-suo-mo-xing-yu-sou-suo-pai-xu/">检索模型与搜索排序</a> 12/03/2016</li>
+    
+		<li><a href="/blog/2016/02/20/sou-suo-yin-qing-suo-yin/">搜索引擎索引</a> 20/02/2016</li>
+    
+		<li><a href="/blog/2016/02/08/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%E5%8F%8A%E5%85%B6%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84/">搜索引擎及其技术架构</a> 08/02/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/spark'>spark <span>(4)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2018/03/11/spark-shuffle-implementation/">Spark Shuffle工作原理详解</a> 11/03/2018</li>
+    
+		<li><a href="/blog/2016/11/28/spark-core-message-queue-mechanism/">Spark Core 消息队列机制</a> 28/11/2016</li>
+    
+		<li><a href="/blog/2016/10/19/sparkri-zhi-pei-zhi-fang-fa/">Spark日志配置方法</a> 19/10/2016</li>
+    
+		<li><a href="/blog/2016/08/24/spark-historyserver-configuration/">Spark HistoryServer 配置和使用方法</a> 24/08/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/大数据'>大数据 <span>(8)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2018/03/11/spark-shuffle-implementation/">Spark Shuffle工作原理详解</a> 11/03/2018</li>
+    
+		<li><a href="/blog/2018/03/05/flink-framwork-introduction/">Flink架构及工作原理介绍</a> 05/03/2018</li>
+    
+		<li><a href="/blog/2018/02/08/da-jian-rayji-qun-bu-zou/">搭建Ray集群步骤</a> 08/02/2018</li>
+    
+		<li><a href="/blog/2017/11/14/gua-zai-hdfsdao-ben-di-mu-lu-fang-fa/">使用Fuse挂载HDFS到本地目录方法</a> 14/11/2017</li>
+    
+		<li><a href="/blog/2017/01/20/zookeeperan-zhuang-shi-yong-zhi-nan/">ZooKeeper安装使用指南</a> 20/01/2017</li>
+    
+		<li><a href="/blog/2016/11/28/spark-core-message-queue-mechanism/">Spark Core 消息队列机制</a> 28/11/2016</li>
+    
+		<li><a href="/blog/2016/10/19/sparkri-zhi-pei-zhi-fang-fa/">Spark日志配置方法</a> 19/10/2016</li>
+    
+		<li><a href="/blog/2016/08/24/spark-historyserver-configuration/">Spark HistoryServer 配置和使用方法</a> 24/08/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/javascript'>javascript <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/09/13/javascriptshi-xian-bo-wen-mu-lu-zi-dong-sheng-cheng/">JavaScript实现博文目录自动生成</a> 13/09/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/前端'>前端 <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2016/09/13/javascriptshi-xian-bo-wen-mu-lu-zi-dong-sheng-cheng/">JavaScript实现博文目录自动生成</a> 13/09/2016</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/docker'>docker <span>(2)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2018/03/18/dockerzi-yuan-ge-chi-he-xian-zhi-shi-xian-yuan-li/">Docker资源隔离和限制实现原理</a> 18/03/2018</li>
+    
+		<li><a href="/blog/2017/06/18/dockerchang-yong-ming-ling-jie-shao/">Docker常用命令介绍</a> 18/06/2017</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/论文笔记'>论文笔记 <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2017/11/30/on-line-random-forest-paper/">论文阅读: On-line Random Forest</a> 30/11/2017</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/机器学习'>机器学习 <span>(3)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2018/03/25/tensorflowjia-gou-jie-shao/">tensorflow架构介绍</a> 25/03/2018</li>
+    
+		<li><a href="/blog/2017/12/10/tensorflowmo-xing-bao-cun-yu-jia-zai-fang-fa/">Tensorflow模型保存与加载方法</a> 10/12/2017</li>
+    
+		<li><a href="/blog/2017/11/30/on-line-random-forest-paper/">论文阅读: On-line Random Forest</a> 30/11/2017</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/tensorflow'>tensorflow <span>(3)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2018/05/17/tensorflowji-chu-huan-jing-an-zhuang/">Tensorflow基础环境安装</a> 17/05/2018</li>
+    
+		<li><a href="/blog/2018/03/25/tensorflowjia-gou-jie-shao/">tensorflow架构介绍</a> 25/03/2018</li>
+    
+		<li><a href="/blog/2017/12/10/tensorflowmo-xing-bao-cun-yu-jia-zai-fang-fa/">Tensorflow模型保存与加载方法</a> 10/12/2017</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/ray'>ray <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2018/02/08/da-jian-rayji-qun-bu-zou/">搭建Ray集群步骤</a> 08/02/2018</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/flink'>flink <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2018/03/05/flink-framwork-introduction/">Flink架构及工作原理介绍</a> 05/03/2018</li>
+    
+  </ul-->
+  
+	<p><a href='/blog/categories/人工智能'>人工智能 <span>(1)</span></a></p>
+  <!--ul class="arc-list">
+    
+		<li><a href="/blog/2018/03/25/tensorflowjia-gou-jie-shao/">tensorflow架构介绍</a> 25/03/2018</li>
+    
+  </ul-->
+  
+</section>
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2018 - Wang Yiguang -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+<script src="/javascripts/libs/blogDirectory.js" type="text/javascript"></script>
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
