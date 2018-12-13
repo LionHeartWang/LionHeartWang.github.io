@@ -117,10 +117,10 @@
 <lastmod>2016-02-03T11:42:56+08:00</lastmod>
 </url>
 <url>
-<loc>http://lionheartwang.github.io/blog/archives/</loc>
+<loc>http://lionheartwang.github.io/</loc>
 </url>
 <url>
-<loc>http://lionheartwang.github.io/</loc>
+<loc>http://lionheartwang.github.io/blog/archives/</loc>
 </url>
 <url>
 <loc>http://lionheartwang.github.io/team/</loc>
@@ -129,10 +129,10 @@
 <loc>http://lionheartwang.github.io/algorithm/</loc>
 </url>
 <url>
-<loc>http://lionheartwang.github.io/bigdata/</loc>
+<loc>http://lionheartwang.github.io/machinelearning/</loc>
 </url>
 <url>
-<loc>http://lionheartwang.github.io/machinelearning/</loc>
+<loc>http://lionheartwang.github.io/bigdata/</loc>
 </url>
 <url>
 <loc>http://lionheartwang.github.io/blog/categories/%E6%8A%80%E6%9C%AF%E8%B5%84%E6%BA%90/</loc>
@@ -178,5 +178,11 @@
 </url>
 <url>
 <loc>http://lionheartwang.github.io/blog/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/posts/2/</loc>
+</url>
+<url>
+<loc>http://lionheartwang.github.io/posts/3/</loc>
 </url>
 </urlset>
